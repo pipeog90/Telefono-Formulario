@@ -1,0 +1,47 @@
+import React from 'react';
+
+const Button = ({ children, onClick, type = 'button', variant = 'primary', className = '', disabled = false }) => {
+    const getStyle = () => {
+        let style = {
+            padding: '12px 24px',
+            borderRadius: 'var(--radius-sm)',
+            border: 'none',
+            cursor: disabled ? 'not-allowed' : 'pointer',
+            fontSize: '1rem',
+            fontWeight: '500',
+            transition: 'all 0.3s ease',
+            opacity: disabled ? 0.6 : 1,
+            color: 'white',
+            ...(variant === 'primary' ? {
+                background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
+                boxShadow: '0 4px 15px rgba(34, 197, 94, 0.3)'
+            } : {}),
+            ...(variant === 'secondary' ? {
+                background: 'white',
+                border: '1px solid var(--color-glass-border)',
+                color: 'var(--color-text-main)'
+            } : {}),
+            ...(variant === 'danger' ? {
+                background: 'linear-gradient(135deg, var(--color-error), #b91c1c)',
+                boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)'
+            } : {}),
+        };
+        return style;
+    };
+
+    return (
+        <button
+            type={type}
+            onClick={onClick}
+            disabled={disabled}
+            style={getStyle()}
+            className={`nano-btn ${className}`}
+            onMouseEnter={(e) => !disabled && (e.currentTarget.style.transform = 'translateY(-2px)')}
+            onMouseLeave={(e) => !disabled && (e.currentTarget.style.transform = 'translateY(0)')}
+        >
+            {children}
+        </button>
+    );
+};
+
+export default Button;
