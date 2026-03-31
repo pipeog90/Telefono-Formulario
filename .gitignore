@@ -68,6 +68,9 @@ node_modules/
 # dataconnect generated files
 .dataconnect
 
+# Production build output (contains API keys in compiled JS)
+dist/
+
 # Agent intermediate files
 .tmp/
 

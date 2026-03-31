@@ -21,7 +21,7 @@ Before deploying, you typically want to test your application locally.
   ```bash
   npm run dev
   ```
-  *Use this while coding.* It starts a local server (usually at `http://localhost:5173`) that updates instantly when you save files.
+  *Use this while coding.* It starts a local server (usually at `http://localhost:3000`) that updates instantly when you save files.
 
 - **Preview Production Build**:
   ```bash
@@ -73,6 +73,8 @@ npm run build
 Upload the files to Firebase:
 ```bash
 firebase deploy
+
+firebase deploy --only hosting
 ```
 
 ### 5. Access Your Site

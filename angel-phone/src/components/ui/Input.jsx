@@ -4,8 +4,8 @@ const Input = ({ label, id, type = 'text', value, onChange, placeholder, require
     const containerStyle = {
         display: 'flex',
         flexDirection: 'column',
-        gap: '8px',
-        marginBottom: '16px',
+        gap: '2px',
+        marginBottom: '2px',
         width: '100%'
     };
 
@@ -17,13 +17,16 @@ const Input = ({ label, id, type = 'text', value, onChange, placeholder, require
     };
 
     const inputStyle = {
-        padding: '12px 16px',
+        padding: 'var(--input-padding)',
         borderRadius: 'var(--radius-sm)',
         border: error ? '2px solid #ef4444' : '1px solid var(--color-secondary)', // Red border if error
         background: '#ffffff',
         color: error ? '#ef4444' : 'var(--color-text-main)', // Red text if error
         fontWeight: error ? '700' : 'normal', // Bold if error
-        fontSize: '1rem',
+        fontSize: 'var(--input-font-size)',
+        lineHeight: 'var(--input-line-height)',
+        height: 'var(--input-height)',
+        boxSizing: 'border-box',
         outline: 'none',
         transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
         width: '100%',

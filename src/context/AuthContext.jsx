@@ -15,15 +15,12 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
             if (firebaseUser) {
-                // Fetch extra profile data from Firestore
                 try {
-                    // FIX: Use 'firestore' (raw instance) instead of 'db' (class wrapper)
                     const docRef = doc(firestore, "users", firebaseUser.uid);
                     const docSnap = await getDoc(docRef);
                     if (docSnap.exists()) {
                         setUser({ ...firebaseUser, ...docSnap.data() });
                     } else {
-                        // Fallback if no profile exists
                         setUser(firebaseUser);
                     }
                 } catch (err) {

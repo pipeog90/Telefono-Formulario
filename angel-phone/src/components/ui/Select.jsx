@@ -118,8 +118,6 @@ const Select = ({ label, id, value, onChange, options = [], required = false, di
     const containerStyle = {
         display: 'flex',
         flexDirection: 'column',
-        gap: '8px',
-        marginBottom: '16px',
         width: '100%',
         position: 'relative'
     };

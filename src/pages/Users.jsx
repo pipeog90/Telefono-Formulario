@@ -9,14 +9,14 @@ import { Users as UsersIcon, UserPlus, Trash2, Edit2, Save, X, Mail, KeyRound, E
 
 const isFakeEmail = (email) => !email || email.endsWith('@te.org');
 
-const PasswordInput = ({ label, value, onChange, placeholder, style = {} }) => {
+const PasswordInput = ({ label, value, onChange, placeholder, style = {}, centered = false }) => {
     const [show, setShow] = useState(false);
 
     const containerStyle = {
         display: 'flex',
         flexDirection: 'column',
-        gap: '8px',
-        marginBottom: '16px',
+        gap: '4px',
+        marginBottom: '2px',
         width: '100%'
     };
 
@@ -24,26 +24,30 @@ const PasswordInput = ({ label, value, onChange, placeholder, style = {} }) => {
         fontSize: '0.9rem',
         color: 'var(--color-text-muted)',
         fontWeight: '500',
-        marginLeft: '4px'
+        marginLeft: centered ? '0' : '4px',
+        textAlign: centered ? 'center' : 'left'
     };
 
     const inputStyle = {
-        padding: '12px 16px',
+        padding: 'var(--input-padding)',
         paddingRight: '40px', // For the eye icon
         borderRadius: 'var(--radius-sm)',
         border: '1px solid #43A047',
         background: '#ffffff',
         color: 'var(--color-text-main)',
         fontWeight: 'normal',
-        fontSize: '1rem',
+        fontSize: 'var(--input-font-size)',
+        lineHeight: 'var(--input-line-height)',
+        height: 'var(--input-height)',
+        boxSizing: 'border-box',
         outline: 'none',
         transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
         width: '100%',
         appearance: 'none',
-        height: '48px', // Match standard Input height
         WebkitAppearance: 'none',
         MozAppearance: 'none',
         boxShadow: 'none',
+        textAlign: centered ? 'center' : 'left',
         ...style
     };
 
@@ -243,33 +247,41 @@ const Users = () => {
 
     return (
         <div className="container animate-fade-in" style={{ paddingBottom: '4rem' }}>
-            <h2 style={{ color: 'var(--color-secondary)', marginBottom: '20px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <UsersIcon size={24} /> Gestión de Usuarios
+            <h2 style={{ color: 'var(--color-secondary)', borderBottom: '2px solid var(--color-secondary)', paddingBottom: '2px', marginBottom: '2px', fontWeight: '600' }}>
+                Gestión de Usuarios
             </h2>
 
             {/* ── Add User Form ─────────────────────────────────────────── */}
-            <div className="glass-panel" style={{ padding: '20px', marginBottom: '30px' }}>
+            <div className="glass-panel card-responsive-padding" style={{ marginBottom: '2px' }}>
                 <h3 className="section-title">
                     <UserPlus size={20} /> Agregar Nuevo Usuario
                 </h3>
-                <form onSubmit={handleAddUser} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', alignItems: 'end' }}>
+                <form onSubmit={handleAddUser} style={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', 
+                    gap: '12px', 
+                    alignItems: 'end'
+                }}>
                     <Input
                         label="Nombre Completo"
                         value={newUser.name}
                         onChange={e => setNewUser({ ...newUser, name: e.target.value })}
                         placeholder="Ej: Juan Pérez"
+                        centered={true}
                     />
                     <Input
                         label="Usuario (Login)"
                         value={newUser.username}
                         onChange={e => setNewUser({ ...newUser, username: e.target.value })}
                         placeholder="Ej: jperez"
+                        centered={true}
                     />
                     <PasswordInput
                         label="Contraseña inicial"
                         value={newUser.password}
                         onChange={e => setNewUser({ ...newUser, password: e.target.value })}
                         placeholder="Mínimo 6 caracteres"
+                        centered={true}
                     />
                     <Input
                         label="Email real (opcional)"
@@ -277,6 +289,7 @@ const Users = () => {
                         value={newUser.email}
                         onChange={e => setNewUser({ ...newUser, email: e.target.value })}
                         placeholder="Ej: juan@empresa.com"
+                        centered={true}
                     />
                     <Select
                         label="Rol"
@@ -286,8 +299,12 @@ const Users = () => {
                             { value: 'user', label: 'Orientador (Usuario)' },
                             { value: 'admin', label: 'Administrador' }
                         ]}
+                        centered={true}
                     />
-                    <Button type="submit" variant="primary" style={{ height: '48px', alignSelf: 'end', marginBottom: '16px' }}>Crear Usuario</Button>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '2px' }}>
+                        <label style={{ fontSize: '0.9rem', visibility: 'hidden', padding: '0', margin: '0' }}>Spacer</label>
+                        <Button type="submit" variant="primary" style={{ height: 'var(--input-height)' }}>Crear Usuario</Button>
+                    </div>
                 </form>
                 {userError && <p style={{ color: 'red', fontWeight: 'bold', marginTop: '10px' }}>{userError}</p>}
                 {userSuccess && <p style={{ color: 'green', marginTop: '10px' }}>{userSuccess}</p>}

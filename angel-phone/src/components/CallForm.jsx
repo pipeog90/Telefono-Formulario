@@ -266,7 +266,7 @@ const CallForm = ({ user }) => {
                         type="button"
                         onClick={handleReset}
                         style={{
-                            background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
+                            background: 'linear-gradient(135deg, var(--sub-color-primary), var(--sub-color-secondary))',
                             color: 'white',
                             border: 'none',
                             borderRadius: '8px',
@@ -303,7 +303,7 @@ const CallForm = ({ user }) => {
 
             {/* LLAMANTE SECTION */}
             <Card title="Llamante">
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                     <div style={{ flex: '1 1 200px' }}>
                         <Select id="l_sexo" label="Sexo" options={initialDropdowns['Sexo']} value={formData.l_sexo} onChange={handleChange} required error={missingFieldsList.includes('l_sexo')} />
                     </div>
@@ -321,10 +321,10 @@ const CallForm = ({ user }) => {
                     </div>
                 </div>
 
-                <div className="glass-panel mobile-scroll-wrapper" style={{ marginTop: '20px', padding: '15px' }}>
-                    <div className="mobile-min-w-600" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', alignItems: 'start' }}>
-                        <h4 style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', marginBottom: '10px' }}>Problemática (Máx 3)</h4>
-                        <h4 style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', marginBottom: '10px' }}>Problema (Máx 3)</h4>
+                <div className="glass-panel mobile-scroll-wrapper" style={{ marginTop: '1px', padding: 'var(--card-padding)' }}>
+                    <div className="mobile-min-w-600" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px', alignItems: 'start' }}>
+                        <h4 style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Problemática (Máx 3)</h4>
+                        <h4 style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Problema (Máx 3)</h4>
 
                         <Select id="l_problematica_1" options={problematicaOptions} value={formData.l_problematica_1} onChange={handleChange} placeholder="Seleccionar..." />
                         <Select id="l_problema_1" options={getProblems(formData.l_problematica_1, [formData.l_problema_2, formData.l_problema_3])} value={formData.l_problema_1} onChange={handleChange} placeholder="Seleccionar..." disabled={!formData.l_problematica_1} />
@@ -337,7 +337,7 @@ const CallForm = ({ user }) => {
                     </div>
                 </div>
 
-                <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+                <div style={{ marginTop: '2px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '6px' }}>
                     <Select id="l_naturaleza" label="Naturaleza" options={initialDropdowns['Naturaleza']} value={formData.l_naturaleza} onChange={handleChange} required error={missingFieldsList.includes('l_naturaleza')} />
                     <Select id="l_inicio" label="Inicio" options={initialDropdowns['Inicio']} value={formData.l_inicio} onChange={handleChange} required error={missingFieldsList.includes('l_inicio')} />
                     <Select id="l_actitud" label="Actitud ante orientador" options={initialDropdowns['Actitud ante el orientador']} value={formData.l_actitud} onChange={handleChange} required error={missingFieldsList.includes('l_actitud')} />
@@ -352,7 +352,7 @@ const CallForm = ({ user }) => {
 
             {/* TERCERO SECTION */}
             <Card title="Tercero (Opcional)">
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '6px' }}>
                     <Select id="t_sexo" label="Sexo" options={initialDropdowns['Sexo']} value={formData.t_sexo} onChange={handleChange} />
                     <Select id="t_edad" label="Edad" options={initialDropdowns['Edad']} value={formData.t_edad} onChange={handleChange} />
                     <Select id="t_ecivil" label="E. Civil" options={initialDropdowns['E.Civil']} value={formData.t_ecivil} onChange={handleChange} />
@@ -363,7 +363,7 @@ const CallForm = ({ user }) => {
 
             {/* LLAMADA SECTION */}
             <Card title="Datos de la Llamada">
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '6px' }}>
                     <Input id="c_hora" label="Hora" type="time" value={formData.c_hora} onChange={handleChange} required error={missingFieldsList.includes('c_hora')} />
                     <Input id="c_fecha" label="Fecha" type="date" value={formData.c_fecha} onChange={handleChange} required error={missingFieldsList.includes('c_fecha')} />
                     <Select id="c_resultado" label="Resultado" options={initialDropdowns['Resultado']} value={formData.c_resultado} onChange={handleChange} required error={missingFieldsList.includes('c_resultado')} />
@@ -373,19 +373,19 @@ const CallForm = ({ user }) => {
 
             {/* ORIENTADOR SECTION */}
             <Card title="Evaluación del Orientador">
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '6px' }}>
                     <Input id="o_clave" label="Clave" value={formData.o_clave} disabled />
                     <Select id="o_autoevaluacion" label="Autoevaluación" options={initialDropdowns['Autoevaluación']} value={formData.o_autoevaluacion} onChange={handleChange} required error={missingFieldsList.includes('o_autoevaluacion')} />
                     <Select id="o_volvera_llamar" label="Volverá a llamar" options={initialDropdowns['Volvera a llamar']} value={formData.o_volvera_llamar} onChange={handleChange} required error={missingFieldsList.includes('o_volvera_llamar')} />
                 </div>
 
-                <div className="glass-panel mobile-scroll-wrapper" style={{ marginTop: '20px', padding: '15px' }}>
-                    <div className="mobile-min-w-800" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '20px', alignItems: 'start' }}>
+                <div className="glass-panel mobile-scroll-wrapper" style={{ padding: 'var(--card-padding)' }}>
+                    <div className="mobile-min-w-800" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '6px', alignItems: 'start' }}>
                         {/* Headers */}
-                        <label style={{ display: 'block', marginBottom: '0px', color: 'var(--color-text-muted)', fontWeight: '500' }}>Nivel de Ayuda (Máx 2)</label>
-                        <label style={{ display: 'block', marginBottom: '0px', color: 'var(--color-text-muted)', fontWeight: '500' }}>Sentimientos (Máx 3)</label>
-                        <label style={{ display: 'block', marginBottom: '0px', color: 'var(--color-text-muted)', fontWeight: '500' }}>Actitudes equivocadas (Máx 2)</label>
-                        <label style={{ display: 'block', marginBottom: '0px', color: 'var(--color-text-muted)', fontWeight: '500' }}>Satisfacción del llamante (Máx 2)</label>
+                        <label style={{ display: 'block', marginBottom: '0px', color: 'var(--color-text-muted)', fontWeight: '500', whiteSpace: 'nowrap', fontSize: '0.85rem' }}>Nivel de Ayuda (Máx 2)</label>
+                        <label style={{ display: 'block', marginBottom: '0px', color: 'var(--color-text-muted)', fontWeight: '500', whiteSpace: 'nowrap', fontSize: '0.85rem' }}>Sentimientos (Máx 3)</label>
+                        <label style={{ display: 'block', marginBottom: '0px', color: 'var(--color-text-muted)', fontWeight: '500', whiteSpace: 'nowrap', fontSize: '0.85rem' }}>Actitudes equivocadas (Máx 2)</label>
+                        <label style={{ display: 'block', marginBottom: '0px', color: 'var(--color-text-muted)', fontWeight: '500', whiteSpace: 'nowrap', fontSize: '0.85rem' }}>Satisfacción del llamante (Máx 2)</label>
 
                         {/* Row 1 */}
                         <Select id="o_nivel_ayuda_1" options={getFilteredOptions('Nivel de ayuda', [formData.o_nivel_ayuda_2])} value={formData.o_nivel_ayuda_1} onChange={handleChange} placeholder="Seleccionar..." />
@@ -410,8 +410,8 @@ const CallForm = ({ user }) => {
 
             {/* SINTESIS SECTION */}
             <Card title="Síntesis">
-                <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', marginBottom: '15px', lineHeight: '1.5', textAlign: 'justify' }}>
-                    En este apartado deben describir detalladamente las fases de la intervención en crisis que se desarrollaron con el usuario. Estas fases incluyen: <span style={{ color: 'var(--color-accent)', fontWeight: '500' }}>Acogida, Exploración y comprensión del problema, Reestructuración, Planificación y cambio y Cierre.</span> Para los casos de LLHH/CCHH, es muy importante resaltar las estrategias que sirvieron para establecer límites, ya que son fundamentales en la intervención.
+                <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', lineHeight: '1.5', textAlign: 'justify' }}>
+                    En este apartado deben describir detalladamente las fases de la intervención en crisis que se desarrollaron con el usuario. Estas fases incluyen: <span style={{ color: 'var(--sub-color-accent)', fontWeight: '500' }}>Acogida, Exploración y comprensión del problema, Reestructuración, Planificación y cambio y Cierre.</span> Para los casos de LLHH/CCHH, es muy importante resaltar las estrategias que sirvieron para establecer límites, ya que son fundamentales en la intervención.
                 </p>
                 <textarea
                     id="sintesis"
@@ -420,9 +420,9 @@ const CallForm = ({ user }) => {
                     placeholder="Escriba aquí la síntesis..."
                     style={{
                         width: '100%',
-                        padding: '16px',
+                        padding: '8px',
                         borderRadius: 'var(--radius-sm)',
-                        border: '1px solid var(--color-secondary)',
+                        border: '1px solid var(--sub-color-secondary)',
                         background: '#ffffff',
                         color: 'var(--color-text-main)',
                         fontSize: '1rem',
@@ -433,7 +433,7 @@ const CallForm = ({ user }) => {
                 />
             </Card>
 
-            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '30px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '6px' }}>
                 <Button type="submit" variant="primary" disabled={loading}>
                     {loading ? 'Registrando...' : 'Registrar Llamada Completa'}
                 </Button>

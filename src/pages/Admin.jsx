@@ -193,10 +193,10 @@ const Admin = () => {
     return (
         <div className="container animate-fade-in">
             <section id="administracion" className="tab-content active" style={{ display: 'block' }}>
-                <h2 style={{ color: 'var(--color-secondary)', borderBottom: '2px solid var(--color-secondary)', paddingBottom: '10px', marginBottom: '20px', fontWeight: '600' }}>Administración de Valores</h2>
+                <h2 style={{ color: 'var(--color-secondary)', borderBottom: '2px solid var(--color-secondary)', paddingBottom: '2px', marginBottom: '2px', fontWeight: '600' }}>Administración de Valores</h2>
 
                 <div className="admin-section">
-                    <div className="form-group" style={{ marginBottom: '20px' }}>
+                    <div className="form-group" style={{ marginBottom: '4px' }}>
                         <label htmlFor="lista-select" style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>Seleccionar Lista a Administrar:</label>
                         <Select
                             id="lista-select"
@@ -212,7 +212,7 @@ const Admin = () => {
                     </div>
 
                     {!selectedList ? (
-                        <div style={{ padding: '40px', textAlign: 'center', color: '#888', background: '#f9f9f9', borderRadius: '8px', border: '1px dashed #ccc' }}>
+                        <div style={{ padding: '12px', textAlign: 'center', color: '#888', background: '#f9f9f9', borderRadius: '8px', border: '1px dashed #ccc' }}>
                             <p>Por favor seleccione una lista arriba para comenzar a editar.</p>
                         </div>
                     ) : (
@@ -239,7 +239,7 @@ const Admin = () => {
                                     ))}
                                 </div>
                             )}
-                            <div className="glass-panel" style={{ padding: '20px', marginBottom: '20px' }}>
+                            <div className="glass-panel" style={{ padding: 'var(--card-padding)', marginBottom: '4px' }}>
                                 <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
                                     <div style={{ flexGrow: 1, minWidth: '200px' }}>
                                         <Input
@@ -254,7 +254,7 @@ const Admin = () => {
                                         />
 
                                     </div>
-                                    <div style={{ marginBottom: '16px' }}> {/* Align button with input field */}
+                                    <div style={{ marginBottom: '1px' }}> {/* Lifted 1px to align with input border baseline */}
                                         <Button
                                             onClick={handleAdd}
                                             variant="primary"
@@ -262,7 +262,9 @@ const Admin = () => {
                                                 background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
                                                 color: 'white',
                                                 border: 'none',
-                                                boxShadow: '0 4px 15px rgba(34, 197, 94, 0.3)'
+                                                boxShadow: '0 4px 15px rgba(34, 197, 94, 0.3)',
+                                                height: 'var(--input-height)',
+                                                padding: '0 16px'
                                             }}
                                         >
                                             Agregar Valor
@@ -280,8 +282,8 @@ const Admin = () => {
                                 <table className="data-table admin-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
                                     <thead>
                                         <tr>
-                                            <th style={{ textAlign: 'left', padding: '12px' }}>Valor</th>
-                                            <th style={{ textAlign: 'right', padding: '12px' }}>Acción</th>
+                                            <th style={{ textAlign: 'left', padding: 'var(--admin-cell-padding)' }}>Valor</th>
+                                            <th style={{ textAlign: 'left', padding: 'var(--admin-cell-padding)', width: '1px', whiteSpace: 'nowrap' }}>Acción</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -290,7 +292,7 @@ const Admin = () => {
                                         ) : (
                                             currentItems.map((item) => (
                                                 <tr key={item.value} className={item.active === false ? 'inactive-row' : ''} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                                                    <td style={{ padding: '12px' }}>
+                                                    <td style={{ padding: 'var(--admin-cell-padding)' }}>
                                                         {editingIndex === item.value ? (
                                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                                                                 <input type="text" value={editValue} onChange={(e) => setEditValue(e.target.value)} className="input-field" style={{ width: '100%' }} placeholder="Código" />
@@ -303,19 +305,19 @@ const Admin = () => {
                                                         )}
                                                     </td>
 
-                                                    <td style={{ padding: '12px', textAlign: 'right' }}>
+                                                    <td style={{ padding: 'var(--admin-cell-padding)', textAlign: 'left', width: '1px', whiteSpace: 'nowrap' }}>
                                                         {editingIndex === item.value ? (
-                                                            <div style={{ display: 'flex', gap: '5px', justifyContent: 'flex-end' }}>
-                                                                <button onClick={() => saveEdit(item)} className="button small primary" style={{ backgroundColor: 'var(--color-success)', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer' }}>Guardar</button>
-                                                                <button onClick={() => setEditingIndex(null)} className="button small outline" style={{ border: '1px solid var(--color-text-secondary)', color: 'var(--color-text-secondary)', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer', background: 'transparent' }}>Cancelar</button>
+                                                            <div style={{ display: 'flex', gap: '5px', justifyContent: 'flex-start' }}>
+                                                                <button onClick={() => saveEdit(item)} className="button small primary" style={{ backgroundColor: 'var(--color-success)', color: 'white', border: 'none', padding: 'var(--admin-btn-padding)', borderRadius: '4px', cursor: 'pointer' }}>Guardar</button>
+                                                                <button onClick={() => setEditingIndex(null)} className="button small outline" style={{ border: '1px solid var(--color-text-secondary)', color: 'var(--color-text-secondary)', padding: 'var(--admin-btn-padding)', borderRadius: '4px', cursor: 'pointer', background: 'transparent' }}>Cancelar</button>
                                                             </div>
                                                         ) : (
-                                                            <div style={{ display: 'flex', gap: '5px', justifyContent: 'flex-end' }}>
-                                                                <button onClick={() => startEdit(item)} className="button small outline" style={{ border: '1px solid var(--color-primary)', color: 'var(--color-primary)', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer', background: 'transparent' }}>Modificar</button>
-                                                                <button onClick={() => handleToggleActive(item)} className="button small outline" style={{ border: '1px solid var(--color-warning)', color: 'var(--color-warning)', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer', background: 'transparent' }}>
+                                                            <div style={{ display: 'flex', gap: '5px', justifyContent: 'flex-start' }}>
+                                                                <button onClick={() => startEdit(item)} className="button small outline" style={{ border: '1px solid var(--color-primary)', color: 'var(--color-primary)', padding: 'var(--admin-btn-padding)', borderRadius: '4px', cursor: 'pointer', background: 'transparent' }}>Modificar</button>
+                                                                <button onClick={() => handleToggleActive(item)} className="button small outline" style={{ border: '1px solid var(--color-warning)', color: 'var(--color-warning)', padding: 'var(--admin-btn-padding)', borderRadius: '4px', cursor: 'pointer', background: 'transparent' }}>
                                                                     {item.active !== false ? 'Desactivar' : 'Reactivar'}
                                                                 </button>
-                                                                <button onClick={() => handleDelete(item)} className="button small outline" style={{ border: '1px solid var(--color-danger)', color: 'var(--color-danger)', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer', background: 'transparent' }}>Eliminar</button>
+                                                                <button onClick={() => handleDelete(item)} className="button small outline" style={{ border: '1px solid var(--color-danger)', color: 'var(--color-danger)', padding: 'var(--admin-btn-padding)', borderRadius: '4px', cursor: 'pointer', background: 'transparent' }}>Eliminar</button>
                                                             </div>
                                                         )}
                                                     </td>

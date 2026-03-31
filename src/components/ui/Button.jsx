@@ -3,7 +3,7 @@ import React from 'react';
 const Button = ({ children, onClick, type = 'button', variant = 'primary', className = '', disabled = false, style = {}, ...props }) => {
     const getStyle = () => {
         let baseStyle = {
-            padding: '12px 24px',
+            padding: '0 24px',
             borderRadius: 'var(--radius-sm)',
             border: 'none',
             cursor: disabled ? 'not-allowed' : 'pointer',
@@ -12,6 +12,11 @@ const Button = ({ children, onClick, type = 'button', variant = 'primary', class
             transition: 'all 0.3s ease',
             opacity: disabled ? 0.6 : 1,
             color: 'white',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            textAlign: 'center',
+            lineHeight: '1',
             ...(variant === 'primary' ? {
                 background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
                 boxShadow: '0 4px 15px rgba(34, 197, 94, 0.3)'
@@ -41,8 +46,8 @@ const Button = ({ children, onClick, type = 'button', variant = 'primary', class
             disabled={disabled}
             style={getStyle()}
             className={`nano-btn ${className}`}
-            onMouseEnter={(e) => !disabled && (e.currentTarget.style.transform = 'translateY(-2px)')}
-            onMouseLeave={(e) => !disabled && (e.currentTarget.style.transform = 'translateY(0)')}
+            onMouseEnter={(e) => !disabled && (e.currentTarget.style.opacity = '0.9')}
+            onMouseLeave={(e) => !disabled && (e.currentTarget.style.opacity = '1')}
             {...props}
         >
             {children}

@@ -1,12 +1,11 @@
 import React from 'react';
 import { X } from 'lucide-react';
 
-const Input = ({ label, id, type = 'text', value, onChange, placeholder, required = false, disabled = false, style = {}, error = false }) => {
+const Input = ({ label, id, type = 'text', value, onChange, placeholder, required = false, disabled = false, style = {}, error = false, centered = false }) => {
     const containerStyle = {
         display: 'flex',
         flexDirection: 'column',
-        gap: '8px',
-        marginBottom: '16px',
+        gap: '2px',
         width: '100%',
         position: 'relative' // Added for absolute positioning of clear button
     };
@@ -15,26 +14,32 @@ const Input = ({ label, id, type = 'text', value, onChange, placeholder, require
         fontSize: '0.9rem',
         color: error ? '#f59e0b' : 'var(--color-text-muted)',
         fontWeight: '500',
-        marginLeft: '4px'
+        marginLeft: centered ? '0' : '4px',
+        textAlign: centered ? 'center' : 'left',
+        whiteSpace: 'nowrap'
     };
 
     const inputStyle = {
-        padding: '12px 16px',
-        paddingRight: (type === 'date' && value) ? '40px' : '16px',
+        padding: 'var(--input-padding)',
+        paddingRight: (type === 'date' && value) ? '40px' : '12px',
         borderRadius: 'var(--radius-sm)',
         border: error ? '2px solid #ef4444' : '1px solid #43A047',
         background: '#ffffff',
         color: error ? '#ef4444' : 'var(--color-text-main)',
         fontWeight: error ? '700' : 'normal',
-        fontSize: '1rem',
+        fontSize: 'var(--input-font-size)',
+        lineHeight: 'var(--input-line-height)',
+        minHeight: 'var(--input-height)',
+        height: 'auto',
+        boxSizing: 'border-box',
         outline: 'none',
         transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
         width: '100%',
         appearance: 'none',
-        height: '48px',
         WebkitAppearance: 'none',
         MozAppearance: 'none',
         boxShadow: 'none',
+        textAlign: centered ? 'center' : 'left',
         ...style
     };
 

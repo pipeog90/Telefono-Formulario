@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
 
-const Select = ({ label, id, value, onChange, options = [], required = false, disabled = false, placeholder = "Seleccionar...", error = false }) => {
+const Select = ({ label, id, value, onChange, options = [], required = false, disabled = false, placeholder = "Seleccionar...", error = false, centered = false }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [coords, setCoords] = useState({ top: 0, left: 0, width: 0, maxHeight: 300, isFlipped: false });
     const containerRef = useRef(null);
@@ -118,8 +118,6 @@ const Select = ({ label, id, value, onChange, options = [], required = false, di
     const containerStyle = {
         display: 'flex',
         flexDirection: 'column',
-        gap: '8px',
-        marginBottom: '16px',
         width: '100%',
         position: 'relative'
     };
@@ -128,7 +126,9 @@ const Select = ({ label, id, value, onChange, options = [], required = false, di
         fontSize: '0.9rem',
         color: error ? '#f59e0b' : 'var(--color-text-muted)', // Yellow if error
         fontWeight: '500',
-        marginLeft: '4px'
+        marginLeft: centered ? '0' : '4px',
+        textAlign: centered ? 'center' : 'left',
+        whiteSpace: 'nowrap'
     };
 
     return (
@@ -147,6 +147,9 @@ const Select = ({ label, id, value, onChange, options = [], required = false, di
                     cursor: disabled ? 'not-allowed' : 'pointer',
                     background: disabled ? '#f3f4f6' : '#ffffff',
                     border: error ? '2px solid #ef4444' : `1px solid ${isOpen ? '#66BB6A' : '#43A047'}`, // Green border
+                    textAlign: centered ? 'center' : 'left',
+                    justifyContent: centered ? 'center' : 'flex-start',
+                    paddingRight: centered ? '12px' : '40px' // Reduce right padding if centered to balance space
                 }}
             >
                 {displayValue}

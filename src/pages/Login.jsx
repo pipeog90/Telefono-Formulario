@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../services/firebase';
 import Button from '../components/ui/Button';
-import { User, Lock, Eye, EyeOff, ArrowRight, Database } from 'lucide-react';
+import { User, Lock, Eye, EyeOff, ArrowRight, Database, Mail } from 'lucide-react';
 
 import { useAuth } from '../context/AuthContext';
 
@@ -111,14 +111,15 @@ const Login = () => {
                             src="/logo.png"
                             alt="Teléfono de la Esperanza"
                             className="logo-img logo-image"
+                            style={{ marginBottom: '2px' }}
                         />
                     </div>
 
                     {/* Titles */}
-                    <h1 className="app-title">
+                    <h1 className="app-title" style={{ marginTop: '2px', marginBottom: '2px' }}>
                         Ángel al Teléfono
                     </h1>
-                    <p className="app-subtitle">
+                    <p className="app-subtitle" style={{ marginTop: '2px', marginBottom: '2px' }}>
                         Sistema de Gestión de Llamadas
                     </p>
                 </div>
@@ -137,9 +138,9 @@ const Login = () => {
                             <form onSubmit={handleLogin} style={{ width: '100%' }}>
                                 {/* Usuario Fieldset */}
                                 <fieldset className="input-fieldset">
-                                    <legend className="text-center w-full">Usuario</legend>
-                                    <div className="input-content justify-center">
-                                        <User className="icon" size={18} />
+                                    <legend style={{ textAlign: 'center' }}>Usuario</legend>
+                                    <div className="input-content justify-center" >
+                                        <User className="icon" size={18} style={{ position: 'absolute' }} />
                                         <input
                                             type="text"
                                             value={email}
@@ -152,7 +153,7 @@ const Login = () => {
 
                                 {/* Contraseña Fieldset */}
                                 <fieldset className="input-fieldset">
-                                    <legend className="text-center w-full">Contraseña</legend>
+                                    <legend style={{ textAlign: 'center' }}>Contraseña</legend>
                                     <div className="input-content justify-center">
                                         <Lock className="icon" size={18} />
                                         <input
@@ -175,7 +176,8 @@ const Login = () => {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="btn-primary mt-6"
+                                    className="btn-primary"
+                                    style={{ marginTop: '8px' }}
                                 >
                                     {loading ? (
                                         <span className="flex items-center gap-2 justify-center">
@@ -193,7 +195,7 @@ const Login = () => {
                                 </button>
                             </form>
 
-                            <div style={{ marginTop: '1.0rem', textAlign: 'center' }}>
+                            <div style={{ marginTop: '2px', textAlign: 'center' }}>
                                 <button
                                     type="button"
                                     onClick={() => {
@@ -221,7 +223,7 @@ const Login = () => {
                                     style={{
                                         width: '100%',
                                         justifyContent: 'center',
-                                        marginTop: '1.5rem',
+                                        marginTop: '4px',
                                         background: 'linear-gradient(135deg, #AED581 0%, #8BC34A 100%)',
                                         borderColor: '#8BC34A',
                                         boxShadow: '0 4px 15px rgba(139, 195, 74, 0.3)'
@@ -233,7 +235,7 @@ const Login = () => {
                         </>
                     ) : showChangePassword ? (
                         <div style={{ width: '100%' }}>
-                            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', textAlign: 'center', marginBottom: '1.5rem', color: '#1f2937' }}>Cambiar Contraseña</h2>
+                            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', textAlign: 'center', marginBottom: '0px', color: '#1f2937' }}>Cambiar Contraseña</h2>
 
                             {changePassError && (
                                 <div style={{ backgroundColor: '#fef2f2', padding: '0.75rem', borderRadius: '0.5rem', marginBottom: '1rem', fontSize: '0.875rem', textAlign: 'center', color: 'red', fontWeight: 'bold' }}>
@@ -247,9 +249,10 @@ const Login = () => {
                                 </div>
                             )}
 
-                            <form onSubmit={handleChangePassword} className="space-y-4">
+                            <form onSubmit={handleChangePassword} className="space-y-2">
                                 <fieldset className="input-fieldset">
                                     <legend style={{ textAlign: 'center' }}>Usuario</legend>
+                                    <User className="icon" size={18} style={{ position: 'absolute', marginTop: '-0.5rem' }} />
                                     <input
                                         type="text"
                                         value={email}
@@ -257,13 +260,14 @@ const Login = () => {
                                         className="input-field text-center"
                                         placeholder="Ingrese su usuario"
                                         required
+                                        style={{ marginTop: '-0.5rem' }}
                                     />
                                 </fieldset>
 
                                 <fieldset className="input-fieldset">
                                     <legend style={{ textAlign: 'center' }}>Contraseña Actual</legend>
                                     <div className="input-content justify-center" style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
-                                        <Lock className="icon" size={18} style={{ marginLeft: '10px' }} />
+                                        <Lock className="icon" size={18} />
                                         <input
                                             type={showOldPass ? "text" : "password"}
                                             value={oldPassword}
@@ -276,7 +280,6 @@ const Login = () => {
                                             type="button"
                                             onClick={() => setShowOldPass(!showOldPass)}
                                             className="password-toggle"
-                                            style={{ marginRight: '10px', background: 'transparent', border: 'none', display: 'flex', alignItems: 'center' }}
                                         >
                                             {showOldPass ? <Eye size={18} /> : <EyeOff size={18} />}
                                         </button>
@@ -286,7 +289,7 @@ const Login = () => {
                                 <fieldset className="input-fieldset">
                                     <legend style={{ textAlign: 'center' }}>Nueva Contraseña</legend>
                                     <div className="input-content justify-center" style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
-                                        <Lock className="icon" size={18} style={{ marginLeft: '10px' }} />
+                                        <Lock className="icon" size={18} />
                                         <input
                                             type={showNewPass ? "text" : "password"}
                                             value={newPassword}
@@ -299,7 +302,6 @@ const Login = () => {
                                             type="button"
                                             onClick={() => setShowNewPass(!showNewPass)}
                                             className="password-toggle"
-                                            style={{ marginRight: '10px', background: 'transparent', border: 'none', display: 'flex', alignItems: 'center' }}
                                         >
                                             {showNewPass ? <Eye size={18} /> : <EyeOff size={18} />}
                                         </button>
@@ -309,7 +311,7 @@ const Login = () => {
                                 <fieldset className="input-fieldset">
                                     <legend style={{ textAlign: 'center' }}>Confirmar Nueva Contraseña</legend>
                                     <div className="input-content justify-center" style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
-                                        <Lock className="icon" size={18} style={{ marginLeft: '10px' }} />
+                                        <Lock className="icon" size={18} />
                                         <input
                                             type={showConfirmPass ? "text" : "password"}
                                             value={confirmPassword}
@@ -322,7 +324,6 @@ const Login = () => {
                                             type="button"
                                             onClick={() => setShowConfirmPass(!showConfirmPass)}
                                             className="password-toggle"
-                                            style={{ marginRight: '10px', background: 'transparent', border: 'none', display: 'flex', alignItems: 'center' }}
                                         >
                                             {showConfirmPass ? <Eye size={18} /> : <EyeOff size={18} />}
                                         </button>
@@ -332,13 +333,13 @@ const Login = () => {
                                 <button
                                     type="submit"
                                     className="btn-primary"
-                                    style={{ width: '100%', justifyContent: 'center', marginTop: '2rem' }}
+                                    style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}
                                 >
                                     Actualizar Contraseña
                                 </button>
                             </form>
 
-                            <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+                            <div style={{ marginTop: '4px', textAlign: 'center' }}>
                                 <button
                                     onClick={() => {
                                         setShowChangePassword(false);
@@ -363,7 +364,7 @@ const Login = () => {
                         </div>
                     ) : showRecovery ? (
                         <div style={{ width: '100%' }}>
-                            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', textAlign: 'center', marginBottom: '1.5rem', color: '#1f2937' }}>Recuperar Contraseña</h2>
+                            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', textAlign: 'center', marginBottom: '0px', color: '#1f2937' }}>Recuperar Contraseña</h2>
 
                             {recoveryError && (
                                 <div style={{ backgroundColor: '#fef2f2', padding: '0.75rem', borderRadius: '0.5rem', marginBottom: '1rem', fontSize: '0.875rem', textAlign: 'center', color: 'red', fontWeight: 'bold' }}>
@@ -377,9 +378,10 @@ const Login = () => {
                                 </div>
                             )}
 
-                            <form onSubmit={handleRecovery} className="space-y-4">
+                            <form onSubmit={handleRecovery} className="space-y-2">
                                 <fieldset className="input-fieldset">
                                     <legend style={{ textAlign: 'center' }}>Email</legend>
+                                    <Mail className="icon" size={18} style={{ marginTop: '-0.5rem' }} />
                                     <input
                                         type="text"
                                         value={recoveryEmail}
@@ -387,6 +389,7 @@ const Login = () => {
                                         className="input-field text-center"
                                         placeholder="Ingrese su usuario o correo"
                                         required
+                                        style={{ marginTop: '-0.5rem' }}
                                     />
                                 </fieldset>
 
@@ -394,13 +397,13 @@ const Login = () => {
                                     type="submit"
                                     disabled={loading}
                                     className="btn-primary"
-                                    style={{ width: '100%', justifyContent: 'center', marginTop: '2rem' }}
+                                    style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}
                                 >
                                     {loading ? 'Enviando...' : 'Recuperar Contraseña'}
                                 </button>
                             </form>
 
-                            <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+                            <div style={{ marginTop: '4px', textAlign: 'center' }}>
                                 <button
                                     onClick={() => {
                                         setShowRecovery(false);

@@ -8,6 +8,7 @@ import Input from '../components/ui/Input';
 import Select from '../components/ui/Select';
 
 import { useAuth } from '../context/AuthContext';
+import '../../angel-phone/src/index.css';
 
 const Registro = () => {
     const navigate = useNavigate();

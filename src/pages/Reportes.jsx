@@ -388,15 +388,15 @@ const Reportes = () => {
     return (
         <div className="container animate-fade-in" style={{ paddingBottom: '4rem' }}>
             <section id="reportes" className="tab-content active" style={{ display: 'block' }}>
-                <h2 style={{ color: 'var(--color-secondary)', borderBottom: '2px solid var(--color-secondary)', paddingBottom: '10px', marginBottom: '20px', fontWeight: '600' }}>
+                <h2 style={{ color: 'var(--color-secondary)', borderBottom: '2px solid var(--color-secondary)', paddingBottom: '2px', marginBottom: '2px', fontWeight: '600' }}>
                     Generación de Reportes
                 </h2>
 
-                <div className="reporte-controls" style={{ display: 'flex', flexDirection: 'column', gap: '30px', marginBottom: '20px' }}>
-                    <div className="glass-panel" style={{ padding: '20px' }}>
+                <div className="reporte-controls" style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginBottom: '2px' }}>
+                    <div className="glass-panel" style={{ padding: 'var(--card-padding)' }}>
                         <h3 className="section-title">Filtros de Búsqueda</h3>
                         <form id="reporte-form-filters" onSubmit={(e) => { e.preventDefault(); generateReport(); }}>
-                            <div className="form-grid-3" style={{ marginBottom: '20px' }}>
+                            <div className="form-grid-3" style={{ marginBottom: '6px' }}>
                                 <Input
                                     id="fechaInicio"
                                     label="Fecha Inicio"
@@ -420,7 +420,7 @@ const Reportes = () => {
                                     placeholder="Todos"
                                 />
                             </div>
-                            <div className="form-grid-3" style={{ marginBottom: '20px' }}>
+                            <div className="form-grid-3" style={{ marginBottom: '1px' }}>
                                 <Select
                                     id="problema"
                                     label="Problemática"
@@ -456,7 +456,7 @@ const Reportes = () => {
                             </div>
 
                             {/* Action Buttons Row */}
-                            <div className="action-buttons-row" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '15px', justifyContent: 'flex-start' }}>
+                            <div className="action-buttons-row" style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '6px', justifyContent: 'flex-start' }}>
                                 <Button type="submit" variant="primary" style={{ width: '170px', padding: '10px', display: 'flex', justifyContent: 'center' }}>
                                     {loading ? 'Generando...' : 'Generar Reporte'}
                                 </Button>
@@ -480,19 +480,19 @@ const Reportes = () => {
                         </form>
                     </div>
 
-                    <div className="glass-panel" style={{ padding: '20px' }}>
+                    <div className="glass-panel" style={{ padding: 'var(--card-padding)' }}>
                         <h3 className="section-title">Consultas Rápidas</h3>
                         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                            <Button onClick={handleLast20} variant="primary" style={{ width: '200px', display: 'flex', justifyContent: 'center' }}>Últimas 20 llamadas</Button>
-                            <Button onClick={handleLastWeek} variant="primary" style={{ width: '200px', display: 'flex', justifyContent: 'center' }}>Última semana</Button>
+                            <Button onClick={handleLast20} variant="primary" style={{ width: '170px', padding: '10px', display: 'flex', justifyContent: 'center', whiteSpace: 'nowrap' }}>Últimas 20 llamadas</Button>
+                            <Button onClick={handleLastWeek} variant="primary" style={{ width: '170px', padding: '10px', display: 'flex', justifyContent: 'center', whiteSpace: 'nowrap' }}>Última semana</Button>
                         </div>
                     </div>
                 </div>
 
                 <div className="reporte-display">
-                    <h3 style={{ marginBottom: '1rem' }}>Resultados del Reporte (<span id="total-registros">{results.length}</span> llamadas)</h3>
+                    <h3 style={{ marginBottom: '1px' }}>Resultados del Reporte (<span id="total-registros">{results.length}</span> llamadas)</h3>
                     <div className="table-responsive-wrapper">
-                        <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px', fontSize: '0.9em' }}>
+                        <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9em' }}>
                             <thead>
                                 <tr>
                                     <th style={{ width: '35px', minWidth: '35px', backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)', padding: '10px', textAlign: 'center' }}>No</th>

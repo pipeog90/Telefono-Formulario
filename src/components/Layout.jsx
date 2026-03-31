@@ -12,9 +12,14 @@ const NavLink = ({ to, children }) => {
         color: isActive ? 'var(--color-primary)' : 'var(--color-text-muted)',
         textDecoration: 'none',
         fontWeight: '500',
-        padding: '8px 16px',
-        borderRadius: 'var(--radius-sm)',
+        padding: 'var(--nav-padding)',
+        borderRadius: 'var(--nav-radius)',
+        margin: 'var(--nav-margin-y) 0',
+        height: 'var(--nav-item-height)',
+        display: 'inline-flex',
+        alignItems: 'center',
         transition: 'all 0.3s ease',
+
         background: isActive ? 'rgba(34, 197, 94, 0.1)' : 'transparent',
         border: isActive ? '1px solid rgba(34, 197, 94, 0.2)' : '1px solid transparent'
     };
@@ -36,11 +41,11 @@ const Layout = () => {
 
     const handleLogout = async () => {
         await auth.signOut();
-        
+
         // Clear locally persisted form data
         localStorage.removeItem('callFormDraft');
         localStorage.removeItem('adminSelectedList');
-        
+
         // Hard redirect to force complete clearance of React memory state 
         // to ensure all 4 subdomains start clean for the next user.
         window.location.href = '/login';
@@ -55,10 +60,8 @@ const Layout = () => {
                         gap: '15px',
                         overflowX: 'auto',
                         whiteSpace: 'nowrap',
-                        paddingBottom: '5px',
                         paddingRight: '15px',
                         flex: 1,
-                        marginRight: '15px',
                         scrollbarWidth: 'none',
                         msOverflowStyle: 'none',
                     }}
