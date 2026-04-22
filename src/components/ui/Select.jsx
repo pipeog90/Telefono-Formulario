@@ -202,4 +202,4 @@ const Select = ({ label, id, value, onChange, options = [], required = false, di
     );
 };
 
-export default Select;
+export default React.memo(Select);

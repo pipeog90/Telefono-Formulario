@@ -2,10 +2,10 @@
 
 :root {
   /* Teléfono de la Esperanza Aesthetic Palette */
-  --color-bg-light: #f0fdf4;
-  --color-bg-gradient: linear-gradient(180deg, #fff 0%, #dcfce7 100%);
-  --color-glass-bg: rgb(255 255 255 / 70%);
-  --color-glass-border: rgb(34 197 94 / 20%);
+  --color-bg-light: #e8f5e9;
+  --color-bg-gradient: linear-gradient(180deg, #e8f5e9 0%, #c8e6c9 100%);
+  --color-glass-bg: rgba(255, 255, 255, 0.85);
+  --color-glass-border: rgba(34, 197, 94, 0.35);
   --color-glass-shadow: 0 4px 6px -1px rgb(0 0 0 / 10%), 0 2px 4px -1px rgb(0 0 0 / 6%);
   --sub-color-primary: #4ade80;
 

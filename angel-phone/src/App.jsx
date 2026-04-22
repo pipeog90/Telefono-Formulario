@@ -1,9 +1,17 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import Home from './pages/Home';
-import Admin from './pages/Admin';
-import Reportes from './pages/Reportes';
 import { ListsProvider } from './context/ListsContext';
+
+// Lazy-loaded pages for code splitting
+const Home = React.lazy(() => import('./pages/Home'));
+const Admin = React.lazy(() => import('./pages/Admin'));
+const Reportes = React.lazy(() => import('./pages/Reportes'));
+
+const PageLoader = () => (
+  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '40vh' }}>
+    <div style={{ width: '2rem', height: '2rem', border: '3px solid #E8F5E9', borderTopColor: '#66BB6A', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+  </div>
+);
 
 const NavLink = ({ to, children }) => {
   const location = useLocation();
@@ -55,11 +63,13 @@ function App() {
       <Router>
         <div className="app-wrapper">
           <Navigation />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/reportes" element={<Reportes />} />
-          </Routes>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/reportes" element={<Reportes />} />
+            </Routes>
+          </Suspense>
         </div>
       </Router>
     </ListsProvider>

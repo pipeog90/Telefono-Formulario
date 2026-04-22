@@ -1,0 +1,225 @@
+
+--- Sheet: Catalogo ---
+               Categoría  Valor                                                                                        Descripcion    Estado  Texto Ayuda 
+          MEDIO_CONTACTO      1                                                                                       Por teléfono    Activo           NaN
+          MEDIO_CONTACTO      2                                                                                   Atendido en sede    Activo           NaN
+          MEDIO_CONTACTO      3                                                                                          Por email    Activo           NaN
+          MEDIO_CONTACTO      4                                                                                                NaN Sin datos           NaN
+          MEDIO_CONTACTO      5                                                                                                NaN Sin datos           NaN
+          MEDIO_CONTACTO      6                                                                                                NaN Sin datos           NaN
+          MEDIO_CONTACTO      7                                                            Programa de atención a personas mayores    Activo           NaN
+          MEDIO_CONTACTO      8                                                                           Chat TE Conectate social    Activo           NaN
+                    SEXO      0                                                                                           No lo sé    Activo           NaN
+                    SEXO      1                                                                                             Hombre    Activo           NaN
+                    SEXO      2                                                                                              Mujer    Activo           NaN
+                    EDAD      1                                                                                       Hast 18 años    Activo           NaN
+                    EDAD      2                                                                                         De 19 a 25    Activo           NaN
+                    EDAD      3                                                                                         De 26 a 35    Activo           NaN
+                    EDAD      4                                                                                         De 36 a 45    Activo           NaN
+                    EDAD      5                                                                                         De 46 a 55    Activo           NaN
+                    EDAD      6                                                                                         De 56 a 65    Activo           NaN
+                    EDAD      7                                                                                         de 66 a 75    Activo           NaN
+                    EDAD      8                                                                                          76 o mas     Activo           NaN
+                    EDAD      9                                                                                        Si, definir    Activo           NaN
+            ESTADO_CIVIL      0                                                                                           No lo sé    Activo           NaN
+            ESTADO_CIVIL      1                                                                                            Soltero    Activo           NaN
+            ESTADO_CIVIL      2                                                                                             Casado    Activo           NaN
+            ESTADO_CIVIL      3                                                                                              Viudo    Activo           NaN
+            ESTADO_CIVIL      4                                                                                Separado/Divorciado    Activo           NaN
+            ESTADO_CIVIL      5                                                                                    Matrimonio nulo    Activo           NaN
+            ESTADO_CIVIL      6                                                                                    Pareja de hecho    Activo           NaN
+                 CONVIVE      0                                                                                           No lo sé    Activo           NaN
+                 CONVIVE      1                                                                                               Solo    Activo           NaN
+                 CONVIVE      2                                                                                  Familia de origen    Activo           NaN
+                 CONVIVE      3                                                                                     Familia propia    Activo           NaN
+                 CONVIVE      4                                                                                    Pareja de hecho    Activo           NaN
+                 CONVIVE      5                                                                                  Pareja Homosexual    Activo           NaN
+                 CONVIVE      6                                                       Domicilio de los hijos casados o emancipados    Activo           NaN
+                 CONVIVE      7                                                                                Con otros parientes    Activo           NaN
+                 CONVIVE      8                                                                  Residencia o institución benéfica    Activo           NaN
+                 CONVIVE      9                                                                                    Piso compartido    Activo           NaN
+               ASIDUIDAD      0                                                                                           No lo sé    Activo           NaN
+               ASIDUIDAD      1                                                                                    Primera llamada    Activo           NaN
+               ASIDUIDAD      2                                                           Ha llamado mas veces por el mismo asunto    Activo           NaN
+               ASIDUIDAD      3                                                               Ha llamado mas veces en otras crisis    Activo           NaN
+               ASIDUIDAD      4                                                                                 Llamante frecuente    Activo           NaN
+              NATURALEZA      1                                                                                      Problema Leve    Activo           NaN
+              NATURALEZA      2                                                                                     Problema Grave    Activo           NaN
+              NATURALEZA      3                                                                                   Problema Crónico    Activo           NaN
+              NATURALEZA      4                                                                Crisis actual por situación externa    Activo           NaN
+              NATURALEZA      5                                                   Crisis actual por procesos internos o evolutivos    Activo           NaN
+                  INICIO      1                                                                                  Menos de 1 semana    Activo           NaN
+                  INICIO      2                                                                             Entre 1 semana y 1 mes    Activo           NaN
+                  INICIO      3                                                                      Mas de 1 mes y menos de 1 año    Activo           NaN
+                  INICIO      4                                                                                       Mas de 1 año    Activo           NaN
+      ACTITUD_ORIENTADOR      1                                                                                           Confiada    Activo           NaN
+      ACTITUD_ORIENTADOR      2                                                                                        Desconfiada    Activo           NaN
+      ACTITUD_ORIENTADOR      3                                                                                        Dependiente    Activo           NaN
+      ACTITUD_ORIENTADOR      4                                                                                           Enfadada    Activo           NaN
+      ACTITUD_ORIENTADOR      5                                                                                           Agresiva    Activo           NaN
+      ACTITUD_ORIENTADOR      6                                                                                            Ansiosa    Activo           NaN
+      ACTITUD_ORIENTADOR      7                                                                                       Desorientada    Activo           NaN
+            PRESENTACION      0                                                                                           No lo sé  Inactivo           NaN
+            PRESENTACION      1                                                                                    Clara y directa    Activo           NaN
+            PRESENTACION      2                                                                                         Con rodeos    Activo           NaN
+            PRESENTACION      3                                                                                         Dubitativa    Activo           NaN
+            PRESENTACION      4                                                                               Abstracta e impersal    Activo           NaN
+            PRESENTACION      5                                                                                        Muy prolija    Activo           NaN
+            PRESENTACION      6                                                                                        Muy escueta    Activo           NaN
+            PRESENTACION      7                                                                                 Exagera la Graveda  Inactivo           NaN
+            PRESENTACION      8                                                                               Minimiza el problema  Inactivo           NaN
+            PRESENTACION      9                                                                            Comunicación Congruente    Activo           NaN
+            PRESENTACION     10                                                                           Comunicaión Incongruente    Activo           NaN
+            PARALENGUAJE      0                                                                                           No lo sé  Inactivo           NaN
+            PARALENGUAJE      1                                                                                  No significativo     Activo           NaN
+            PARALENGUAJE      2                                                                                          Silencios    Activo           NaN
+            PARALENGUAJE      3                                                                                           Suspiros    Activo           NaN
+            PARALENGUAJE      4                                                                                           Sollozos    Activo           NaN
+            PARALENGUAJE      5                                                                     Ritmo o tono de voz alterados     Activo           NaN
+            PARALENGUAJE      6                                                                           Respiración entrecortada  Inactivo           NaN
+            PARALENGUAJE      7                                                                                    Risas nerviosas    Activo           NaN
+             PROCEDENCIA      0                                                                                           No lo sé    Activo           NaN
+             PROCEDENCIA      1                                                      De la misma población del centro del Telefono    Activo           NaN
+             PROCEDENCIA      2                                                                 De la misma provincia del Telefono    Activo           NaN
+             PROCEDENCIA      3                                                                                  De otra provincia    Activo           NaN
+             PROCEDENCIA      4                                                                               De otro país europeo    Activo           NaN
+             PROCEDENCIA      5                                                                     De otro país latinoamericano,     Activo           NaN
+             PROCEDENCIA      6                                                                                    De otros países    Activo           NaN
+             PROCEDENCIA      7                                                                                   Derivada del 112    Activo           NaN
+             PROCEDENCIA      8                                                                                De un País a la U.E    Activo           NaN
+                PETICION      0                                                                                           No lo sé  Inactivo           NaN
+                PETICION      1                                                                                 Simple información  Inactivo           NaN
+                PETICION      2                                                               Hablar o de desahogarse con alguien     Activo           NaN
+                PETICION      3                                                                                       Orientación     Activo           NaN
+                PETICION      4                                                           Consultar el teléfono de un Especialista  Inactivo           NaN
+                PETICION      5                                                                            Soluciones inmediatas,     Activo           NaN
+                PETICION      6                                                                Aprobación de una decisión, tomada     Activo           NaN
+                PETICION      7                                                                             Asistencia a domicilio  Inactivo           NaN
+                PETICION      8                                                                              Personarse en la sede  Inactivo           NaN
+                PETICION      9                                                                      Entrevista con un profesional    Activo           NaN
+        ACTITUD_PROBLEMA      0                                                                                           No lo sé  Inactivo           NaN
+        ACTITUD_PROBLEMA      1                                                                            Niega tener un problema  Inactivo           NaN
+        ACTITUD_PROBLEMA      2                                                                        Cree que no tiene solución     Activo           NaN
+        ACTITUD_PROBLEMA      3                                     Pasivo y sin deseos de colaborar con la solución del problema     Activo           NaN
+        ACTITUD_PROBLEMA      4                                                    Se reconoce responsable, al menos parcialmente     Activo           NaN
+        ACTITUD_PROBLEMA      5                                                     Se siente impotente para resolver el problema     Activo           NaN
+        ACTITUD_PROBLEMA      6                                             Muestra deseos de colaborar para resolver el problema     Activo           NaN
+        ACTITUD_PROBLEMA      7                                                                       Se siente muy culpabilizado     Activo           NaN
+        ACTITUD_PROBLEMA      8                                                                                         Preocupado  Inactivo           NaN
+        ACTITUD_PROBLEMA      9                                                                                       Desesperado     Activo           NaN
+        ACTITUD_PROBLEMA     10                                                                Exagera la importancia del problema  Inactivo           NaN
+        ACTITUD_PROBLEMA     11                                                               Minimiza la importancia del problema  Inactivo           NaN
+        ACTITUD_PROBLEMA     12                                           Cree que que sólo los demás tienen la culpa del problema    Activo           NaN
+        LLAMADA_DERIVADA      1                                                                                       Servicio 112    Activo           NaN
+        LLAMADA_DERIVADA      2                                                                                       Tráfico UVAT    Activo           NaN
+        LLAMADA_DERIVADA      3                                                                                 Médico de Familia     Activo           NaN
+        LLAMADA_DERIVADA      4                                                              Servicios de salud mental/psiquiatra     Activo           NaN
+        LLAMADA_DERIVADA      5                                                                               Servicios sociales,     Activo           NaN
+        LLAMADA_DERIVADA      6                                                                                   Policía nacional    Activo           NaN
+        LLAMADA_DERIVADA      7                                                                                      Guardia civil    Activo           NaN
+        LLAMADA_DERIVADA      8                                                                                     Fundación Anar    Activo           NaN
+        LLAMADA_DERIVADA      9                                                                                    Programa SUMATE    Activo           NaN
+        LLAMADA_DERIVADA     10                                                                                 Acompañandote 24/7    Activo           NaN
+        LLAMADA_DERIVADA     11                                                                                       Teléfono 024    Activo           NaN
+        LLAMADA_DERIVADA     12                                                                                       As. V.Frankl    Activo           NaN
+               RESULTADO      0                                                                                           No lo sé  Inactivo           NaN
+               RESULTADO      1                                         Se satisface la demanda del llamante, sólo con la llamada     Activo           NaN
+               RESULTADO      2                                                            Seguimiento programado por el Telefono     Activo           NaN
+               RESULTADO      3                                             Se recomienda entrevista con profesional del Telefono     Activo           NaN
+               RESULTADO      4                                      Dice que llamará para concretar entrevista con el profesional  Inactivo           NaN
+               RESULTADO      5                                                            Se le da entrevista con un profesional     Activo           NaN
+               RESULTADO      6                                                         Se le invita que llame cuando lo necesite     Activo           NaN
+               RESULTADO      7                                                                    Venir a la sede inmediatamente     Activo           NaN
+               RESULTADO      8                                                   Se deriva a otros profesionales o instituciones     Activo           NaN
+               RESULTADO      9                                                            No se acepta la ayuda que se le ofrece     Activo           NaN
+               RESULTADO     10                                                                                Llamada incompleta     Activo           NaN
+               RESULTADO     11                                                   Se le deriva hacia otros programas del teléfono     Activo           NaN
+               RESULTADO     12                    A la persona atendida en sede se le concreta nueva cita con el mismo orientador  Inactivo           NaN
+               RESULTADO     13 A la persona atendida en la sede, se le invita en general a que venga otras veces, si lo necesita     Activo           NaN
+               RESULTADO     14                                                        se le deriva la llamada a la fundación Anar    Activo           NaN
+             NIVEL_AYUDA      1                                                                                           No lo sé  Inactivo           NaN
+             NIVEL_AYUDA      1                                                                                 Simple información  Inactivo           NaN
+             NIVEL_AYUDA      2                                                                          Orientaciones puntuales,     Activo           NaN
+             NIVEL_AYUDA      3                                                                        Acción de des angustiante,     Activo           NaN
+             NIVEL_AYUDA      4                                                                                Compresión empática    Activo           NaN
+             NIVEL_AYUDA      5                                                                       Restructuración del problema    Activo           NaN
+             NIVEL_AYUDA      6                                                             programación de nuevos comportamientos    Activo           NaN
+            SENTIMIENTOS      1                                                                                          Compasión    Activo           NaN
+            SENTIMIENTOS      2                                                                                            Afecto     Activo           NaN
+            SENTIMIENTOS      4                                                                               Aceptación y respeto    Activo           NaN
+            SENTIMIENTOS      5                                                                                          Cercanía     Activo           NaN
+            SENTIMIENTOS      6                                                                                      Satisfacción     Activo           NaN
+            SENTIMIENTOS      7                                                                                          Serenidad  Inactivo           NaN
+            SENTIMIENTOS      8                                                                     Implicación personal/simpatía     Activo           NaN
+            SENTIMIENTOS      9                                                                                           Bloqueo     Activo           NaN
+            SENTIMIENTOS     10                                                                                           Sorpresa  Inactivo           NaN
+            SENTIMIENTOS     11                                                                                         Confusión     Activo           NaN
+            SENTIMIENTOS     12                                                                                      Indiferencia     Activo           NaN
+            SENTIMIENTOS     13                                                                                        Inseguridad  Inactivo           NaN
+            SENTIMIENTOS     14                                                                                       Incomodidad     Activo           NaN
+            SENTIMIENTOS     15                                                                                       Preocupación  Inactivo           NaN
+            SENTIMIENTOS     16                                                                                         Impotencia    Activo           NaN
+          AUTOEVALUACION      0                                                                                           No lo sé  Inactivo           NaN
+          AUTOEVALUACION      1                                                                                     Muy deficiente  Inactivo           NaN
+          AUTOEVALUACION      2                                                                                        Deficiente     Activo           NaN
+          AUTOEVALUACION      3                                                                                           Regular     Activo           NaN
+          AUTOEVALUACION      4                                                                                         Positiva,     Activo           NaN
+          AUTOEVALUACION      5                                                                                       Muy positiva  Inactivo           NaN
+      ACTITUD_EQUIVOCADA      0                                                                                            Nolo sé  Inactivo           NaN
+      ACTITUD_EQUIVOCADA      1                                                                                Dirigir, presionar     Activo           NaN
+      ACTITUD_EQUIVOCADA      2                                                                                         Aconsejar     Activo           NaN
+      ACTITUD_EQUIVOCADA      3                                                                                         Moralizar     Activo           NaN
+      ACTITUD_EQUIVOCADA      4                                                                                        Ridiculizar  Inactivo           NaN
+      ACTITUD_EQUIVOCADA      5                                                                                          Consolar     Activo           NaN
+      ACTITUD_EQUIVOCADA      6                                                                                          Discutir     Activo           NaN
+      ACTITUD_EQUIVOCADA      7                                                                                         Compadecer    Activo           NaN
+      ACTITUD_EQUIVOCADA      8                                                                                    Desviar el tema  Inactivo           NaN
+      ACTITUD_EQUIVOCADA      9                                                                                            Ninguna    Activo           NaN
+            SATISFACCION      0                                                                                           No lo sé  Inactivo           NaN
+            SATISFACCION      1                                                                                      No dice nada     Activo           NaN
+            SATISFACCION      2                                                                            Expresa disconformidad     Activo           NaN
+            SATISFACCION      3                                                                             Expresa satisfacción,     Activo           NaN
+            SATISFACCION      4                                                                                     Da las gracias  Inactivo           NaN
+            SATISFACCION      5                                                            Cuelga sin concluir el proceso de ayuda    Activo           NaN
+                RELACION      0                                                                                           No lo sé  Inactivo           NaN
+                RELACION      1                                                                               Cónyuge o compañero     Activo           NaN
+                RELACION      2                                                                           Excónyuge o excompañero     Activo           NaN
+                RELACION      3                                                                                       Padre/madre     Activo           NaN
+                RELACION      4                                                                                         Hijo/hija     Activo           NaN
+                RELACION      5                                                            Hijo/hija del otro miembro de la pareja    Activo           NaN
+                RELACION      6                                                                                    Hernano/Hermana  Inactivo           NaN
+                RELACION      7                                                                                           Pariente  Inactivo           NaN
+                RELACION      8                                                                                        Novio/Novia  Inactivo           NaN
+                RELACION      9                                                                                   Familia política  Inactivo           NaN
+                RELACION     10                                                                           Amigo, vecino, compañero    Activo           NaN
+                RELACION     11                                                        Miembros de Organismos, Instituciones, etc.  Inactivo           NaN
+                RELACION     12                                                                                            Ninguna  Inactivo           NaN
+                RELACION     13                                                                                   Otros familiares    Activo           NaN
+TERCERO_ACTITUD_PROBLEMA      0                                                                                           No lo sé  Inactivo           NaN
+TERCERO_ACTITUD_PROBLEMA      1                                                                             No lo sabe el llamante  Inactivo           NaN
+TERCERO_ACTITUD_PROBLEMA      2                                                           El llamante no se atreve a proponerselo     Activo           NaN
+TERCERO_ACTITUD_PROBLEMA      3                                                      El tercero, niega la existencia del problema     Activo           NaN
+TERCERO_ACTITUD_PROBLEMA      4                           El tercero, piensa que el llamante es el responsable total del problema     Activo           NaN
+TERCERO_ACTITUD_PROBLEMA      5                            No se muestran deseos de querer colaborar con la solución del problema     Activo           NaN
+TERCERO_ACTITUD_PROBLEMA      6                         El tercero reconoce que él colabora, al menos parcialmente en el problema     Activo           NaN
+TERCERO_ACTITUD_PROBLEMA      7                                                                         Desea resolver el problema    Activo           NaN
+CONDICION_SOCIOECONOMICA      1                                                                                     Recursos Bajos    Activo           NaN
+CONDICION_SOCIOECONOMICA      2                                                                                    Recursos Medios    Activo           NaN
+CONDICION_SOCIOECONOMICA      3                                                                                     Recursos Altos    Activo           NaN
+             COMO_CONOCE      1                                                                                           Internet    Activo           NaN
+             COMO_CONOCE      2                                                                                                 TV    Activo           NaN
+             COMO_CONOCE      3                                                                                              Radio    Activo           NaN
+             COMO_CONOCE      4                                                                                             Prensa    Activo           NaN
+             COMO_CONOCE      5                                                                                          Parroquia    Activo           NaN
+             COMO_CONOCE      6                                                                                         Voluntario    Activo           NaN
+             COMO_CONOCE      7                                                                                           Familiar    Activo           NaN
+             COMO_CONOCE      8                                                                                              Amigo    Activo           NaN
+             COMO_CONOCE      9                                                                                     Redes Sociales    Activo           NaN
+             COMO_CONOCE     10                                                                                                 IA    Activo           NaN
+             COMO_CONOCE     11                                                                                               Otra    Activo           NaN
+          RANGO_DURACION      1                                                                                        1-5 Minutos    Activo           NaN
+          RANGO_DURACION      2                                                                                       6-10 Minutos    Activo           NaN
+          RANGO_DURACION      3                                                                                      11-20 Minutos    Activo           NaN
+          RANGO_DURACION      4                                                                                      21-30 Minutos    Activo           NaN
+          RANGO_DURACION      5                                                                                     30-45 Mninutos    Activo           NaN
+          RANGO_DURACION      6                                                                                  Mas de 45 Minutos    Activo           NaN

@@ -109,4 +109,4 @@ const Input = ({ label, id, type = 'text', value, onChange, placeholder, require
     );
 };
 
-export default Input;
+export default React.memo(Input);

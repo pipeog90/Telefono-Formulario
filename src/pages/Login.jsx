@@ -252,7 +252,7 @@ const Login = () => {
                             <form onSubmit={handleChangePassword} className="space-y-2">
                                 <fieldset className="input-fieldset">
                                     <legend style={{ textAlign: 'center' }}>Usuario</legend>
-                                    <User className="icon" size={18} style={{ position: 'absolute', marginTop: '-0.5rem' }} />
+                                    <User className="icon" size={18} style={{ position: 'absolute' }} />
                                     <input
                                         type="text"
                                         value={email}
@@ -260,7 +260,6 @@ const Login = () => {
                                         className="input-field text-center"
                                         placeholder="Ingrese su usuario"
                                         required
-                                        style={{ marginTop: '-0.5rem' }}
                                     />
                                 </fieldset>
 
@@ -381,7 +380,7 @@ const Login = () => {
                             <form onSubmit={handleRecovery} className="space-y-2">
                                 <fieldset className="input-fieldset">
                                     <legend style={{ textAlign: 'center' }}>Email</legend>
-                                    <Mail className="icon" size={18} style={{ marginTop: '-0.5rem' }} />
+                                    <Mail className="icon" size={18} />
                                     <input
                                         type="text"
                                         value={recoveryEmail}
@@ -389,7 +388,6 @@ const Login = () => {
                                         className="input-field text-center"
                                         placeholder="Ingrese su usuario o correo"
                                         required
-                                        style={{ marginTop: '-0.5rem' }}
                                     />
                                 </fieldset>
 

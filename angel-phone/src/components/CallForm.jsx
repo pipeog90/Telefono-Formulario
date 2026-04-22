@@ -37,50 +37,50 @@ const CallForm = ({ user }) => {
 
     // Blank form template – used for reset and as default state
     const blankForm = () => ({
-        orientador: '',
-        medioContacto: '',
-        comoConocio: '',
-        l_sexo: '',
-        l_edad: '',
-        l_ecivil: '',
-        l_convive: '',
-        l_asiduidad: '',
-        l_problematica_1: '', l_problema_1: '',
-        l_problematica_2: '', l_problema_2: '',
-        l_problematica_3: '', l_problema_3: '',
-        l_naturaleza: '',
-        l_inicio: '',
-        l_actitud: '',
-        l_presentacion: '',
-        l_paralenguaje: '',
-        l_procedencia: '',
-        l_peticion: '',
-        l_actitud_problema_1: '',
-        l_actitud_problema_2: '',
-        l_condicion: '',
-        l_derivada: '',
-        t_sexo: '',
-        t_edad: '',
-        t_ecivil: '',
-        t_convive: '',
-        t_relacion: '',
-        t_problematica_1: '', t_problema_1: '',
-        t_problematica_2: '', t_problema_2: '',
-        t_problematica_3: '', t_problema_3: '',
-        t_actitud_problema_1: '',
-        t_actitud_problema_2: '',
-        c_hora: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
-        c_fecha: new Date().toISOString().split('T')[0],
-        c_resultado: '',
-        c_duracion: '',
-        o_clave: '',
-        o_autoevaluacion: '',
-        o_volvera_llamar: '',
-        o_nivel_ayuda_1: '', o_nivel_ayuda_2: '',
-        o_sentimientos_1: '', o_sentimientos_2: '', o_sentimientos_3: '',
-        o_actitudes_1: '', o_actitudes_2: '',
-        o_satisfaccion_1: '', o_satisfaccion_2: '',
-        sintesis: ''
+        L_Orientador: '',
+        L_Medio_Contacto: '',
+        L_Como_Conoce: '',
+        U_Sexo: '',
+        U_Edad: '',
+        U_Estado_Civil: '',
+        U_Convive: '',
+        U_Asiduidad: '',
+        U_Problematica_1: '', U_Problema_1: '',
+        U_Problematica_2: '', U_Problema_2: '',
+        U_Problematica_3: '', U_Problema_3: '',
+        U_Naturaleza: '',
+        U_Inicio: '',
+        U_Actitud_Orientador: '',
+        U_Presentacion: '',
+        U_Paralenguaje: '',
+        U_Procedencia: '',
+        U_Peticion: '',
+        U_Actitud_Problema_1: '',
+        U_Actitud_Problema_2: '',
+        U_Cond_Socioeconomica: '',
+        L_Llamada_Derivada: '',
+        T_Sexo_Tercero: '',
+        T_Edad_Tercero: '',
+        T_Estado_Civil_Tercero: '',
+        T_Convive: '',
+        T_Relacion: '',
+        T_Problematica_1: '', T_Problema_1: '',
+        T_Problematica_2: '', T_Problema_2: '',
+        T_Problematica_3: '', T_Problema_3: '',
+        T_Actitud_Problema_1: '',
+        T_Actitud_Problema_2: '',
+        L_Hora: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+        L_Fecha: new Date().toISOString().split('T')[0],
+        L_Resultado: '',
+        L_Duracion: '',
+        O_Clave: '',
+        O_Autoevaluacion: '',
+        O_Volvera_Llamar: '',
+        O_Nivel_Ayuda_1: '', O_Nivel_Ayuda_2: '',
+        O_Sentimientos_1: '', O_Sentimientos_2: '', O_Sentimientos_3: '',
+        O_Actitud_Equivocada_1: '', O_Actitud_Equivocada_2: '',
+        O_Satisfaccion_1: '', O_Satisfaccion_2: '',
+        L_Sintesis: ''
     });
 
     // State for form data — restore draft from localStorage if one exists
@@ -94,7 +94,7 @@ const CallForm = ({ user }) => {
 
     // Persist form data to localStorage on every change (except user-specific fields)
     useEffect(() => {
-        const { orientador, o_clave, ...draftData } = formData;
+        const { L_Orientador, O_Clave, ...draftData } = formData;
         localStorage.setItem('callFormDraft', JSON.stringify(draftData));
     }, [formData]);
 
@@ -103,8 +103,8 @@ const CallForm = ({ user }) => {
         if (user && user.name) {
             setFormData(prev => ({
                 ...prev,
-                orientador: user.name,
-                o_clave: user.name
+                L_Orientador: user.name,
+                O_Clave: user.name
             }));
         }
     }, [user]);
@@ -115,8 +115,8 @@ const CallForm = ({ user }) => {
             localStorage.removeItem('callFormDraft');
             setFormData({
                 ...blankForm(),
-                orientador: user?.name || '',
-                o_clave: user?.name || ''
+                L_Orientador: user?.name || '',
+                O_Clave: user?.name || ''
             });
             setErrorMessage('');
             setMissingFieldsList([]);
@@ -169,26 +169,26 @@ const CallForm = ({ user }) => {
 
         // Required fields validation
         const requiredFields = {
-            l_sexo: 'Sexo',
-            l_edad: 'Edad',
-            l_ecivil: 'E. Civil',
-            l_convive: 'Convive',
-            l_asiduidad: 'Asiduidad',
-            l_naturaleza: 'Naturaleza',
-            l_inicio: 'Inicio',
-            l_actitud: 'Actitud ante orientador',
-            l_presentacion: 'Presentación',
-            l_paralenguaje: 'Paralenguaje',
-            l_procedencia: 'Procedencia',
-            l_peticion: 'Petición',
-            l_condicion: 'Condición Socioeconómica',
-            l_derivada: 'Llamada derivada',
-            c_hora: 'Hora',
-            c_fecha: 'Fecha',
-            c_resultado: 'Resultado',
-            c_duracion: 'Duración',
-            o_autoevaluacion: 'Autoevaluación',
-            o_volvera_llamar: 'Volverá a llamar'
+            U_Sexo: 'Sexo',
+            U_Edad: 'Edad',
+            U_Estado_Civil: 'E. Civil',
+            U_Convive: 'Convive',
+            U_Asiduidad: 'Asiduidad',
+            U_Naturaleza: 'Naturaleza',
+            U_Inicio: 'Inicio',
+            U_Actitud_Orientador: 'Actitud ante L_Orientador',
+            U_Presentacion: 'Presentación',
+            U_Paralenguaje: 'Paralenguaje',
+            U_Procedencia: 'Procedencia',
+            U_Peticion: 'Petición',
+            U_Cond_Socioeconomica: 'Condición Socioeconómica',
+            L_Llamada_Derivada: 'Llamada derivada',
+            L_Hora: 'Hora',
+            L_Fecha: 'Fecha',
+            L_Resultado: 'Resultado',
+            L_Duracion: 'Duración',
+            O_Autoevaluacion: 'Autoevaluación',
+            O_Volvera_Llamar: 'Volverá a llamar'
         };
 
         const missingFields = Object.entries(requiredFields)
@@ -215,7 +215,7 @@ const CallForm = ({ user }) => {
                     cleanData[key] = value;
                 }
             }
-            // Add the orientador UID for future reporting/filtering
+            // Add the L_Orientador UID for future reporting/filtering
             if (user && user.uid) {
                 cleanData.orientadorUid = user.uid;
             }
@@ -227,8 +227,8 @@ const CallForm = ({ user }) => {
             // Reset form to initial state
             setFormData({
                 ...blankForm(),
-                orientador: user?.name || '',
-                o_clave: user?.name || ''
+                L_Orientador: user?.name || '',
+                O_Clave: user?.name || ''
             });
 
             window.scrollTo(0, 0);
@@ -283,19 +283,19 @@ const CallForm = ({ user }) => {
                 }
             >
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
-                    <Input id="orientador" label="Orientador" value={formData.orientador} disabled />
+                    <Input id="L_Orientador" label="Orientador" value={formData.L_Orientador} disabled />
                     <Select
-                        id="medioContacto"
+                        id="L_Medio_Contacto"
                         label="Medio de contacto"
                         options={initialDropdowns['Medio de contacto']}
-                        value={formData.medioContacto}
+                        value={formData.L_Medio_Contacto}
                         onChange={handleChange}
                     />
                     <Select
-                        id="comoConocio"
+                        id="L_Como_Conoce"
                         label="Cómo conoció el teléfono"
                         options={initialDropdowns['Comoconoce']}
-                        value={formData.comoConocio}
+                        value={formData.L_Como_Conoce}
                         onChange={handleChange}
                     />
                 </div>
@@ -305,19 +305,19 @@ const CallForm = ({ user }) => {
             <Card title="Llamante">
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                     <div style={{ flex: '1 1 200px' }}>
-                        <Select id="l_sexo" label="Sexo" options={initialDropdowns['Sexo']} value={formData.l_sexo} onChange={handleChange} required error={missingFieldsList.includes('l_sexo')} />
+                        <Select id="U_Sexo" label="Sexo" options={initialDropdowns['Sexo']} value={formData.U_Sexo} onChange={handleChange} required error={missingFieldsList.includes('U_Sexo')} />
                     </div>
                     <div style={{ flex: '1 1 200px' }}>
-                        <Select id="l_edad" label="Edad" options={initialDropdowns['Edad']} value={formData.l_edad} onChange={handleChange} required error={missingFieldsList.includes('l_edad')} />
+                        <Select id="U_Edad" label="Edad" options={initialDropdowns['Edad']} value={formData.U_Edad} onChange={handleChange} required error={missingFieldsList.includes('U_Edad')} />
                     </div>
                     <div style={{ flex: '1 1 200px' }}>
-                        <Select id="l_ecivil" label="E. Civil" options={initialDropdowns['E.Civil']} value={formData.l_ecivil} onChange={handleChange} required error={missingFieldsList.includes('l_ecivil')} />
+                        <Select id="U_Estado_Civil" label="E. Civil" options={initialDropdowns['E.Civil']} value={formData.U_Estado_Civil} onChange={handleChange} required error={missingFieldsList.includes('U_Estado_Civil')} />
                     </div>
                     <div style={{ flex: '1 1 200px' }}>
-                        <Select id="l_convive" label="Convive" options={initialDropdowns['Convive']} value={formData.l_convive} onChange={handleChange} required error={missingFieldsList.includes('l_convive')} />
+                        <Select id="U_Convive" label="Convive" options={initialDropdowns['Convive']} value={formData.U_Convive} onChange={handleChange} required error={missingFieldsList.includes('U_Convive')} />
                     </div>
                     <div style={{ flex: '1 1 200px' }}>
-                        <Select id="l_asiduidad" label="Asiduidad" options={initialDropdowns['Asiduad']} value={formData.l_asiduidad} onChange={handleChange} required error={missingFieldsList.includes('l_asiduidad')} />
+                        <Select id="U_Asiduidad" label="Asiduidad" options={initialDropdowns['Asiduad']} value={formData.U_Asiduidad} onChange={handleChange} required error={missingFieldsList.includes('U_Asiduidad')} />
                     </div>
                 </div>
 
@@ -326,57 +326,82 @@ const CallForm = ({ user }) => {
                         <h4 style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Problemática (Máx 3)</h4>
                         <h4 style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Problema (Máx 3)</h4>
 
-                        <Select id="l_problematica_1" options={problematicaOptions} value={formData.l_problematica_1} onChange={handleChange} placeholder="Seleccionar..." />
-                        <Select id="l_problema_1" options={getProblems(formData.l_problematica_1, [formData.l_problema_2, formData.l_problema_3])} value={formData.l_problema_1} onChange={handleChange} placeholder="Seleccionar..." disabled={!formData.l_problematica_1} />
+                        <Select id="U_Problematica_1" options={problematicaOptions} value={formData.U_Problematica_1} onChange={handleChange} placeholder="Seleccionar..." />
+                        <Select id="U_Problema_1" options={getProblems(formData.U_Problematica_1, [formData.U_Problema_2, formData.U_Problema_3])} value={formData.U_Problema_1} onChange={handleChange} placeholder="Seleccionar..." disabled={!formData.U_Problematica_1} />
 
-                        <Select id="l_problematica_2" options={problematicaOptions} value={formData.l_problematica_2} onChange={handleChange} placeholder="Seleccionar..." />
-                        <Select id="l_problema_2" options={getProblems(formData.l_problematica_2, [formData.l_problema_1, formData.l_problema_3])} value={formData.l_problema_2} onChange={handleChange} placeholder="Seleccionar..." disabled={!formData.l_problematica_2} />
+                        <Select id="U_Problematica_2" options={problematicaOptions} value={formData.U_Problematica_2} onChange={handleChange} placeholder="Seleccionar..." />
+                        <Select id="U_Problema_2" options={getProblems(formData.U_Problematica_2, [formData.U_Problema_1, formData.U_Problema_3])} value={formData.U_Problema_2} onChange={handleChange} placeholder="Seleccionar..." disabled={!formData.U_Problematica_2} />
 
-                        <Select id="l_problematica_3" options={problematicaOptions} value={formData.l_problematica_3} onChange={handleChange} placeholder="Seleccionar..." />
-                        <Select id="l_problema_3" options={getProblems(formData.l_problematica_3, [formData.l_problema_1, formData.l_problema_2])} value={formData.l_problema_3} onChange={handleChange} placeholder="Seleccionar..." disabled={!formData.l_problematica_3} />
+                        <Select id="U_Problematica_3" options={problematicaOptions} value={formData.U_Problematica_3} onChange={handleChange} placeholder="Seleccionar..." />
+                        <Select id="U_Problema_3" options={getProblems(formData.U_Problematica_3, [formData.U_Problema_1, formData.U_Problema_2])} value={formData.U_Problema_3} onChange={handleChange} placeholder="Seleccionar..." disabled={!formData.U_Problematica_3} />
                     </div>
                 </div>
 
                 <div style={{ marginTop: '2px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '6px' }}>
-                    <Select id="l_naturaleza" label="Naturaleza" options={initialDropdowns['Naturaleza']} value={formData.l_naturaleza} onChange={handleChange} required error={missingFieldsList.includes('l_naturaleza')} />
-                    <Select id="l_inicio" label="Inicio" options={initialDropdowns['Inicio']} value={formData.l_inicio} onChange={handleChange} required error={missingFieldsList.includes('l_inicio')} />
-                    <Select id="l_actitud" label="Actitud ante orientador" options={initialDropdowns['Actitud ante el orientador']} value={formData.l_actitud} onChange={handleChange} required error={missingFieldsList.includes('l_actitud')} />
-                    <Select id="l_presentacion" label="Presentación" options={initialDropdowns['Presentación']} value={formData.l_presentacion} onChange={handleChange} required error={missingFieldsList.includes('l_presentacion')} />
-                    <Select id="l_paralenguaje" label="Paralenguaje" options={initialDropdowns['Paralenguaje']} value={formData.l_paralenguaje} onChange={handleChange} required error={missingFieldsList.includes('l_paralenguaje')} />
-                    <Select id="l_procedencia" label="Procedencia" options={initialDropdowns['Procedencia']} value={formData.l_procedencia} onChange={handleChange} required error={missingFieldsList.includes('l_procedencia')} />
-                    <Select id="l_peticion" label="Petición" options={initialDropdowns['Petición']} value={formData.l_peticion} onChange={handleChange} required error={missingFieldsList.includes('l_peticion')} />
-                    <Select id="l_condicion" label="Condición Socioeconómica" options={initialDropdowns['Condicion Socioeconomica']} value={formData.l_condicion} onChange={handleChange} required error={missingFieldsList.includes('l_condicion')} />
-                    <Select id="l_derivada" label="Llamada derivada" options={initialDropdowns['Llamada derivada']} value={formData.l_derivada} onChange={handleChange} required error={missingFieldsList.includes('l_derivada')} />
+                    <Select id="U_Naturaleza" label="Naturaleza" options={initialDropdowns['Naturaleza']} value={formData.U_Naturaleza} onChange={handleChange} required error={missingFieldsList.includes('U_Naturaleza')} />
+                    <Select id="U_Inicio" label="Inicio" options={initialDropdowns['Inicio']} value={formData.U_Inicio} onChange={handleChange} required error={missingFieldsList.includes('U_Inicio')} />
+                    <Select id="U_Actitud_Orientador" label="Actitud ante L_Orientador" options={initialDropdowns['Actitud ante el L_Orientador']} value={formData.U_Actitud_Orientador} onChange={handleChange} required error={missingFieldsList.includes('U_Actitud_Orientador')} />
+                    <Select id="U_Presentacion" label="Presentación" options={initialDropdowns['Presentación']} value={formData.U_Presentacion} onChange={handleChange} required error={missingFieldsList.includes('U_Presentacion')} />
+                    <Select id="U_Paralenguaje" label="Paralenguaje" options={initialDropdowns['Paralenguaje']} value={formData.U_Paralenguaje} onChange={handleChange} required error={missingFieldsList.includes('U_Paralenguaje')} />
+                    <Select id="U_Procedencia" label="Procedencia" options={initialDropdowns['Procedencia']} value={formData.U_Procedencia} onChange={handleChange} required error={missingFieldsList.includes('U_Procedencia')} />
+                    <Select id="U_Peticion" label="Petición" options={initialDropdowns['Petición']} value={formData.U_Peticion} onChange={handleChange} required error={missingFieldsList.includes('U_Peticion')} />
+                    <Select id="U_Cond_Socioeconomica" label="Condición Socioeconómica" options={initialDropdowns['Condicion Socioeconomica']} value={formData.U_Cond_Socioeconomica} onChange={handleChange} required error={missingFieldsList.includes('U_Cond_Socioeconomica')} />
+                    <Select id="L_Llamada_Derivada" label="Llamada derivada" options={initialDropdowns['Llamada derivada']} value={formData.L_Llamada_Derivada} onChange={handleChange} required error={missingFieldsList.includes('L_Llamada_Derivada')} />
                 </div>
             </Card>
 
             {/* TERCERO SECTION */}
+            { [formData.U_Problema_1, formData.U_Problema_2, formData.U_Problema_3].some(code => {
+                if (!code) return false;
+                for (const cat of Object.values(problemCategories)) {
+                    const p = cat.items.find(i => i.fullCode === code);
+                    if (p && p.tercero === 1) return true;
+                }
+                return false;
+            }) && (
             <Card title="Tercero (Opcional)">
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '6px' }}>
-                    <Select id="t_sexo" label="Sexo" options={initialDropdowns['Sexo']} value={formData.t_sexo} onChange={handleChange} />
-                    <Select id="t_edad" label="Edad" options={initialDropdowns['Edad']} value={formData.t_edad} onChange={handleChange} />
-                    <Select id="t_ecivil" label="E. Civil" options={initialDropdowns['E.Civil']} value={formData.t_ecivil} onChange={handleChange} />
-                    <Select id="t_convive" label="Convive" options={initialDropdowns['Convive']} value={formData.t_convive} onChange={handleChange} />
-                    <Select id="t_relacion" label="Relación" options={initialDropdowns['Relación']} value={formData.t_relacion} onChange={handleChange} />
+                    <Select id="T_Sexo_Tercero" label="Sexo" options={initialDropdowns['Sexo']} value={formData.T_Sexo_Tercero} onChange={handleChange} />
+                    <Select id="T_Edad_Tercero" label="Edad" options={initialDropdowns['Edad']} value={formData.T_Edad_Tercero} onChange={handleChange} />
+                    <Select id="T_Estado_Civil_Tercero" label="E. Civil" options={initialDropdowns['E.Civil']} value={formData.T_Estado_Civil_Tercero} onChange={handleChange} />
+                    <Select id="T_Convive" label="Convive" options={initialDropdowns['Convive']} value={formData.T_Convive} onChange={handleChange} />
+                    <Select id="T_Relacion" label="Relación" options={initialDropdowns['Relación']} value={formData.T_Relacion} onChange={handleChange} />
+                </div>
+                
+                <div className="glass-panel mobile-scroll-wrapper" style={{ marginTop: '1px', padding: 'var(--card-padding)' }}>
+                    <div className="mobile-min-w-600" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px', alignItems: 'start' }}>
+                        <h4 style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Problemática Tercero (Máx 3)</h4>
+                        <h4 style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Problema Tercero (Máx 3)</h4>
+
+                        <Select id="T_Problematica_1" options={problematicaOptions} value={formData.T_Problematica_1} onChange={handleChange} placeholder="Seleccionar..." />
+                        <Select id="T_Problema_1" options={getProblems(formData.T_Problematica_1, [formData.T_Problema_2, formData.T_Problema_3])} value={formData.T_Problema_1} onChange={handleChange} placeholder="Seleccionar..." disabled={!formData.T_Problematica_1} />
+
+                        <Select id="T_Problematica_2" options={problematicaOptions} value={formData.T_Problematica_2} onChange={handleChange} placeholder="Seleccionar..." />
+                        <Select id="T_Problema_2" options={getProblems(formData.T_Problematica_2, [formData.T_Problema_1, formData.T_Problema_3])} value={formData.T_Problema_2} onChange={handleChange} placeholder="Seleccionar..." disabled={!formData.T_Problematica_2} />
+
+                        <Select id="T_Problematica_3" options={problematicaOptions} value={formData.T_Problematica_3} onChange={handleChange} placeholder="Seleccionar..." />
+                        <Select id="T_Problema_3" options={getProblems(formData.T_Problematica_3, [formData.T_Problema_1, formData.T_Problema_2])} value={formData.T_Problema_3} onChange={handleChange} placeholder="Seleccionar..." disabled={!formData.T_Problematica_3} />
+                    </div>
                 </div>
             </Card>
+            )}
 
             {/* LLAMADA SECTION */}
             <Card title="Datos de la Llamada">
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '6px' }}>
-                    <Input id="c_hora" label="Hora" type="time" value={formData.c_hora} onChange={handleChange} required error={missingFieldsList.includes('c_hora')} />
-                    <Input id="c_fecha" label="Fecha" type="date" value={formData.c_fecha} onChange={handleChange} required error={missingFieldsList.includes('c_fecha')} />
-                    <Select id="c_resultado" label="Resultado" options={initialDropdowns['Resultado']} value={formData.c_resultado} onChange={handleChange} required error={missingFieldsList.includes('c_resultado')} />
-                    <Select id="c_duracion" label="Duración" options={initialDropdowns['C_duracion']} value={formData.c_duracion} onChange={handleChange} required error={missingFieldsList.includes('c_duracion')} />
+                    <Input id="L_Hora" label="Hora" type="time" value={formData.L_Hora} onChange={handleChange} required error={missingFieldsList.includes('L_Hora')} />
+                    <Input id="L_Fecha" label="Fecha" type="date" value={formData.L_Fecha} onChange={handleChange} required error={missingFieldsList.includes('L_Fecha')} />
+                    <Select id="L_Resultado" label="Resultado" options={initialDropdowns['Resultado']} value={formData.L_Resultado} onChange={handleChange} required error={missingFieldsList.includes('L_Resultado')} />
+                    <Select id="L_Duracion" label="Duración" options={initialDropdowns['C_duracion']} value={formData.L_Duracion} onChange={handleChange} required error={missingFieldsList.includes('L_Duracion')} />
                 </div>
             </Card>
 
             {/* ORIENTADOR SECTION */}
             <Card title="Evaluación del Orientador">
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '6px' }}>
-                    <Input id="o_clave" label="Clave" value={formData.o_clave} disabled />
-                    <Select id="o_autoevaluacion" label="Autoevaluación" options={initialDropdowns['Autoevaluación']} value={formData.o_autoevaluacion} onChange={handleChange} required error={missingFieldsList.includes('o_autoevaluacion')} />
-                    <Select id="o_volvera_llamar" label="Volverá a llamar" options={initialDropdowns['Volvera a llamar']} value={formData.o_volvera_llamar} onChange={handleChange} required error={missingFieldsList.includes('o_volvera_llamar')} />
+                    <Input id="O_Clave" label="Clave" value={formData.O_Clave} disabled />
+                    <Select id="O_Autoevaluacion" label="Autoevaluación" options={initialDropdowns['Autoevaluación']} value={formData.O_Autoevaluacion} onChange={handleChange} required error={missingFieldsList.includes('O_Autoevaluacion')} />
+                    <Select id="O_Volvera_Llamar" label="Volverá a llamar" options={initialDropdowns['Volvera a llamar']} value={formData.O_Volvera_Llamar} onChange={handleChange} required error={missingFieldsList.includes('O_Volvera_Llamar')} />
                 </div>
 
                 <div className="glass-panel mobile-scroll-wrapper" style={{ padding: 'var(--card-padding)' }}>
@@ -388,20 +413,20 @@ const CallForm = ({ user }) => {
                         <label style={{ display: 'block', marginBottom: '0px', color: 'var(--color-text-muted)', fontWeight: '500', whiteSpace: 'nowrap', fontSize: '0.85rem' }}>Satisfacción del llamante (Máx 2)</label>
 
                         {/* Row 1 */}
-                        <Select id="o_nivel_ayuda_1" options={getFilteredOptions('Nivel de ayuda', [formData.o_nivel_ayuda_2])} value={formData.o_nivel_ayuda_1} onChange={handleChange} placeholder="Seleccionar..." />
-                        <Select id="o_sentimientos_1" options={getFilteredOptions('Sentimientos', [formData.o_sentimientos_2, formData.o_sentimientos_3])} value={formData.o_sentimientos_1} onChange={handleChange} placeholder="Seleccionar..." />
-                        <Select id="o_actitudes_1" options={getFilteredOptions('Actitudes equivodas', [formData.o_actitudes_2])} value={formData.o_actitudes_1} onChange={handleChange} placeholder="Seleccionar..." />
-                        <Select id="o_satisfaccion_1" options={getFilteredOptions('Satisfacción del llamante', [formData.o_satisfaccion_2])} value={formData.o_satisfaccion_1} onChange={handleChange} placeholder="Seleccionar..." />
+                        <Select id="O_Nivel_Ayuda_1" options={getFilteredOptions('Nivel de ayuda', [formData.O_Nivel_Ayuda_2])} value={formData.O_Nivel_Ayuda_1} onChange={handleChange} placeholder="Seleccionar..." />
+                        <Select id="O_Sentimientos_1" options={getFilteredOptions('Sentimientos', [formData.O_Sentimientos_2, formData.O_Sentimientos_3])} value={formData.O_Sentimientos_1} onChange={handleChange} placeholder="Seleccionar..." />
+                        <Select id="O_Actitud_Equivocada_1" options={getFilteredOptions('Actitudes equivodas', [formData.O_Actitud_Equivocada_2])} value={formData.O_Actitud_Equivocada_1} onChange={handleChange} placeholder="Seleccionar..." />
+                        <Select id="O_Satisfaccion_1" options={getFilteredOptions('Satisfacción del llamante', [formData.O_Satisfaccion_2])} value={formData.O_Satisfaccion_1} onChange={handleChange} placeholder="Seleccionar..." />
 
                         {/* Row 2 */}
-                        <Select id="o_nivel_ayuda_2" options={getFilteredOptions('Nivel de ayuda', [formData.o_nivel_ayuda_1])} value={formData.o_nivel_ayuda_2} onChange={handleChange} placeholder="Seleccionar..." disabled={!formData.o_nivel_ayuda_1} />
-                        <Select id="o_sentimientos_2" options={getFilteredOptions('Sentimientos', [formData.o_sentimientos_1, formData.o_sentimientos_3])} value={formData.o_sentimientos_2} onChange={handleChange} placeholder="Seleccionar..." disabled={!formData.o_sentimientos_1} />
-                        <Select id="o_actitudes_2" options={getFilteredOptions('Actitudes equivodas', [formData.o_actitudes_1])} value={formData.o_actitudes_2} onChange={handleChange} placeholder="Seleccionar..." disabled={!formData.o_actitudes_1} />
-                        <Select id="o_satisfaccion_2" options={getFilteredOptions('Satisfacción del llamante', [formData.o_satisfaccion_1])} value={formData.o_satisfaccion_2} onChange={handleChange} placeholder="Seleccionar..." disabled={!formData.o_satisfaccion_1} />
+                        <Select id="O_Nivel_Ayuda_2" options={getFilteredOptions('Nivel de ayuda', [formData.O_Nivel_Ayuda_1])} value={formData.O_Nivel_Ayuda_2} onChange={handleChange} placeholder="Seleccionar..." disabled={!formData.O_Nivel_Ayuda_1} />
+                        <Select id="O_Sentimientos_2" options={getFilteredOptions('Sentimientos', [formData.O_Sentimientos_1, formData.O_Sentimientos_3])} value={formData.O_Sentimientos_2} onChange={handleChange} placeholder="Seleccionar..." disabled={!formData.O_Sentimientos_1} />
+                        <Select id="O_Actitud_Equivocada_2" options={getFilteredOptions('Actitudes equivodas', [formData.O_Actitud_Equivocada_1])} value={formData.O_Actitud_Equivocada_2} onChange={handleChange} placeholder="Seleccionar..." disabled={!formData.O_Actitud_Equivocada_1} />
+                        <Select id="O_Satisfaccion_2" options={getFilteredOptions('Satisfacción del llamante', [formData.O_Satisfaccion_1])} value={formData.O_Satisfaccion_2} onChange={handleChange} placeholder="Seleccionar..." disabled={!formData.O_Satisfaccion_1} />
 
                         {/* Row 3 */}
                         <div></div>
-                        <Select id="o_sentimientos_3" options={getFilteredOptions('Sentimientos', [formData.o_sentimientos_1, formData.o_sentimientos_2])} value={formData.o_sentimientos_3} onChange={handleChange} placeholder="Seleccionar..." disabled={!formData.o_sentimientos_2} />
+                        <Select id="O_Sentimientos_3" options={getFilteredOptions('Sentimientos', [formData.O_Sentimientos_1, formData.O_Sentimientos_2])} value={formData.O_Sentimientos_3} onChange={handleChange} placeholder="Seleccionar..." disabled={!formData.O_Sentimientos_2} />
                         <div></div>
                         <div></div>
                     </div>
@@ -414,8 +439,8 @@ const CallForm = ({ user }) => {
                     En este apartado deben describir detalladamente las fases de la intervención en crisis que se desarrollaron con el usuario. Estas fases incluyen: <span style={{ color: 'var(--sub-color-accent)', fontWeight: '500' }}>Acogida, Exploración y comprensión del problema, Reestructuración, Planificación y cambio y Cierre.</span> Para los casos de LLHH/CCHH, es muy importante resaltar las estrategias que sirvieron para establecer límites, ya que son fundamentales en la intervención.
                 </p>
                 <textarea
-                    id="sintesis"
-                    value={formData.sintesis}
+                    id="L_Sintesis"
+                    value={formData.L_Sintesis}
                     onChange={handleChange}
                     placeholder="Escriba aquí la síntesis..."
                     style={{

@@ -6,20 +6,18 @@ const ListsContext = createContext();
 
 // Generate derived lists from problemCategories
 const problematicaList = Object.entries(problemCategories).map(([key, category]) => {
-    const full = `${key} - ${category.label}`;
     return {
-        value: full,
-        label: full
+        value: key,
+        label: `${key} - ${category.label}`
     };
 });
 
 const problemaList = [];
 Object.values(problemCategories).forEach(category => {
     category.items.forEach(item => {
-        const full = `${item.fullCode} - ${item.label}`;
         problemaList.push({
-            value: full,
-            label: full
+            value: item.fullCode,
+            label: `${item.fullCode} - ${item.label}`
         });
     });
 });

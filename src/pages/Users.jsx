@@ -237,7 +237,7 @@ const Users = () => {
         border: `1px solid ${color}`,
         color,
         background: bg,
-        padding: '5px 10px',
+        padding: 'var(--admin-btn-padding)',
         borderRadius: '4px',
         cursor: 'pointer',
         fontSize: '0.8rem',
@@ -316,11 +316,11 @@ const Users = () => {
                     <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead style={{ background: 'var(--color-primary-light)' }}>
                             <tr>
-                                <th style={{ padding: '15px', textAlign: 'left' }}>Nombre</th>
-                                <th style={{ padding: '15px', textAlign: 'left' }}>Usuario</th>
-                                <th style={{ padding: '15px', textAlign: 'left' }}>Email</th>
-                                <th style={{ padding: '15px', textAlign: 'left' }}>Rol</th>
-                                <th style={{ padding: '15px', textAlign: 'right' }}>Acciones</th>
+                                <th style={{ padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Nombre</th>
+                                <th style={{ padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Usuario</th>
+                                <th style={{ padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Email</th>
+                                <th style={{ padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Rol</th>
+                                <th style={{ padding: 'var(--admin-cell-padding)', textAlign: 'left', width: '1px', whiteSpace: 'nowrap' }}>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -333,7 +333,7 @@ const Users = () => {
                                 return (
                                     <tr key={u.uid} style={{ borderBottom: '1px solid var(--color-border)' }}>
                                         {/* Name */}
-                                        <td style={{ padding: '15px' }}>
+                                        <td style={{ padding: 'var(--admin-cell-padding)' }}>
                                             {isEditing ? (
                                                 <input
                                                     type="text"
@@ -345,12 +345,12 @@ const Users = () => {
                                         </td>
 
                                         {/* Username */}
-                                        <td style={{ padding: '15px', color: '#6b7280', fontSize: '0.9rem' }}>
+                                        <td style={{ padding: 'var(--admin-cell-padding)', color: '#6b7280', fontSize: '0.9rem' }}>
                                             {u.username || (u.email ? u.email.replace('@te.org', '') : '—')}
                                         </td>
 
                                         {/* Email */}
-                                        <td style={{ padding: '15px' }}>
+                                        <td style={{ padding: 'var(--admin-cell-padding)' }}>
                                             {isEditing ? (
                                                 <input
                                                     type="email"
@@ -365,7 +365,7 @@ const Users = () => {
                                         </td>
 
                                         {/* Role */}
-                                        <td style={{ padding: '15px' }}>
+                                        <td style={{ padding: 'var(--admin-cell-padding)' }}>
                                             {isEditing ? (
                                                 <select
                                                     className="input-field"
@@ -389,9 +389,9 @@ const Users = () => {
                                         </td>
 
                                         {/* Actions */}
-                                        <td style={{ padding: '15px', textAlign: 'right' }}>
+                                        <td style={{ padding: 'var(--admin-cell-padding)', textAlign: 'left', width: '1px', whiteSpace: 'nowrap' }}>
                                             {isEditing ? (
-                                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '5px' }}>
+                                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '5px' }}>
                                                     {editError && (
                                                         <span style={{ color: 'red', fontWeight: 'bold', fontSize: '0.8rem' }}>
                                                             {editError}
@@ -409,8 +409,8 @@ const Users = () => {
                                             ) : isAdmin ? (
                                                 <span style={{ fontSize: '0.8rem', color: '#999', fontStyle: 'italic' }}>Super Admin</span>
                                             ) : (
-                                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
-                                                    <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '6px' }}>
+                                                    <div style={{ display: 'flex', gap: '5px', flexWrap: 'nowrap', justifyContent: 'flex-start' }}>
                                                         {/* Edit */}
                                                         <button onClick={() => startEdit(u)} style={btnStyle('var(--color-primary)')}>
                                                             <Edit2 size={13} style={{ verticalAlign: 'middle', marginRight: '3px' }} />Editar

@@ -278,54 +278,56 @@ const Admin = () => {
                                 )}
                             </div>
 
-                            <div className="table-responsive-wrapper">
-                                <table className="data-table admin-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                    <thead>
-                                        <tr>
-                                            <th style={{ textAlign: 'left', padding: 'var(--admin-cell-padding)' }}>Valor</th>
-                                            <th style={{ textAlign: 'left', padding: 'var(--admin-cell-padding)', width: '1px', whiteSpace: 'nowrap' }}>Acción</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {currentItems.length === 0 ? (
-                                            <tr><td colSpan="2" className="no-data" style={{ textAlign: 'center', padding: '20px' }}>No hay valores definidos.</td></tr>
-                                        ) : (
-                                            currentItems.map((item) => (
-                                                <tr key={item.value} className={item.active === false ? 'inactive-row' : ''} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                                                    <td style={{ padding: 'var(--admin-cell-padding)' }}>
-                                                        {editingIndex === item.value ? (
-                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                                                                <input type="text" value={editValue} onChange={(e) => setEditValue(e.target.value)} className="input-field" style={{ width: '100%' }} placeholder="Código" />
-                                                                <input type="text" value={editDescription} onChange={(e) => setEditDescription(e.target.value)} className="input-field" style={{ width: '100%' }} placeholder="Descripción" />
-                                                            </div>
-                                                        ) : (
-                                                            <span style={{ color: item.active === false ? 'red' : 'inherit' }}>
-                                                                {item.label}
-                                                            </span>
-                                                        )}
-                                                    </td>
+                            <div className="glass-panel" style={{ padding: 'var(--card-padding)', overflow: 'hidden' }}>
+                                <div className="table-responsive-wrapper">
+                                    <table className="data-table admin-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                        <thead>
+                                            <tr>
+                                                <th style={{ textAlign: 'left', padding: 'var(--admin-cell-padding)' }}>Valor</th>
+                                                <th style={{ textAlign: 'left', padding: 'var(--admin-cell-padding)', width: '1px', whiteSpace: 'nowrap' }}>Acción</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {currentItems.length === 0 ? (
+                                                <tr><td colSpan="2" className="no-data" style={{ textAlign: 'center', padding: '20px' }}>No hay valores definidos.</td></tr>
+                                            ) : (
+                                                currentItems.map((item) => (
+                                                    <tr key={item.value} className={item.active === false ? 'inactive-row' : ''} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                                                        <td style={{ padding: 'var(--admin-cell-padding)' }}>
+                                                            {editingIndex === item.value ? (
+                                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                                                    <input type="text" value={editValue} onChange={(e) => setEditValue(e.target.value)} className="input-field" style={{ width: '100%' }} placeholder="Código" />
+                                                                    <input type="text" value={editDescription} onChange={(e) => setEditDescription(e.target.value)} className="input-field" style={{ width: '100%' }} placeholder="Descripción" />
+                                                                </div>
+                                                            ) : (
+                                                                <span style={{ color: item.active === false ? 'red' : 'inherit' }}>
+                                                                    {item.label}
+                                                                </span>
+                                                            )}
+                                                        </td>
 
-                                                    <td style={{ padding: 'var(--admin-cell-padding)', textAlign: 'left', width: '1px', whiteSpace: 'nowrap' }}>
-                                                        {editingIndex === item.value ? (
-                                                            <div style={{ display: 'flex', gap: '5px', justifyContent: 'flex-start' }}>
-                                                                <button onClick={() => saveEdit(item)} className="button small primary" style={{ backgroundColor: 'var(--color-success)', color: 'white', border: 'none', padding: 'var(--admin-btn-padding)', borderRadius: '4px', cursor: 'pointer' }}>Guardar</button>
-                                                                <button onClick={() => setEditingIndex(null)} className="button small outline" style={{ border: '1px solid var(--color-text-secondary)', color: 'var(--color-text-secondary)', padding: 'var(--admin-btn-padding)', borderRadius: '4px', cursor: 'pointer', background: 'transparent' }}>Cancelar</button>
-                                                            </div>
-                                                        ) : (
-                                                            <div style={{ display: 'flex', gap: '5px', justifyContent: 'flex-start' }}>
-                                                                <button onClick={() => startEdit(item)} className="button small outline" style={{ border: '1px solid var(--color-primary)', color: 'var(--color-primary)', padding: 'var(--admin-btn-padding)', borderRadius: '4px', cursor: 'pointer', background: 'transparent' }}>Modificar</button>
-                                                                <button onClick={() => handleToggleActive(item)} className="button small outline" style={{ border: '1px solid var(--color-warning)', color: 'var(--color-warning)', padding: 'var(--admin-btn-padding)', borderRadius: '4px', cursor: 'pointer', background: 'transparent' }}>
-                                                                    {item.active !== false ? 'Desactivar' : 'Reactivar'}
-                                                                </button>
-                                                                <button onClick={() => handleDelete(item)} className="button small outline" style={{ border: '1px solid var(--color-danger)', color: 'var(--color-danger)', padding: 'var(--admin-btn-padding)', borderRadius: '4px', cursor: 'pointer', background: 'transparent' }}>Eliminar</button>
-                                                            </div>
-                                                        )}
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        )}
-                                    </tbody>
-                                </table>
+                                                        <td style={{ padding: 'var(--admin-cell-padding)', textAlign: 'left', width: '1px', whiteSpace: 'nowrap' }}>
+                                                            {editingIndex === item.value ? (
+                                                                <div style={{ display: 'flex', gap: '5px', justifyContent: 'flex-start' }}>
+                                                                    <button onClick={() => saveEdit(item)} className="button small primary" style={{ backgroundColor: 'var(--color-success)', color: 'white', border: 'none', padding: 'var(--admin-btn-padding)', borderRadius: '4px', cursor: 'pointer' }}>Guardar</button>
+                                                                    <button onClick={() => setEditingIndex(null)} className="button small outline" style={{ border: '1px solid var(--color-text-secondary)', color: 'var(--color-text-secondary)', padding: 'var(--admin-btn-padding)', borderRadius: '4px', cursor: 'pointer', background: 'transparent' }}>Cancelar</button>
+                                                                </div>
+                                                            ) : (
+                                                                <div style={{ display: 'flex', gap: '5px', justifyContent: 'flex-start' }}>
+                                                                    <button onClick={() => startEdit(item)} className="button small outline" style={{ border: '1px solid var(--color-primary)', color: 'var(--color-primary)', padding: 'var(--admin-btn-padding)', borderRadius: '4px', cursor: 'pointer', background: 'transparent' }}>Modificar</button>
+                                                                    <button onClick={() => handleToggleActive(item)} className="button small outline" style={{ border: '1px solid var(--color-warning)', color: 'var(--color-warning)', padding: 'var(--admin-btn-padding)', borderRadius: '4px', cursor: 'pointer', background: 'transparent' }}>
+                                                                        {item.active !== false ? 'Desactivar' : 'Reactivar'}
+                                                                    </button>
+                                                                    <button onClick={() => handleDelete(item)} className="button small outline" style={{ border: '1px solid var(--color-danger)', color: 'var(--color-danger)', padding: 'var(--admin-btn-padding)', borderRadius: '4px', cursor: 'pointer', background: 'transparent' }}>Eliminar</button>
+                                                                </div>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </>
                     )}

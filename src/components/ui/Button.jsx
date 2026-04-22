@@ -55,4 +55,4 @@ const Button = ({ children, onClick, type = 'button', variant = 'primary', class
     );
 };
 
-export default Button;
+export default React.memo(Button);
