@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useLists } from '../hooks/useLists';
+import { useLists, firestoreKeyMigration } from '../hooks/useLists';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Select from '../components/ui/Select';
-import { List } from 'lucide-react';
+import { List, RefreshCw, Database } from 'lucide-react';
+import { initialDropdowns, problemCategories } from '../data/initialData';
+import { db } from '../services/firebase';
 
 const Admin = () => {
     const { lists, loading, updateList } = useLists();
 
     // --- LIST MANAGEMENT STATE ---
-    const [selectedList, setSelectedList] = useState(() => localStorage.getItem('adminSelectedList') || '');
+    const [selectedList, setSelectedList] = useState(() => sessionStorage.getItem('adminSelectedList') || '');
     const [newValue, setNewValue] = useState('');
     const [editingIndex, setEditingIndex] = useState(null);
     const [editValue, setEditValue] = useState('');
@@ -19,77 +21,79 @@ const Admin = () => {
 
     // --- EFFECTS ---
     useEffect(() => {
-        if (selectedList) localStorage.setItem('adminSelectedList', selectedList);
+        if (selectedList) sessionStorage.setItem('adminSelectedList', selectedList);
     }, [selectedList]);
 
     // --- LIST MANAGEMENT LOGIC ---
-    const listKeys = Object.keys(lists).sort();
+    const listKeys = Object.keys(lists)
+        .filter(key => !firestoreKeyMigration[key])
+        .sort();
     let currentItems = lists[selectedList] || [];
-    if (selectedList === 'Problema') {
+    if (selectedList === 'PROBLEMA') {
         currentItems = currentItems.filter(item => item.value.startsWith(selectedLetter));
     }
-    const problemLetters = lists['Problemática']?.map(item => item.value) || [];
+    const problemLetters = lists['PROBLEMATICA']?.map(item => item.value) || [];
 
     const handleAdd = (e) => {
         e.preventDefault();
         setError('');
         if (!newValue.trim()) return;
 
-        const parts = newValue.split(' - ');
-        if (parts.length < 2) {
-            // Check for common error: missing spaces around hyphen
-            if (newValue.includes('-')) {
-                setError('Por favor, asegúrese de poner un espacio antes y después del guión (ejemplo: "A - Valor").');
-            } else {
-                setError('Formato incorrecto. Debe escribir el código, un guión y el valor (ejemplo: "10 - Nuevo Item").');
-            }
-            return;
-        }
-
-        const value = parts[0].trim();
-        const description = parts.slice(1).join(' - ').trim();
-
-        // Restriction: description must contain at least one letter or number
-        if (!/[a-zA-ZÀ-ÿ0-9]/.test(description)) {
-            setError('Error: La descripción no puede estar vacía ni contener solo espacios. Debe incluir al menos una letra o número.');
-            return;
-        }
-
-        if (selectedList === 'Problemática') {
-            if (!/^[A-Z]$/.test(value)) {
-                setError('Error: Para "Problemática", el código debe ser una sola letra mayúscula (ejemplo: "A", "B", "C").');
-                return;
-            }
-        } else if (selectedList === 'Problema') {
-            if (!value) {
-                setError('Error: El código no puede estar vacío.');
-                return;
-            }
-            // Restriction: Must start with selected letter and be followed by numbers
-            const regex = new RegExp(`^${selectedLetter}\\d+$`);
-            if (!regex.test(value)) {
-                setError(`Error: El formato debe ser la letra "${selectedLetter}" seguida de un número (ej: "${selectedLetter}1").`);
-                return;
-            }
-        } else if (selectedList !== 'Problemática' && selectedList !== 'Problema' && (isNaN(value) || value === '')) {
-            setError('Error: Para esta lista, la primera parte debe ser un número (ejemplo: "1 - Opción").');
-            return;
-        }
-
+        const description = newValue.trim();
         const allItems = lists[selectedList] || [];
-        if (allItems.some(item => item.value === value)) {
-            setError(`Error: El código "${value}" ya existe en esta lista. Por favor use otro.`);
-            return;
+
+        let generatedValue = '';
+
+        if (selectedList === 'PROBLEMATICA') {
+            const usedLetters = new Set(allItems.map(item => item.value.toUpperCase()));
+            let found = false;
+            for (let i = 65; i <= 90; i++) {
+                const letter = String.fromCharCode(i);
+                if (!usedLetters.has(letter)) {
+                    generatedValue = letter;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                setError('No hay más letras disponibles (A-Z) para Problemáticas.');
+                return;
+            }
+        } else if (selectedList === 'PROBLEMA') {
+            const prefix = selectedLetter;
+            const usedNumbers = new Set();
+            allItems.forEach(item => {
+                if (item.value.startsWith(prefix)) {
+                    const numStr = item.value.substring(prefix.length);
+                    const num = parseInt(numStr, 10);
+                    if (!isNaN(num)) usedNumbers.add(num);
+                }
+            });
+            let nextNum = 1;
+            while (usedNumbers.has(nextNum)) {
+                nextNum++;
+            }
+            generatedValue = `${prefix}${nextNum}`;
+        } else {
+            const usedNumbers = new Set();
+            allItems.forEach(item => {
+                const num = parseInt(item.value, 10);
+                if (!isNaN(num)) usedNumbers.add(num);
+            });
+            let nextNum = 1;
+            while (usedNumbers.has(nextNum)) {
+                nextNum++;
+            }
+            generatedValue = nextNum.toString();
         }
 
-        // ... (rest of the add logic) ...
-        const fullLabel = `${value} - ${description}`;
-        const newItem = { value, label: fullLabel, active: true };
+        const fullLabel = `${generatedValue} - ${description}`;
+        const newItem = { value: generatedValue, label: fullLabel, active: true };
         const newItems = [...allItems, newItem];
 
-        if (selectedList === 'Problemática') {
+        if (selectedList === 'PROBLEMATICA') {
             newItems.sort((a, b) => a.value.localeCompare(b.value));
-        } else if (selectedList === 'Problema') {
+        } else if (selectedList === 'PROBLEMA') {
             newItems.sort((a, b) => a.value.localeCompare(b.value, undefined, { numeric: true, sensitivity: 'base' }));
         } else {
             newItems.sort((a, b) => parseInt(a.value) - parseInt(b.value));
@@ -101,9 +105,7 @@ const Admin = () => {
 
     // Helper for placeholder
     const getPlaceholder = () => {
-        if (selectedList === 'Problemática') return 'Ejemplo: A - Problemas Familiares';
-        if (selectedList === 'Problema') return `Ejemplo: ${selectedLetter}1 - Descripción del problema`;
-        return 'Ejemplo: 1 - Descripción';
+        return 'Escriba la descripción (el código se generará automáticamente)';
     };
 
     const handleToggleActive = async (itemToToggle) => {
@@ -118,18 +120,18 @@ const Admin = () => {
     };
 
     const handleDelete = async (itemToDelete) => {
-        if (selectedList === 'Problemática') {
+        if (selectedList === 'PROBLEMATICA') {
             const code = itemToDelete.value;
-            if (window.confirm(`ADVERTENCIA: Al eliminar la "Problemática" ${code}, se eliminarán también todos los "Problema" asociados. ¿Desea continuar?`)) {
+            if (window.confirm(`ADVERTENCIA: Al eliminar la "PROBLEMATICA" ${code}, se eliminarán también todos los "PROBLEMA" asociados. ¿Desea continuar?`)) {
                 // Delete Problemática entry
-                const probList = lists['Problemática'] || [];
+                const probList = lists['PROBLEMATICA'] || [];
                 const newProb = probList.filter(item => item.value !== code);
-                await updateList('Problemática', newProb);
+                await updateList('PROBLEMATICA', newProb);
 
                 // Delete associated Problema entries
-                const problemaList = lists['Problema'] || [];
+                const problemaList = lists['PROBLEMA'] || [];
                 const newProblema = problemaList.filter(item => !item.value.startsWith(code));
-                await updateList('Problema', newProblema);
+                await updateList('PROBLEMA', newProblema);
             }
         } else {
             if (window.confirm(`ADVERTENCIA: ¿Está seguro de que desea eliminar PERMANENTEMENTE el valor "${itemToDelete.label}"?\n\nEsta acción eliminará el valor de la lista de opciones para nuevos registros. Los registros históricos no se verán afectados.`)) {
@@ -139,6 +141,29 @@ const Admin = () => {
             }
         }
     };
+
+    const handlePurgeLegacy = async () => {
+        const legacyKeys = Object.keys(lists).filter(key => firestoreKeyMigration[key]);
+        if (legacyKeys.length === 0) {
+            alert('No se detectaron listas legadas redundantes.');
+            return;
+        }
+
+        if (window.confirm(`¿Está seguro de que desea eliminar PERMANENTEMENTE las siguientes ${legacyKeys.length} listas redundantes de Firestore?\n\n${legacyKeys.join('\n')}\n\nNota: Los datos ya han sido migrados internamente, por lo que esta acción es segura.`)) {
+            try {
+                const { deleteDoc, doc, firestore } = require('../services/firebase');
+                for (const key of legacyKeys) {
+                    await deleteDoc(doc(firestore, "lists", key));
+                }
+                alert('Limpieza completada con éxito.');
+            } catch (err) {
+                console.error("Error purging legacy lists:", err);
+                alert('Error al purgar las listas. Revise la consola.');
+            }
+        }
+    };
+
+
 
     const startEdit = (item) => {
         setEditValue(item.value);
@@ -178,9 +203,9 @@ const Admin = () => {
         });
 
         // Sorting based on list type
-        if (selectedList === 'Problemática') {
+        if (selectedList === 'PROBLEMATICA') {
             newItems.sort((a, b) => a.value.localeCompare(b.value));
-        } else if (selectedList === 'Problema') {
+        } else if (selectedList === 'PROBLEMA') {
             newItems.sort((a, b) => a.value.localeCompare(b.value, undefined, { numeric: true, sensitivity: 'base' }));
         } else {
             newItems.sort((a, b) => parseInt(a.value) - parseInt(b.value));
@@ -190,10 +215,25 @@ const Admin = () => {
         setEditingIndex(null);
     };
 
+
+
     return (
         <div className="container animate-fade-in">
             <section id="administracion" className="tab-content active" style={{ display: 'block' }}>
-                <h2 style={{ color: 'var(--color-secondary)', borderBottom: '2px solid var(--color-secondary)', paddingBottom: '2px', marginBottom: '2px', fontWeight: '600' }}>Administración de Valores</h2>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid var(--color-secondary)', paddingBottom: '2px', marginBottom: '2px' }}>
+                    <h2 style={{ color: 'var(--color-secondary)', margin: 0, fontWeight: '600' }}>Administración de Valores</h2>
+                    {Object.keys(lists).some(key => firestoreKeyMigration[key]) && (
+                        <Button 
+                            onClick={handlePurgeLegacy}
+                            variant="outline"
+                            style={{ color: 'var(--color-danger)', borderColor: 'var(--color-danger)', fontSize: '0.8rem', padding: '4px 8px' }}
+                        >
+                            <RefreshCw size={14} style={{ marginRight: '4px' }} />
+                            Purgar Datos Legados
+                        </Button>
+                    )}
+
+                </div>
 
                 <div className="admin-section">
                     <div className="form-group" style={{ marginBottom: '4px' }}>
@@ -217,8 +257,8 @@ const Admin = () => {
                         </div>
                     ) : (
                         <>
-                            {/* Letter Filter for "Problema" */}
-                            {selectedList === 'Problema' && (
+                            {/* Letter Filter for "PROBLEMA" */}
+                            {selectedList === 'PROBLEMA' && (
                                 <div style={{ marginBottom: '20px', display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
                                     {problemLetters.map(letter => (
                                         <button
@@ -244,13 +284,14 @@ const Admin = () => {
                                     <div style={{ flexGrow: 1, minWidth: '200px' }}>
                                         <Input
                                             id="nuevo-valor"
-                                            label={`Nuevo Valor (${getPlaceholder()})`}
+                                            label="Descripción del Nuevo Valor"
                                             placeholder={getPlaceholder()}
                                             value={newValue}
                                             onChange={(e) => {
                                                 setNewValue(e.target.value);
                                                 setError('');
                                             }}
+                                            tooltip="Descripción del valor de la Categoría"
                                         />
 
                                     </div>

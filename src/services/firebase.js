@@ -8,7 +8,9 @@ import {
     updateProfile,
     updatePassword,
     sendPasswordResetEmail,
-    deleteUser as firebaseDeleteUser
+    deleteUser as firebaseDeleteUser,
+    setPersistence,
+    browserSessionPersistence
 } from "firebase/auth";
 import {
     getFirestore,
@@ -22,7 +24,9 @@ import {
     getDoc,
     query,
     where,
-    Timestamp
+    Timestamp,
+    onSnapshot,
+    runTransaction
 } from "firebase/firestore";
 import { getFunctions, httpsCallable } from "firebase/functions";
 
@@ -40,6 +44,10 @@ const firebaseConfig = {
 // --- Initialization ---
 const app = initializeApp(firebaseConfig);
 const authInstance = getAuth(app);
+// Set persistence to session (logout when tab closes)
+setPersistence(authInstance, browserSessionPersistence).catch((err) => {
+    console.error("Auth persistence error:", err);
+});
 const dbInstance = getFirestore(app);
 const functionsInstance = getFunctions(app);
 
@@ -87,6 +95,17 @@ class AuthService {
             }
 
             const userCredential = await signInWithEmailAndPassword(authInstance, finalEmail, password);
+            const user = userCredential.user;
+            
+            // Check if user is active
+            const userDoc = await getDoc(doc(dbInstance, "users", user.uid));
+            if (userDoc.exists()) {
+                if (userDoc.data().active === false) {
+                    await firebaseSignOut(authInstance);
+                    throw new Error("Su cuenta ha sido desactivada. Contacte al administrador.");
+                }
+            }
+
             return userCredential;
         } catch (error) {
             console.error("Login resolution or signin error: ", error);
@@ -147,6 +166,13 @@ class AuthService {
                 name,
                 role,
                 realEmail: userData.realEmail || null,
+                Clave: userData.Clave ? userData.Clave.toUpperCase() : null,
+                Código_Orientador: userData.Código_Orientador || null,
+                direccion: userData.direccion || null,
+                centro: userData.centro || null,
+                fecha_alta: userData.fecha_alta || null,
+                fecha_baja: userData.fecha_baja || null,
+                active: userData.active !== undefined ? userData.active : true,
                 createdAt: new Date().toISOString()
             });
 
@@ -246,8 +272,12 @@ class AuthService {
             const { password, ...safeUpdates } = updates;
             await updateDoc(userRef, safeUpdates);
 
-            // If admin changed the realEmail (and it's actually different), we MUST sync it with the hidden Firebase Auth account
-            if (safeUpdates.hasOwnProperty('realEmail') && safeUpdates.realEmail !== currentData.realEmail) {
+            // If admin changed the realEmail (and it's actually different), we MUST sync it with the hidden Firebase Auth account.
+            // IMPORTANT: Only do this when `uid` is a real Firebase Auth UID (28-char alphanumeric).
+            // Legacy users have Firestore doc IDs like "MEO127" — passing those to the Cloud Function
+            // causes an invalid-argument error because Firebase Auth doesn't know that ID.
+            const isRealAuthUid = /^[A-Za-z0-9]{20,}$/.test(uid) && !uid.startsWith('MEO');
+            if (isRealAuthUid && safeUpdates.hasOwnProperty('realEmail') && safeUpdates.realEmail !== currentData.realEmail) {
                 const newAuthEmail = (safeUpdates.realEmail && safeUpdates.realEmail.trim() !== '')
                     ? safeUpdates.realEmail.trim()
                     : `${username}@te.org`;
@@ -303,29 +333,32 @@ class AuthService {
 // --- Firestore Service ---
 class DataService {
     async getLists() {
-        // Fetch from 'lists' collection. 
-        // Structure: Each doc ID is the list name (e.g., 'Sexo', 'Problemática')
-        // Doc data: { items: [...] }
         const querySnapshot = await getDocs(collection(dbInstance, "lists"));
         const lists = {};
         querySnapshot.forEach((docSnap) => {
             const data = docSnap.data();
-            // Supports both structure { items: [] } or just flat data fields if migrated differently
             lists[docSnap.id] = data.items || [];
         });
         return lists;
+    }
 
-        // Note: If lists document doesn't exist, this returns empty.
-        // We might need a seed function.
+    subscribeToLists(callback) {
+        return onSnapshot(collection(dbInstance, "lists"), (querySnapshot) => {
+            const lists = {};
+            querySnapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                lists[docSnap.id] = data.items || [];
+            });
+            callback(lists);
+        });
     }
 
     async updateList(listName, items) {
-        // Save to 'lists' collection
-        // Use setDoc with merge to ensure creation
         await setDoc(doc(dbInstance, "lists", listName), { items });
     }
 
-    async getCalls() {
+    async getCalls(filters = {}) {
+        // Fallback to Firestore to ensure buttons work if BigQuery function is not available
         const querySnapshot = await getDocs(collection(dbInstance, "calls"));
         const calls = [];
         querySnapshot.forEach((doc) => {
@@ -335,11 +368,41 @@ class DataService {
     }
 
     async addCall(callData) {
-        const docRef = await addDoc(collection(dbInstance, "calls"), {
-            ...callData,
-            createdAt: Timestamp.now()
+        const counterRef = doc(dbInstance, "counters", "calls");
+
+        return runTransaction(dbInstance, async (transaction) => {
+            const counterDoc = await transaction.get(counterRef);
+            let nextId = 1;
+            
+            if (counterDoc.exists()) {
+                const data = counterDoc.data();
+                if (data.nextId) nextId = data.nextId;
+            }
+
+            // Calculate dynamic prefix based on the current year
+            const currentYear = new Date().getFullYear();
+            const offset = currentYear - 2026;
+            const index = 10 + Math.max(0, offset); // 10 is 'AK'
+            
+            const firstLetter = String.fromCharCode(65 + Math.floor(index / 26)); // 65 is 'A'
+            const secondLetter = String.fromCharCode(65 + (index % 26));
+            const prefix = `${firstLetter}${secondLetter}`;
+
+            // Generate padded ID, e.g. AK0001
+            const formattedId = `${prefix}${String(nextId).padStart(4, '0')}`;
+
+            const callWithId = {
+                ...callData,
+                L_ID_Llamada: formattedId,
+                createdAt: Timestamp.now()
+            };
+
+            const newCallRef = doc(collection(dbInstance, "calls"));
+            transaction.set(newCallRef, callWithId);
+            transaction.set(counterRef, { nextId: nextId + 1 }, { merge: true });
+
+            return { id: newCallRef.id, L_ID_Llamada: formattedId, ...callData };
         });
-        return { id: docRef.id, ...callData };
     }
 
     async deleteCall(id) {
@@ -351,6 +414,12 @@ class DataService {
         const calls = await this.getCalls();
         const promises = calls.map(c => deleteDoc(doc(dbInstance, "calls", c.id)));
         await Promise.all(promises);
+    }
+
+    async migratePreProductionCalls() {
+        const migrateCallable = httpsCallable(functionsInstance, 'migratePreProductionCalls');
+        const result = await migrateCallable();
+        return result.data;
     }
 }
 

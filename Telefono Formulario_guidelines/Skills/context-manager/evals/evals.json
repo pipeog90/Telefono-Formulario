@@ -1,0 +1,17 @@
+{
+  "skill_name": "context-manager",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I need to update the color theme across all the components in the src/components folder, and also update the Tailwind configuration file. Please use the context-manager skill to organize this.",
+      "expected_output": "The agent should create or update a PROJECT_STATE.md file listing all component files and the tailwind config before making any changes.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "We are refactoring the authentication flow. It touches the frontend login page, the backend auth middleware, and the database schema. How should we track the files involved?",
+      "expected_output": "The agent should invoke the context-manager, explain the Research-Plan-Implement workflow, and propose creating a PROJECT_STATE.md file to list the frontend, backend, and DB files involved.",
+      "files": []
+    }
+  ]
+}

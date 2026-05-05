@@ -35,6 +35,10 @@ export const ListsProvider = ({ children }) => {
         // Force merge of new lists if missing (for existing users/localStorage)
         if (!initial['Problemática']) initial['Problemática'] = extendedInitialDropdowns['Problemática'];
         if (!initial['Problema']) initial['Problema'] = extendedInitialDropdowns['Problema'];
+        if (!initial['CENTRO']) initial['CENTRO'] = extendedInitialDropdowns['CENTRO'];
+
+        // Clean up deleted legacy lists
+        if (initial['O_CLAVE']) delete initial['O_CLAVE'];
 
         return initial;
     });

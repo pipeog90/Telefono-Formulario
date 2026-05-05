@@ -42,7 +42,10 @@ const Layout = () => {
     const handleLogout = async () => {
         await auth.signOut();
 
-        // Clear locally persisted form data
+        // Clear all session storage (automatically clears on tab close, but we force it here too)
+        sessionStorage.clear();
+        
+        // Clear locally persisted form data in case some are still in localStorage
         localStorage.removeItem('callFormDraft');
         localStorage.removeItem('adminSelectedList');
 
@@ -61,19 +64,30 @@ const Layout = () => {
                         overflowX: 'auto',
                         whiteSpace: 'nowrap',
                         paddingRight: '15px',
+                        paddingBottom: '4px',
                         flex: 1,
-                        scrollbarWidth: 'none',
-                        msOverflowStyle: 'none',
+                        minWidth: 0,
                     }}
-                    className="no-scrollbar"
+                    className="mini-scrollbar"
                 >
                     <NavLink to="/">1. Registro de Llamadas</NavLink>
                     {isAdmin && <NavLink to="/admin">2. Administración de Listas</NavLink>}
                     <NavLink to="/reportes">3. Generación de Reportes</NavLink>
                     {isAdmin && <NavLink to="/users">4. Gestión de Usuarios</NavLink>}
                     <style>{`
-                        .no-scrollbar::-webkit-scrollbar {
-                            display: none;
+                        .mini-scrollbar::-webkit-scrollbar {
+                            height: 6px;
+                        }
+                        .mini-scrollbar::-webkit-scrollbar-track {
+                            background: rgba(0, 0, 0, 0.05);
+                            border-radius: 4px;
+                        }
+                        .mini-scrollbar::-webkit-scrollbar-thumb {
+                            background: rgba(34, 197, 94, 0.3);
+                            border-radius: 4px;
+                        }
+                        .mini-scrollbar::-webkit-scrollbar-thumb:hover {
+                            background: rgba(34, 197, 94, 0.6);
                         }
                     `}</style>
                 </div>

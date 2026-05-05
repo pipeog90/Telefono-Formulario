@@ -158,9 +158,12 @@ exports.getCallsFromBigQuery = onCall(async (request) => {
     try {
         const bigquery = new BigQuery({ projectId: "singular-arbor-401018" });
 
-        const query = `
+        const { fechaInicio, fechaFin } = request.data || {};
+
+        let query = `
             SELECT
                 COALESCE(document_id, codigo_id) AS id,
+                COALESCE(CAST(l_id_llamada AS STRING), '-1') AS L_ID_Llamada,
                 orientador                  AS L_Orientador,
                 medio_contacto              AS L_Medio_Contacto,
                 como_conocio                AS L_Como_Conoce,
@@ -218,14 +221,69 @@ exports.getCallsFromBigQuery = onCall(async (request) => {
                 sintesis                    AS L_Sintesis,
                 source
             FROM \`singular-arbor-401018.marts.dashboard_union\`
-            ORDER BY llamada_datetime DESC
+            WHERE 1=1
         `;
 
-        const [rows] = await bigquery.query({ query });
+        const params = {};
+
+        if (fechaInicio) {
+            // Only add parameter if it's a valid string
+            query += ` AND DATE(llamada_datetime) >= DATE(@fechaInicio)`;
+            params.fechaInicio = fechaInicio;
+        }
+
+        if (fechaFin) {
+            query += ` AND DATE(llamada_datetime) <= DATE(@fechaFin)`;
+            params.fechaFin = fechaFin;
+        }
+
+        query += ` ORDER BY llamada_datetime DESC LIMIT 2000`;
+
+        const [rows] = await bigquery.query({ 
+            query: query,
+            params: params
+        });
         return { calls: rows };
 
     } catch (error) {
         console.error("Error querying BigQuery:", error);
         throw new HttpsError("internal", "Error al consultar BigQuery: " + error.message);
+    }
+});
+
+// One-time migration: stamp all existing calls without L_ID_Llamada as "-1"
+// Only admins can trigger this. Safe to call multiple times (idempotent).
+exports.migratePreProductionCalls = onCall(async (request) => {
+    if (!request.auth) {
+        throw new HttpsError("unauthenticated", "El usuario no está autenticado.");
+    }
+
+    const callerUid = request.auth.uid;
+    const callerDoc = await admin.firestore().collection("users").doc(callerUid).get();
+    if (!callerDoc.exists || callerDoc.data().role !== "admin") {
+        throw new HttpsError("permission-denied", "Solo los administradores pueden ejecutar migraciones.");
+    }
+
+    try {
+        const callsSnapshot = await admin.firestore().collection("calls").get();
+        let updated = 0;
+        const batch = admin.firestore().batch();
+
+        callsSnapshot.forEach((doc) => {
+            const data = doc.data();
+            if (!data.L_ID_Llamada) {
+                batch.update(doc.ref, { L_ID_Llamada: "-1" });
+                updated++;
+            }
+        });
+
+        if (updated > 0) {
+            await batch.commit();
+        }
+
+        return { success: true, message: `${updated} llamadas pre-producción actualizadas con ID -1.`, total: callsSnapshot.size, updated };
+    } catch (error) {
+        console.error("Error en migración:", error);
+        throw new HttpsError("internal", "Error durante la migración: " + error.message);
     }
 });

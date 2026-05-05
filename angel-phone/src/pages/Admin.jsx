@@ -7,7 +7,7 @@ const Admin = () => {
 
     // Persistence: Initialize from localStorage or default to empty
     const [selectedList, setSelectedList] = useState(() => {
-        return localStorage.getItem('adminSelectedList') || '';
+        return sessionStorage.getItem('adminSelectedList') || '';
     });
 
     const [newValue, setNewValue] = useState('');
@@ -22,7 +22,7 @@ const Admin = () => {
     // Update localStorage when selectedList changes
     useEffect(() => {
         if (selectedList) {
-            localStorage.setItem('adminSelectedList', selectedList);
+            sessionStorage.setItem('adminSelectedList', selectedList);
         }
     }, [selectedList]);
 
@@ -45,43 +45,56 @@ const Admin = () => {
         setError(''); // Clear previous errors
         if (!newValue.trim()) return;
 
-        const parts = newValue.split(' - ');
+        const description = newValue.trim();
+        const allItems = lists[selectedList] || [];
 
-        // Restriction 1: Must have " - " separator
-        if (parts.length < 2) {
-            setError('Formato incorrecto. Debe ser "# - Valor" (ej: "10 - Nuevo Item"). El guión es obligatorio.');
-            return;
-        }
+        let generatedValue = '';
 
-        const value = parts[0].trim();
-        const description = parts.slice(1).join(' - ').trim();
-
-        // Validation per list type
         if (selectedList === 'Problemática') {
-            if (!/^[A-Z]$/.test(value)) {
-                setError('Formato incorrecto. La "Problemática" debe ser una letra mayúscula (A-Z).');
+            const usedLetters = new Set(allItems.map(item => item.value.toUpperCase()));
+            let found = false;
+            for (let i = 65; i <= 90; i++) {
+                const letter = String.fromCharCode(i);
+                if (!usedLetters.has(letter)) {
+                    generatedValue = letter;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                setError('No hay más letras disponibles (A-Z) para Problemáticas.');
                 return;
             }
         } else if (selectedList === 'Problema') {
-            if (!value) {
-                setError('Formato incorrecto. El código no puede estar vacío.');
-                return;
+            const prefix = selectedLetter;
+            const usedNumbers = new Set();
+            allItems.forEach(item => {
+                if (item.value.startsWith(prefix)) {
+                    const numStr = item.value.substring(prefix.length);
+                    const num = parseInt(numStr, 10);
+                    if (!isNaN(num)) usedNumbers.add(num);
+                }
+            });
+            let nextNum = 1;
+            while (usedNumbers.has(nextNum)) {
+                nextNum++;
             }
+            generatedValue = `${prefix}${nextNum}`;
         } else {
-            if (isNaN(value) || value === '') {
-                setError('Formato incorrecto. La primera parte debe ser un número.');
-                return;
+            const usedNumbers = new Set();
+            allItems.forEach(item => {
+                const num = parseInt(item.value, 10);
+                if (!isNaN(num)) usedNumbers.add(num);
+            });
+            let nextNum = 1;
+            while (usedNumbers.has(nextNum)) {
+                nextNum++;
             }
+            generatedValue = nextNum.toString();
         }
 
-        // Uniqueness check against full list (not filtered)
-        const allItems = lists[selectedList] || [];
-        if (allItems.some(item => item.value === value)) {
-            setError(`Error: El código "${value}" ya existe en esta lista.`);
-            return;
-        }
-
-        const newItem = { value, label: description, active: true };
+        const label = `${generatedValue} - ${description}`;
+        const newItem = { value: generatedValue, label: label, active: true };
         const newItems = [...allItems, newItem];
 
         // Sorting based on list type
@@ -236,12 +249,12 @@ const Admin = () => {
                                 <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-end' }}>
                                     <div style={{ flexGrow: 1 }}>
                                         <label htmlFor="nuevo-valor" style={{ display: 'block', marginBottom: '5px' }}>
-                                            Nuevo Valor (Ej: {selectedList === 'Problema' ? 'A1' : '1'} - Valor)
+                                            Descripción del Nuevo Valor
                                         </label>
                                         <input
                                             type="text"
                                             id="nuevo-valor"
-                                            placeholder={`Nuevo valor (ej. ${selectedList === 'Problema' ? 'A1' : '1'} - Valor)`}
+                                            placeholder="Escriba la descripción (el código se generará automáticamente)"
                                             value={newValue}
                                             onChange={(e) => {
                                                 setNewValue(e.target.value);

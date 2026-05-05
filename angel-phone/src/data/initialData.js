@@ -1,17 +1,17 @@
 export const initialDropdowns = {
-    "Medio de contacto": [
+    "MEDIO_CONTACTO": [
         { value: "1", label: "Por teléfono" },
         { value: "2", label: "Atendido en sede" },
         { value: "3", label: "Por email" },
         { value: "7", label: "Programa de atención a personas mayores" },
         { value: "8", label: "Chat TE" }
     ],
-    "Sexo": [
+    "SEXO": [
         { value: "0", label: "No lo sé" },
         { value: "1", label: "Hombre" },
         { value: "2", label: "Mujer" }
     ],
-    "Edad": [
+    "EDAD": [
         { value: "1", label: "Hasta 18 años" },
         { value: "2", label: "De 19 a 25" },
         { value: "3", label: "De 26 a 35" },
@@ -22,7 +22,7 @@ export const initialDropdowns = {
         { value: "8", label: "76 o mas" },
         { value: "9", label: "Si, definir" }
     ],
-    "E.Civil": [
+    "ESTADO_CIVIL": [
         { value: "0", label: "No lo sé" },
         { value: "1", label: "Soltero" },
         { value: "2", label: "Casado" },
@@ -31,7 +31,7 @@ export const initialDropdowns = {
         { value: "5", label: "Matrimonio nulo" },
         { value: "6", label: "Pareja de hecho" }
     ],
-    "Convive": [
+    "CONVIVE": [
         { value: "0", label: "No lo sé" },
         { value: "1", label: "Solo" },
         { value: "2", label: "Familia de origen" },
@@ -43,27 +43,27 @@ export const initialDropdowns = {
         { value: "8", label: "Residencia o institución benéfica" },
         { value: "9", label: "Piso compartido" }
     ],
-    "Asiduad": [
+    "ASIDUIDAD": [
         { value: "0", label: "No lo sé" },
         { value: "1", label: "Primera llamada" },
         { value: "2", label: "Ha llamado mas veces por el mismo asunto" },
         { value: "3", label: "Ha llamado mas veces en otras crisis" },
         { value: "4", label: "Llamante frecuente" }
     ],
-    "Naturaleza": [
+    "NATURALEZA": [
         { value: "1", label: "Problema Leve" },
         { value: "2", label: "Problema Grave" },
         { value: "3", label: "Problema Crónico" },
         { value: "4", label: "Crisis actual por situación externa" },
         { value: "5", label: "Crisis actual por procesos internos o evolutivos" }
     ],
-    "Inicio": [
+    "INICIO": [
         { value: "1", label: "Menos de 1 semana" },
         { value: "2", label: "Entre 1 semana y 1 mes" },
         { value: "3", label: "Mas de 1 mes y menos de 1 año" },
         { value: "4", label: "Mas de 1 año" }
     ],
-    "Actitud ante el orientador": [
+    "ACTITUD_ORIENTADOR": [
         { value: "1", label: "Confiada" },
         { value: "2", label: "Desconfiada" },
         { value: "3", label: "Dependiente" },
@@ -72,7 +72,7 @@ export const initialDropdowns = {
         { value: "6", label: "Ansiosa" },
         { value: "7", label: "Desorientada" }
     ],
-    "Presentación": [
+    "PRESENTACION": [
         { value: "1", label: "Clara y directa" },
         { value: "2", label: "Con rodeos" },
         { value: "3", label: "Dubitativa" },
@@ -82,7 +82,7 @@ export const initialDropdowns = {
         { value: "9", label: "Comunicación Congruente" },
         { value: "10", label: "Comunicaión Incongruente" }
     ],
-    "Paralenguaje": [
+    "PARALENGUAJE": [
         { value: "1", label: "No significativo" },
         { value: "2", label: "Silencios" },
         { value: "3", label: "Suspiros" },
@@ -90,7 +90,7 @@ export const initialDropdowns = {
         { value: "5", label: "Ritmo o tono de voz alterados" },
         { value: "7", label: "Risas nerviosas" }
     ],
-    "Procedencia": [
+    "PROCEDENCIA": [
         { value: "1", label: "De la misma población del centro del Telefono" },
         { value: "2", label: "De la misma provincia del Telefono" },
         { value: "3", label: "De otra provincia" },
@@ -98,14 +98,14 @@ export const initialDropdowns = {
         { value: "5", label: "De otro país latinoamericano" },
         { value: "6", label: "De otros países" }
     ],
-    "Petición": [
+    "PETICION": [
         { value: "2", label: "Hablar o de desahogarse con alguien" },
         { value: "3", label: "Orientación" },
         { value: "5", label: "Soluciones inmediatas" },
         { value: "6", label: "Aprobación de una decisión, tomada" },
         { value: "9", label: "Entrevista con un profesional" }
     ],
-    "Actitud ante el problema": [
+    "ACTITUD_PROBLEMA": [
         { value: "2", label: "Cree que no tiene solución" },
         { value: "3", label: "Pasivo y sin deseos de colaborar con la solución del problema" },
         { value: "4", label: "Se reconoce responsable, al menos parcialmente" },
@@ -115,7 +115,7 @@ export const initialDropdowns = {
         { value: "9", label: "Desesperado" },
         { value: "12", label: "Cree que que sólo los demás tienen la culpa del problema" }
     ],
-    "Llamada derivada": [
+    "LLAMADA_DERIVADA": [
         { value: "1", label: "Servicio 112" },
         { value: "2", label: "Tráfico UVAT" },
         { value: "3", label: "Médico de Familia" },
@@ -129,7 +129,7 @@ export const initialDropdowns = {
         { value: "11", label: "Teléfono 024" },
         { value: "12", label: "As. V.Frankl" }
     ],
-    "Resultado": [
+    "RESULTADO": [
         { value: "1", label: "Se satisface la demanda del llamante, sólo con la llamada" },
         { value: "2", label: "Seguimiento programado por el Telefono" },
         { value: "3", label: "Se recomienda entrevista con profesional del Telefono" },
@@ -143,14 +143,14 @@ export const initialDropdowns = {
         { value: "13", label: "A la persona atendida en la sede, se le invita en general a que venga otras veces, si lo necesita" },
         { value: "14", label: "se le deriva la llamada a la fundación Anar" }
     ],
-    "Nivel de ayuda": [
+    "NIVEL_AYUDA": [
         { value: "2", label: "Orientaciones puntuales" },
         { value: "3", label: "Acción de des angustiante" },
         { value: "4", label: "Compresión empática" },
         { value: "5", label: "Restructuración del problema" },
         { value: "6", label: "programación de nuevos comportamientos" }
     ],
-    "Sentimientos": [
+    "SENTIMIENTOS": [
         { value: "1", label: "Compasión" },
         { value: "2", label: "Afecto" },
         { value: "4", label: "Aceptación y respeto" },
@@ -163,12 +163,12 @@ export const initialDropdowns = {
         { value: "14", label: "Incomodidad" },
         { value: "16", label: "Impotencia" }
     ],
-    "Autoevaluación": [
+    "AUTOEVALUACION": [
         { value: "2", label: "Deficiente" },
         { value: "3", label: "Regular" },
         { value: "4", label: "Positiva" }
     ],
-    "Actitudes equivodas": [
+    "ACTITUD_EQUIVOCADA": [
         { value: "1", label: "Dirigir, presionar" },
         { value: "2", label: "Aconsejar" },
         { value: "3", label: "Moralizar" },
@@ -177,13 +177,13 @@ export const initialDropdowns = {
         { value: "7", label: "Compadecer" },
         { value: "9", label: "Ninguna" }
     ],
-    "Satisfacción del llamante": [
+    "SATISFACCION": [
         { value: "1", label: "No dice nada" },
         { value: "2", label: "Expresa disconformidad" },
         { value: "3", label: "Expresa satisfacción" },
         { value: "5", label: "Cuelga sin concluir el proceso de ayuda" }
     ],
-    "Relación": [
+    "RELACION": [
         { value: "1", label: "Cónyuge o compañero" },
         { value: "2", label: "Excónyuge o excompañero" },
         { value: "3", label: "Padre/madre" },
@@ -192,43 +192,40 @@ export const initialDropdowns = {
         { value: "10", label: "Amigo, vecino, compañero" },
         { value: "13", label: "Otros familiares" }
     ],
-    "Tercero Actitud ante el problema": [
+    "TERCERO_ACTITUD_PROBLEMA": [
         { value: "2", label: "El llamante no se atreve a proponerselo" },
-        { value: "3", label: "El tercero, niega la existencia del problema" },
+        { value: "3", label: "El tercero, niega la existence del problema" },
         { value: "4", label: "El tercero, piensa que el llamante es el responsable total del problema" },
         { value: "5", label: "No se muestran deseos de querer colaborar con la solución del problema" },
         { value: "6", label: "El tercero reconoce que él colabora, al menos parcialmente en el problema" },
         { value: "7", label: "Desea resolver el problema" }
     ],
-    "Condicion Socioeconomica": [
+    "CONDICION_SOCIOECONOMICA": [
         { value: "1", label: "Bajos recursos" },
         { value: "2", label: "Recursos Medios" },
         { value: "3", label: "Recursos Altos" }
     ],
-    "O_clave": [
-        { value: "AB", label: "Abril Bello" },
-        { value: "CD", label: "Carlos Díaz" },
-        { value: "EF", label: "Elena Fuentes" },
-        { value: "GH", label: "Gerardo Haya" }
-    ],
-    "C_duracion": [
+    "RANGO_DURACION": [
         { value: "1", label: "1-5 min" },
         { value: "2", label: "6-10 min" },
         { value: "3", label: "11-20 min" },
         { value: "4", label: "21-30 min" },
         { value: "5", label: "+30 min" }
     ],
-    "Volvera a llamar": [
+    "VOLVERA_LLAMAR": [
         { value: "S", label: "Sí" },
         { value: "N", label: "No" }
     ],
-    "Comoconoce": [
+    "COMO_CONOCE": [
         { value: "1", label: "Prensa" },
         { value: "2", label: "Radio/TV" },
         { value: "3", label: "Redes Sociales" },
         { value: "4", label: "Otro usuario" },
         { value: "5", label: "Internet" },
         { value: "6", label: "Otros" }
+    ],
+    "CENTRO": [
+        { value: "Medellín", label: "Medellín", active: true }
     ]
 };
 

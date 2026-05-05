@@ -59,13 +59,8 @@ const Reportes = () => {
         setLoading(true);
         setSearched(true);
         try {
-            let data = await db.getCalls();
-
             const activeFilters = { ...filters, ...filterOverride };
-
-            // Date Range
-            if (activeFilters.fechaInicio) data = data.filter(item => item.L_Fecha >= activeFilters.fechaInicio);
-            if (activeFilters.fechaFin) data = data.filter(item => item.L_Fecha <= activeFilters.fechaFin);
+            let data = await db.getCalls(activeFilters);
 
             // Specific Filters
             if (activeFilters.L_Orientador) data = data.filter(item => item.L_Orientador === activeFilters.L_Orientador);
@@ -97,6 +92,14 @@ const Reportes = () => {
             if (activeFilters.sexo) data = data.filter(item => item.U_Sexo === activeFilters.sexo);
             if (activeFilters.edad) data = data.filter(item => item.U_Edad === activeFilters.edad);
 
+            // Date Range Filters
+            if (activeFilters.fechaInicio) {
+                data = data.filter(item => item.L_Fecha >= activeFilters.fechaInicio);
+            }
+            if (activeFilters.fechaFin) {
+                data = data.filter(item => item.L_Fecha <= activeFilters.fechaFin);
+            }
+
             // Quick Filter: Last Week
             if (activeFilters.lastWeek) {
                 const today = new Date();
@@ -110,7 +113,11 @@ const Reportes = () => {
             }
 
             // specific sorting (newest first)
-            data.sort((a, b) => new Date(b.c_fecha + 'T' + b.c_hora) - new Date(a.c_fecha + 'T' + a.c_hora));
+            data.sort((a, b) => {
+                const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : new Date((a.L_Fecha || '') + 'T' + (a.L_Hora || '00:00')).getTime();
+                const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : new Date((b.L_Fecha || '') + 'T' + (b.L_Hora || '00:00')).getTime();
+                return (timeB || 0) - (timeA || 0);
+            });
 
             // Quick Filter: Last 20
             if (activeFilters.last20) {
@@ -137,64 +144,65 @@ const Reportes = () => {
             // Map data to display format (convert codes to labels for both display AND export)
             const mappedData = data.map((item) => ({
                 ...item, // Keep originals
+                l_id_llamada: item.L_ID_Llamada || '—',
                 c_fecha: formatDate(item.L_Fecha),
                 orientador: item.L_Orientador || 'Desconocido',
                 sintesis: item.L_Sintesis || '',
                 // Header Section
-                medioContacto: getLabel('Medio de contacto', item.L_Medio_Contacto),
-                comoConocio: getLabel('Comoconoce', item.L_Como_Conoce),
+                medioContacto: getLabel('MEDIO_CONTACTO', item.L_Medio_Contacto),
+                comoConocio: getLabel('COMO_CONOCE', item.L_Como_Conoce),
                 // Llamante Section
-                l_sexo: getLabel('Sexo', item.U_Sexo),
-                l_edad: getLabel('Edad', item.U_Edad),
-                l_ecivil: getLabel('E.Civil', item.U_Estado_Civil),
-                l_convive: getLabel('Convive', item.U_Convive),
-                l_asiduidad: getLabel('Asiduad', item.U_Asiduidad),
-                l_problematica_1: getLabel('Problemática', item.U_Problematica_1),
-                l_problema_1: getLabel('Problema', item.U_Problema_1),
-                l_problematica_2: getLabel('Problemática', item.U_Problematica_2),
-                l_problema_2: getLabel('Problema', item.U_Problema_2),
-                l_problematica_3: getLabel('Problemática', item.U_Problematica_3),
-                l_problema_3: getLabel('Problema', item.U_Problema_3),
-                l_naturaleza: getLabel('Naturaleza', item.U_Naturaleza),
-                l_inicio: getLabel('Inicio', item.U_Inicio),
-                l_actitud: getLabel('Actitud ante el orientador', item.U_Actitud_Orientador),
-                l_presentacion: getLabel('Presentación', item.U_Presentacion),
-                l_paralenguaje: getLabel('Paralenguaje', item.U_Paralenguaje),
-                l_procedencia: getLabel('Procedencia', item.U_Procedencia),
-                l_peticion: getLabel('Petición', item.U_Peticion),
-                l_actitud_problema_1: getLabel('Actitud ante el problema', item.U_Actitud_Problema_1),
-                l_actitud_problema_2: getLabel('Actitud ante el problema', item.U_Actitud_Problema_2),
-                l_condicion: getLabel('Condicion Socioeconomica', item.U_Cond_Socioeconomica),
-                l_derivada: getLabel('Llamada derivada', item.L_Llamada_Derivada),
+                l_sexo: getLabel('SEXO', item.U_Sexo),
+                l_edad: getLabel('EDAD', item.U_Edad),
+                l_ecivil: getLabel('ESTADO_CIVIL', item.U_Estado_Civil),
+                l_convive: getLabel('CONVIVE', item.U_Convive),
+                l_asiduidad: getLabel('ASIDUIDAD', item.U_Asiduidad),
+                l_problematica_1: getLabel('PROBLEMATICA', item.U_Problematica_1),
+                l_problema_1: getLabel('PROBLEMA', item.U_Problema_1),
+                l_problematica_2: getLabel('PROBLEMATICA', item.U_Problematica_2),
+                l_problema_2: getLabel('PROBLEMA', item.U_Problema_2),
+                l_problematica_3: getLabel('PROBLEMATICA', item.U_Problematica_3),
+                l_problema_3: getLabel('PROBLEMA', item.U_Problema_3),
+                l_naturaleza: getLabel('NATURALEZA', item.U_Naturaleza),
+                l_inicio: getLabel('INICIO', item.U_Inicio),
+                l_actitud: getLabel('ACTITUD_ORIENTADOR', item.U_Actitud_Orientador),
+                l_presentacion: getLabel('PRESENTACION', item.U_Presentacion),
+                l_paralenguaje: getLabel('PARALENGUAJE', item.U_Paralenguaje),
+                l_procedencia: getLabel('PROCEDENCIA', item.U_Procedencia),
+                l_peticion: getLabel('PETICION', item.U_Peticion),
+                l_actitud_problema_1: getLabel('ACTITUD_PROBLEMA', item.U_Actitud_Problema_1),
+                l_actitud_problema_2: getLabel('ACTITUD_PROBLEMA', item.U_Actitud_Problema_2),
+                l_condicion: getLabel('CONDICION_SOCIOECONOMICA', item.U_Cond_Socioeconomica),
+                l_derivada: getLabel('LLAMADA_DERIVADA', item.L_Llamada_Derivada),
                 // Tercero Section
-                t_sexo: getLabel('Sexo', item.T_Sexo_Tercero),
-                t_edad: getLabel('Edad', item.T_Edad_Tercero),
-                t_ecivil: getLabel('E.Civil', item.T_Estado_Civil_Tercero),
-                t_convive: getLabel('Convive', item.T_Convive),
-                t_relacion: getLabel('Relación', item.T_Relacion),
-                t_problematica_1: getLabel('Problemática', item.T_Problematica_1),
-                t_problema_1: getLabel('Problema', item.T_Problema_1),
-                t_problematica_2: getLabel('Problemática', item.T_Problematica_2),
-                t_problema_2: getLabel('Problema', item.T_Problema_2),
-                t_problematica_3: getLabel('Problemática', item.T_Problematica_3),
-                t_problema_3: getLabel('Problema', item.T_Problema_3),
-                t_actitud_problema_1: getLabel('Actitud ante el problema', item.T_Actitud_Problema_1),
-                t_actitud_problema_2: getLabel('Actitud ante el problema', item.T_Actitud_Problema_2),
+                t_sexo: getLabel('SEXO', item.T_Sexo_Tercero),
+                t_edad: getLabel('EDAD', item.T_Edad_Tercero),
+                t_ecivil: getLabel('ESTADO_CIVIL', item.T_Estado_Civil_Tercero),
+                t_convive: getLabel('CONVIVE', item.T_Convive),
+                t_relacion: getLabel('RELACION', item.T_Relacion),
+                t_problematica_1: getLabel('PROBLEMATICA', item.T_Problematica_1),
+                t_problema_1: getLabel('PROBLEMA', item.T_Problema_1),
+                t_problematica_2: getLabel('PROBLEMATICA', item.T_Problematica_2),
+                t_problema_2: getLabel('PROBLEMA', item.T_Problema_2),
+                t_problematica_3: getLabel('PROBLEMATICA', item.T_Problematica_3),
+                t_problema_3: getLabel('PROBLEMA', item.T_Problema_3),
+                t_actitud_problema_1: getLabel('ACTITUD_PROBLEMA', item.T_Actitud_Problema_1),
+                t_actitud_problema_2: getLabel('ACTITUD_PROBLEMA', item.T_Actitud_Problema_2),
                 // Llamada Section
-                c_resultado: getLabel('Resultado', item.L_Resultado),
-                c_duracion: getLabel('C_duracion', item.L_Duracion),
+                c_resultado: getLabel('RESULTADO', item.L_Resultado),
+                c_duracion: getLabel('RANGO_DURACION', item.L_Duracion),
                 // Orientador Evaluation Section
-                o_autoevaluacion: getLabel('Autoevaluación', item.O_Autoevaluacion),
-                o_volvera_llamar: getLabel('Volvera a llamar', item.O_Volvera_Llamar),
-                o_nivel_ayuda_1: getLabel('Nivel de ayuda', item.O_Nivel_Ayuda_1),
-                o_nivel_ayuda_2: getLabel('Nivel de ayuda', item.O_Nivel_Ayuda_2),
-                o_sentimientos_1: getLabel('Sentimientos', item.O_Sentimientos_1),
-                o_sentimientos_2: getLabel('Sentimientos', item.O_Sentimientos_2),
-                o_sentimientos_3: getLabel('Sentimientos', item.O_Sentimientos_3),
-                o_actitudes_1: getLabel('Actitudes equivodas', item.O_Actitud_Equivocada_1),
-                o_actitudes_2: getLabel('Actitudes equivodas', item.O_Actitud_Equivocada_2),
-                o_satisfaccion_1: getLabel('Satisfacción del llamante', item.O_Satisfaccion_1),
-                o_satisfaccion_2: getLabel('Satisfacción del llamante', item.O_Satisfaccion_2)
+                o_autoevaluacion: getLabel('AUTOEVALUACION', item.O_Autoevaluacion),
+                o_volvera_llamar: getLabel('VOLVERA_LLAMAR', item.O_Volvera_Llamar),
+                o_nivel_ayuda_1: getLabel('NIVEL_AYUDA', item.O_Nivel_Ayuda_1),
+                o_nivel_ayuda_2: getLabel('NIVEL_AYUDA', item.O_Nivel_Ayuda_2),
+                o_sentimientos_1: getLabel('SENTIMIENTOS', item.O_Sentimientos_1),
+                o_sentimientos_2: getLabel('SENTIMIENTOS', item.O_Sentimientos_2),
+                o_sentimientos_3: getLabel('SENTIMIENTOS', item.O_Sentimientos_3),
+                o_actitudes_1: getLabel('ACTITUD_EQUIVOCADA', item.O_Actitud_Equivocada_1),
+                o_actitudes_2: getLabel('ACTITUD_EQUIVOCADA', item.O_Actitud_Equivocada_2),
+                o_satisfaccion_1: getLabel('SATISFACCION', item.O_Satisfaccion_1),
+                o_satisfaccion_2: getLabel('SATISFACCION', item.O_Satisfaccion_2)
             }));
 
             setResults(mappedData);
@@ -243,7 +251,7 @@ const Reportes = () => {
         }
 
         const headers = [
-            "Orientador", "Medio de Contacto", "Cómo Conoció",
+            "ID", "Orientador", "Medio de Contacto", "Cómo Conoció",
             "L_Sexo", "L_Edad", "L_Estado Civil", "L_Convive", "L_Asiduidad",
             "L_Problemática 1", "L_Problema 1",
             "L_Problemática 2", "L_Problema 2",
@@ -278,6 +286,7 @@ const Reportes = () => {
         const csvContent = [
             headers.join(","),
             ...rawResults.map((item) => [
+                escapeCSV(item.L_ID_Llamada),
                 escapeCSV(item.L_Orientador),
                 escapeCSV(item.L_Medio_Contacto),
                 escapeCSV(item.L_Como_Conoce),
@@ -420,6 +429,7 @@ const Reportes = () => {
                                     onChange={(e) => handleChange({ target: { id: 'orientador', value: e.target.value } })}
                                     options={usersList}
                                     placeholder="Todos"
+                                    tooltip="Nombre del orientador"
                                 />
                             </div>
                             <div className="form-grid-3" style={{ marginBottom: '1px' }}>
@@ -428,32 +438,36 @@ const Reportes = () => {
                                     label="Problemática"
                                     value={filters.problema}
                                     onChange={(e) => handleChange({ target: { id: 'problema', value: e.target.value } })}
-                                    options={getOptions('Problemática')}
+                                    options={getOptions('PROBLEMATICA')}
                                     placeholder="Todas"
+                                    tooltip="Problemática o causa posible del problema"
                                 />
                                 <Select
                                     id="asiduidad"
                                     label="Asiduidad"
                                     value={filters.asiduidad}
                                     onChange={(e) => handleChange({ target: { id: 'asiduidad', value: e.target.value } })}
-                                    options={getOptions('Asiduad')}
+                                    options={getOptions('ASIDUIDAD')}
                                     placeholder="Todas"
+                                    tooltip="Frecuencia de llamada del usuario"
                                 />
                                 <Select
                                     id="sexo"
                                     label="Sexo"
                                     value={filters.sexo}
                                     onChange={(e) => handleChange({ target: { id: 'sexo', value: e.target.value } })}
-                                    options={getOptions('Sexo')}
+                                    options={getOptions('SEXO')}
                                     placeholder="Todos"
+                                    tooltip="Sexo"
                                 />
                                 <Select
                                     id="edad"
-                                    label="Edad"
+                                    label="Rango de Edad"
                                     value={filters.edad}
                                     onChange={(e) => handleChange({ target: { id: 'edad', value: e.target.value } })}
-                                    options={getOptions('Edad')}
-                                    placeholder="Todas"
+                                    options={getOptions('EDAD')}
+                                    placeholder="Todos"
+                                    tooltip="Edad en la cual se identifica al usuario"
                                 />
                             </div>
 
@@ -498,6 +512,7 @@ const Reportes = () => {
                             <thead>
                                 <tr>
                                     <th style={{ width: '35px', minWidth: '35px', backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)', padding: 'var(--admin-cell-padding)', textAlign: 'center' }}>No</th>
+                                    <th style={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)', padding: 'var(--admin-cell-padding)', textAlign: 'center' }}>ID</th>
                                     <th style={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)', padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Orientador</th>
                                     <th style={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)', padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Problema</th>
                                     <th style={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)', padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Síntesis</th>
@@ -511,13 +526,14 @@ const Reportes = () => {
                             </thead>
                             <tbody id="reporte-table-body">
                                 {results.length === 0 ? (
-                                    <tr><td colSpan={isAdmin ? "10" : "9"} className="no-data" style={{ textAlign: 'center', padding: '20px', color: '#888', fontStyle: 'italic' }}>
+                                    <tr><td colSpan={isAdmin ? "11" : "10"} className="no-data" style={{ textAlign: 'center', padding: '20px', color: '#888', fontStyle: 'italic' }}>
                                         {searched ? 'No hay llamadas registradas o no coinciden con los filtros.' : 'Configure los filtros y haga clic en Generar Reporte.'}
                                     </td></tr>
                                 ) : (
                                     results.map((row, index) => (
                                         <tr key={index} style={{ backgroundColor: index % 2 === 0 ? '#f9f9f9' : 'white' }}>
                                             <td style={{ padding: 'var(--admin-cell-padding)', borderBottom: '1px solid #eee', textAlign: 'center', fontWeight: '600', color: 'var(--color-text-muted)' }}>{index + 1}</td>
+                                            <td style={{ padding: 'var(--admin-cell-padding)', borderBottom: '1px solid #eee', textAlign: 'center', fontWeight: '500', color: 'var(--sub-color-primary-dark, #16a34a)' }}>{row.L_ID_Llamada || '—'}</td>
                                             <td style={{ padding: 'var(--admin-cell-padding)', borderBottom: '1px solid #eee' }}>{row.L_Orientador}</td>
                                             <td style={{ padding: 'var(--admin-cell-padding)', borderBottom: '1px solid #eee' }}>
                                                 {[row.U_Problema_1, row.U_Problema_2, row.U_Problema_3]
