@@ -85,7 +85,6 @@ export const firestoreKeyMigration = {
     "Tercero Actitud ante": "TERCERO_ACTITUD_PROBLEMA",
     "U_Cond_Socioeconomica": "CONDICION_SOCIOECONOMICA",
     "O_Volvera_Llamar": "VOLVERA_LLAMAR",
-    "Volvera a llamar": "VOLVERA_LLAMAR",
     "L_Como_Conoce": "COMO_CONOCE",
     "L_Duracion": "RANGO_DURACION",
     "L_Orientador": "ORIENTADOR",
@@ -107,12 +106,14 @@ export const ListsProvider = ({ children }) => {
                 migrated[newKey] = value;
             }
             
-            // Final check: if an old key exists in the migrated object but we have its new version,
-            // the loop above already handled it (by overwriting migrated[newKey]).
-            // However, we should explicitly remove keys that are in the migration map's keys.
-            Object.keys(firestoreKeyMigration).forEach(oldKey => {
-                if (migrated[oldKey]) {
-                    delete migrated[oldKey];
+            // Remove any junk keys that should be permanently wiped
+            Object.keys(migrated).forEach(key => {
+                const normalized = key.trim().toLowerCase();
+                if (normalized === 'estado civil' || 
+                    normalized === 'municipio' || 
+                    normalized === 'rango de edad' || 
+                    normalized.startsWith('o_clave')) {
+                    delete migrated[key];
                 }
             });
 
@@ -126,52 +127,95 @@ export const ListsProvider = ({ children }) => {
     // Initial Load and Real-time Subscription from Firestore
     useEffect(() => {
         setLoading(true);
-        const unsubscribe = db.subscribeToLists((firestoreLists) => {
-            try {
-                if (Object.keys(firestoreLists).length > 0) {
-                    // Migrate old Firestore key names to new data dictionary names
-                    const migrated = {};
-                    
-                    // 1. Process all entries from Firestore
-                    for (const [key, value] of Object.entries(firestoreLists)) {
-                        if (key === 'O_CLAVE') continue; // Explicitly ignore legacy O_CLAVE
-                        const newKey = firestoreKeyMigration[key] || key;
-                        // If it's a legacy key, it gets "renamed" to newKey.
-                        // If it's already a newKey, it stays as is.
-                        migrated[newKey] = value;
-                    }
+        
+        // Safety timeout: If Firebase doesn't respond within 5 seconds (due to network drops), 
+        // force loading to false so the app can render using cached/initial lists.
+        const timeoutId = setTimeout(() => {
+            console.warn("Firestore subscription timed out. Falling back to cached lists.");
+            setLoading(false);
+        }, 5000);
 
-                    setLists(prev => {
-                        // 2. Start with previous state but REMOVE all legacy keys
-                        const cleanPrev = { ...prev };
-                        Object.keys(firestoreKeyMigration).forEach(oldKey => {
-                            delete cleanPrev[oldKey];
-                        });
+        const unsubscribe = db.subscribeToLists(
+            (firestoreLists) => {
+                clearTimeout(timeoutId);
+                try {
+                    if (Object.keys(firestoreLists).length > 0) {
+                        // Migrate old Firestore key names to new data dictionary names
+                        const migrated = {};
                         
-                        // Explicitly remove O_CLAVE to purge it
-                        if (cleanPrev['O_CLAVE']) delete cleanPrev['O_CLAVE'];
-                        
-                        // 3. Merge with migrated data from Firestore, 
-                        // ensuring NO legacy keys are included in the final object
-                        const finalMigrated = {};
-                        for (const [key, value] of Object.entries(migrated)) {
-                            if (!firestoreKeyMigration[key]) {
-                                finalMigrated[key] = value;
+                        // 1. Process all entries from Firestore
+                        for (const [key, value] of Object.entries(firestoreLists)) {
+                            // Automatically delete the orphaned keys from the live database if they reappear
+                            const normalized = key.trim().toLowerCase();
+                            const isJunk = normalized === 'estado civil' || 
+                                           normalized === 'municipio' || 
+                                           normalized === 'rango de edad' || 
+                                           normalized.startsWith('o_clave');
+
+                            if (isJunk) {
+                                import('../services/firebase').then(({ firestore, doc, deleteDoc }) => {
+                                    deleteDoc(doc(firestore, 'lists', key)).then(() => {
+                                        console.log(`Auto-purged legacy list from Firestore: ${key}`);
+                                    }).catch(console.error);
+                                });
+                                continue;
                             }
+
+                            const newKey = firestoreKeyMigration[key] || key;
+                            // If it's a legacy key, it gets "renamed" to newKey.
+                            // If it's already a newKey, it stays as is.
+                            migrated[newKey] = value;
                         }
-                        
-                        return { ...cleanPrev, ...finalMigrated };
-                    });
+
+                        setLists(prev => {
+                            // 2. Start with previous state but REMOVE all legacy and junk keys
+                            const cleanPrev = { ...prev };
+                            Object.keys(firestoreKeyMigration).forEach(oldKey => {
+                                delete cleanPrev[oldKey];
+                            });
+                            
+                            // Explicitly remove junk keys from the cache
+                            Object.keys(cleanPrev).forEach(key => {
+                                const normalized = key.trim().toLowerCase();
+                                if (normalized === 'estado civil' || 
+                                    normalized === 'municipio' || 
+                                    normalized === 'rango de edad' || 
+                                    normalized.startsWith('o_clave')) {
+                                    delete cleanPrev[key];
+                                }
+                            });
+                            
+                            // 3. Merge with migrated data from Firestore, 
+                            // ensuring NO legacy keys are included in the final object
+                            const finalMigrated = {};
+                            for (const [key, value] of Object.entries(migrated)) {
+                                if (!firestoreKeyMigration[key]) {
+                                    finalMigrated[key] = value;
+                                }
+                            }
+                            
+                            return { ...cleanPrev, ...finalMigrated };
+                        });
+                    }
+                } catch (err) {
+                    console.error("Error processing lists from Firestore:", err);
+                    setError(err);
+                } finally {
+                    setLoading(false);
                 }
-            } catch (err) {
-                console.error("Error processing lists from Firestore:", err);
+            },
+            (err) => {
+                clearTimeout(timeoutId);
+                console.error("Subscription to lists failed:", err);
                 setError(err);
-            } finally {
                 setLoading(false);
             }
-        });
+        );
 
-        return () => unsubscribe();
+        return () => {
+            clearTimeout(timeoutId);
+            unsubscribe();
+        };
     }, []);
 
     // Save to localStorage whenever lists change (Caching)
@@ -196,8 +240,15 @@ export const ListsProvider = ({ children }) => {
 
 
 
+    const value = React.useMemo(() => ({ 
+        lists, 
+        loading, 
+        error, 
+        updateList 
+    }), [lists, loading, error]);
+
     return (
-        <ListsContext.Provider value={{ lists, loading, error, updateList }}>
+        <ListsContext.Provider value={value}>
             {children}
         </ListsContext.Provider>
     );

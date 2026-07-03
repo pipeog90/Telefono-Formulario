@@ -4,6 +4,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { ListsProvider } from './context/ListsContext';
 import Layout from './components/Layout';
 import { AuthProvider } from './context/AuthContext';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Lazy-loaded pages for code splitting
 const Login = React.lazy(() => import('./pages/Login'));
@@ -20,46 +21,48 @@ const PageLoader = () => (
 
 function App() {
     return (
-        <AuthProvider>
-            <ListsProvider>
-                <Router>
-                    <Suspense fallback={<PageLoader />}>
-                        <Routes>
-                            <Route path="/login" element={<Login />} />
+        <ErrorBoundary>
+            <AuthProvider>
+                <ListsProvider>
+                    <Router>
+                        <Suspense fallback={<PageLoader />}>
+                            <Routes>
+                                <Route path="/login" element={<Login />} />
 
-                            {/* Protected Routes wrapped in Layout */}
-                            <Route element={<Layout />}>
-                                <Route path="/" element={
-                                    <ProtectedRoute>
-                                        <Registro />
-                                    </ProtectedRoute>
-                                } />
+                                {/* Protected Routes wrapped in Layout */}
+                                <Route element={<Layout />}>
+                                    <Route path="/" element={
+                                        <ProtectedRoute>
+                                            <Registro />
+                                        </ProtectedRoute>
+                                    } />
 
-                                <Route path="/admin" element={
-                                    <ProtectedRoute adminOnly={true}>
-                                        <Admin />
-                                    </ProtectedRoute>
-                                } />
+                                    <Route path="/admin" element={
+                                        <ProtectedRoute adminOnly={true}>
+                                            <Admin />
+                                        </ProtectedRoute>
+                                    } />
 
-                                <Route path="/reportes" element={
-                                    <ProtectedRoute>
-                                        <Reportes />
-                                    </ProtectedRoute>
-                                } />
+                                    <Route path="/reportes" element={
+                                        <ProtectedRoute>
+                                            <Reportes />
+                                        </ProtectedRoute>
+                                    } />
 
-                                <Route path="/users" element={
-                                    <ProtectedRoute adminOnly={true}>
-                                        <Users />
-                                    </ProtectedRoute>
-                                } />
-                            </Route>
+                                    <Route path="/users" element={
+                                        <ProtectedRoute adminOnly={true}>
+                                            <Users />
+                                        </ProtectedRoute>
+                                    } />
+                                </Route>
 
-                            <Route path="*" element={<Navigate to="/" replace />} />
-                        </Routes>
-                    </Suspense>
-                </Router>
-            </ListsProvider>
-        </AuthProvider>
+                                <Route path="*" element={<Navigate to="/" replace />} />
+                            </Routes>
+                        </Suspense>
+                    </Router>
+                </ListsProvider>
+            </AuthProvider>
+        </ErrorBoundary>
     );
 }
 

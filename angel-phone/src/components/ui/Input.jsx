@@ -113,6 +113,7 @@ const Input = ({ label, id, type = 'text', value, onChange, placeholder, require
                 autoComplete="off"
                 style={inputStyle}
                 maxLength={maxLength}
+                className={type === 'date' && !value ? 'is-empty' : ''}
             />
         </div>
     );

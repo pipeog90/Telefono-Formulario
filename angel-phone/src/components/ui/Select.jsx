@@ -271,6 +271,7 @@ const Select = ({ label, id, value, onChange, options = [], required = false, di
     const containerStyle = {
         display: 'flex',
         flexDirection: 'column',
+        gap: '2px',
         width: '100%',
         position: 'relative',
         minWidth: 0
@@ -369,7 +370,8 @@ const Select = ({ label, id, value, onChange, options = [], required = false, di
                     outline: 'none', // Hide native outline as we use border
                     overflow: 'hidden',
                     whiteSpace: 'normal',
-                    display: 'block' // Required for height: auto to work effectively with wrapping text
+                    display: 'flex', // Flex layout for vertical centering
+                    alignItems: 'center'
                 }}
             >
                 {displayValue}

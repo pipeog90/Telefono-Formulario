@@ -24,6 +24,11 @@ const Reportes = () => {
     const [searched, setSearched] = useState(false);
     const [usersList, setUsersList] = useState([]);
 
+    // Filters and Pagination for the table
+    const [columnFilters, setColumnFilters] = useState({});
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(20);
+
     // Fetch users for Orientador dropdown
     useEffect(() => {
         const fetchUsers = async () => {
@@ -37,11 +42,15 @@ const Reportes = () => {
         fetchUsers();
     }, []);
 
-    // Helper to get options safely from lists
-    const getOptions = (key) => {
-        if (!lists || !lists[key]) return [];
-        return lists[key].filter((item) => item.active !== false);
-    };
+    // Memoized options for Select components to prevent repeated filtering on every render
+    const optionsCache = React.useMemo(() => {
+        if (!lists) return {};
+        const cache = {};
+        Object.keys(lists).forEach(key => {
+            cache[key] = (lists[key] || []).filter(item => item.active !== false);
+        });
+        return cache;
+    }, [lists]);
 
     if (!lists) {
         return <div className="container" style={{ padding: '20px', textAlign: 'center' }}>Cargando configuración...</div>;
@@ -364,7 +373,7 @@ const Reportes = () => {
         reader.onload = async (evt) => {
             const text = evt.target.result;
             // Simple CSV parser
-            const lines = text.split('\\n');
+            const lines = text.split('\n');
             if (lines.length < 2) return;
 
             // Assume format matches our export: Header row, then data
@@ -394,6 +403,49 @@ const Reportes = () => {
             generateReport(); // Refresh
         };
         reader.readAsText(file);
+    };
+
+    // ── Pagination and Filtering Logic ──────────────────────────────────────
+    const filteredResults = React.useMemo(() => {
+        let res = results;
+        Object.entries(columnFilters).forEach(([key, value]) => {
+            if (value && value.trim() !== '') {
+                const lowerValue = value.toLowerCase().trim();
+                res = res.filter(item => {
+                    let fieldVal = '';
+                    if (key === 'Problema') {
+                        fieldVal = [item.U_Problema_1, item.U_Problema_2, item.U_Problema_3].join(' ');
+                    } else {
+                        fieldVal = item[key] || '';
+                    }
+                    return String(fieldVal).toLowerCase().includes(lowerValue);
+                });
+            }
+        });
+        return res;
+    }, [results, columnFilters]);
+
+    const totalPages = Math.max(1, Math.ceil(filteredResults.length / itemsPerPage));
+    
+    useEffect(() => {
+        if (currentPage > totalPages) {
+            setCurrentPage(1);
+        }
+    }, [totalPages, currentPage]);
+
+    const paginatedResults = React.useMemo(() => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        return filteredResults.slice(startIndex, startIndex + itemsPerPage);
+    }, [filteredResults, currentPage, itemsPerPage]);
+
+    const handleColumnFilterChange = (column, value) => {
+        setColumnFilters(prev => ({ ...prev, [column]: value }));
+        setCurrentPage(1);
+    };
+
+    const clearColumnFilters = () => {
+        setColumnFilters({});
+        setCurrentPage(1);
     };
 
     return (
@@ -438,7 +490,7 @@ const Reportes = () => {
                                     label="Problemática"
                                     value={filters.problema}
                                     onChange={(e) => handleChange({ target: { id: 'problema', value: e.target.value } })}
-                                    options={getOptions('PROBLEMATICA')}
+                                    options={optionsCache['PROBLEMATICA']}
                                     placeholder="Todas"
                                     tooltip="Problemática o causa posible del problema"
                                 />
@@ -447,7 +499,7 @@ const Reportes = () => {
                                     label="Asiduidad"
                                     value={filters.asiduidad}
                                     onChange={(e) => handleChange({ target: { id: 'asiduidad', value: e.target.value } })}
-                                    options={getOptions('ASIDUIDAD')}
+                                    options={optionsCache['ASIDUIDAD']}
                                     placeholder="Todas"
                                     tooltip="Frecuencia de llamada del usuario"
                                 />
@@ -456,7 +508,7 @@ const Reportes = () => {
                                     label="Sexo"
                                     value={filters.sexo}
                                     onChange={(e) => handleChange({ target: { id: 'sexo', value: e.target.value } })}
-                                    options={getOptions('SEXO')}
+                                    options={optionsCache['SEXO']}
                                     placeholder="Todos"
                                     tooltip="Sexo"
                                 />
@@ -465,7 +517,7 @@ const Reportes = () => {
                                     label="Rango de Edad"
                                     value={filters.edad}
                                     onChange={(e) => handleChange({ target: { id: 'edad', value: e.target.value } })}
-                                    options={getOptions('EDAD')}
+                                    options={optionsCache['EDAD']}
                                     placeholder="Todos"
                                     tooltip="Edad en la cual se identifica al usuario"
                                 />
@@ -505,52 +557,89 @@ const Reportes = () => {
                     </div>
                 </div>
 
-                <div className="glass-panel" style={{ padding: 'var(--card-padding)', overflow: 'hidden' }}>
-                    <h3 style={{ marginBottom: '8px' }}>Resultados del Reporte (<span id="total-registros">{results.length}</span> llamadas)</h3>
-                    <div className="table-responsive-wrapper">
-                        <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9em' }}>
+                <div style={{ marginTop: '8px' }}>
+                    <h3 style={{ margin: '0 0 6px 0', color: 'var(--color-secondary)', fontWeight: '600', paddingLeft: '4px' }}>Resultados del Reporte (<span id="total-registros">{results.length}</span> llamadas)</h3>
+                    <div className="premium-table-wrapper" style={{ marginBottom: '0' }}>
+                        <div className="table-responsive-wrapper">
+                            <table className="premium-table">
                             <thead>
                                 <tr>
-                                    <th style={{ width: '35px', minWidth: '35px', backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)', padding: 'var(--admin-cell-padding)', textAlign: 'center' }}>No</th>
-                                    <th style={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)', padding: 'var(--admin-cell-padding)', textAlign: 'center' }}>ID</th>
-                                    <th style={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)', padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Orientador</th>
-                                    <th style={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)', padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Problema</th>
-                                    <th style={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)', padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Síntesis</th>
-                                    <th style={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)', padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Fecha</th>
-                                    <th style={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)', padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Duración</th>
-                                    <th style={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)', padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Sexo</th>
-                                    <th style={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)', padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Edad</th>
-                                    <th style={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)', padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Cómo se enteró</th>
-                                    {isAdmin && <th style={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)', padding: 'var(--admin-cell-padding)', textAlign: 'left', width: '1px', whiteSpace: 'nowrap' }}>Acciones</th>}
+                                    <th style={{ width: '40px', textAlign: 'center' }}>No</th>
+                                    <th>
+                                        <div>ID</div>
+                                        <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.L_ID_Llamada || ''} onChange={e => handleColumnFilterChange('L_ID_Llamada', e.target.value)} />
+                                    </th>
+                                    <th>
+                                        <div>Orientador</div>
+                                        <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.L_Orientador || ''} onChange={e => handleColumnFilterChange('L_Orientador', e.target.value)} />
+                                    </th>
+                                    <th>
+                                        <div>Problema</div>
+                                        <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.Problema || ''} onChange={e => handleColumnFilterChange('Problema', e.target.value)} />
+                                    </th>
+                                    <th>
+                                        <div>Síntesis</div>
+                                        <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.L_Sintesis || ''} onChange={e => handleColumnFilterChange('L_Sintesis', e.target.value)} />
+                                    </th>
+                                    <th>
+                                        <div>Fecha</div>
+                                        <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.L_Fecha || ''} onChange={e => handleColumnFilterChange('L_Fecha', e.target.value)} />
+                                    </th>
+                                    <th>
+                                        <div>Duración</div>
+                                        <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.L_Duracion || ''} onChange={e => handleColumnFilterChange('L_Duracion', e.target.value)} />
+                                    </th>
+                                    <th>
+                                        <div>Sexo</div>
+                                        <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.U_Sexo || ''} onChange={e => handleColumnFilterChange('U_Sexo', e.target.value)} />
+                                    </th>
+                                    <th>
+                                        <div>Edad</div>
+                                        <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.U_Edad || ''} onChange={e => handleColumnFilterChange('U_Edad', e.target.value)} />
+                                    </th>
+                                    <th>
+                                        <div>Cómo se enteró</div>
+                                        <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.L_Como_Conoce || ''} onChange={e => handleColumnFilterChange('L_Como_Conoce', e.target.value)} />
+                                    </th>
+                                    {isAdmin && (
+                                        <th style={{ width: '1px', verticalAlign: 'top' }}>
+                                            <div style={{ marginBottom: '8px' }}>Acciones</div>
+                                            {Object.keys(columnFilters).length > 0 && (
+                                                <Button type="button" onClick={clearColumnFilters} variant="secondary" style={{ padding: '0 8px', fontSize: '0.8rem', height: '32px' }}>
+                                                    Limpiar
+                                                </Button>
+                                            )}
+                                        </th>
+                                    )}
                                 </tr>
                             </thead>
                             <tbody id="reporte-table-body">
-                                {results.length === 0 ? (
+                                {paginatedResults.length === 0 ? (
                                     <tr><td colSpan={isAdmin ? "11" : "10"} className="no-data" style={{ textAlign: 'center', padding: '20px', color: '#888', fontStyle: 'italic' }}>
                                         {searched ? 'No hay llamadas registradas o no coinciden con los filtros.' : 'Configure los filtros y haga clic en Generar Reporte.'}
                                     </td></tr>
                                 ) : (
-                                    results.map((row, index) => (
-                                        <tr key={index} style={{ backgroundColor: index % 2 === 0 ? '#f9f9f9' : 'white' }}>
-                                            <td style={{ padding: 'var(--admin-cell-padding)', borderBottom: '1px solid #eee', textAlign: 'center', fontWeight: '600', color: 'var(--color-text-muted)' }}>{index + 1}</td>
-                                            <td style={{ padding: 'var(--admin-cell-padding)', borderBottom: '1px solid #eee', textAlign: 'center', fontWeight: '500', color: 'var(--sub-color-primary-dark, #16a34a)' }}>{row.L_ID_Llamada || '—'}</td>
-                                            <td style={{ padding: 'var(--admin-cell-padding)', borderBottom: '1px solid #eee' }}>{row.L_Orientador}</td>
-                                            <td style={{ padding: 'var(--admin-cell-padding)', borderBottom: '1px solid #eee' }}>
+                                    paginatedResults.map((row, index) => (
+                                        <tr key={index}>
+                                            <td style={{ textAlign: 'center', fontWeight: '600', color: 'var(--color-text-muted)' }}>{index + 1}</td>
+                                            <td style={{ textAlign: 'center', fontWeight: '500', color: 'var(--color-primary)' }}>{row.L_ID_Llamada || '—'}</td>
+                                            <td>{row.L_Orientador}</td>
+                                            <td>
                                                 {[row.U_Problema_1, row.U_Problema_2, row.U_Problema_3]
                                                     .filter(p => p && p.trim() !== '')
                                                     .map((p, pIdx) => (
                                                         <div key={pIdx} style={{ marginBottom: '4px' }}>• {p}</div>
                                                     ))}
                                             </td>
-                                            <td style={{ padding: 'var(--admin-cell-padding)', borderBottom: '1px solid #eee' }}>{row.L_Sintesis}</td>
-                                            <td style={{ padding: 'var(--admin-cell-padding)', borderBottom: '1px solid #eee' }}>{row.L_Fecha}</td>
-                                            <td style={{ padding: 'var(--admin-cell-padding)', borderBottom: '1px solid #eee' }}>{row.L_Duracion}</td>
-                                            <td style={{ padding: 'var(--admin-cell-padding)', borderBottom: '1px solid #eee' }}>{row.U_Sexo}</td>
-                                            <td style={{ padding: 'var(--admin-cell-padding)', borderBottom: '1px solid #eee' }}>{row.U_Edad}</td>
-                                            <td style={{ padding: 'var(--admin-cell-padding)', borderBottom: '1px solid #eee' }}>{row.L_Como_Conoce}</td>
+                                            <td>{row.L_Sintesis}</td>
+                                            <td>{row.L_Fecha}</td>
+                                            <td>{row.L_Duracion}</td>
+                                            <td>{row.U_Sexo}</td>
+                                            <td>{row.U_Edad}</td>
+                                            <td>{row.L_Como_Conoce}</td>
                                             {isAdmin && (
-                                                <td style={{ padding: 'var(--admin-cell-padding)', borderBottom: '1px solid #eee', width: '1px', whiteSpace: 'nowrap' }}>
-                                                    <button onClick={() => handleDelete(row.id)} title="Eliminar registro" style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#e74c3c' }}>
+                                                <td style={{ width: '1px', whiteSpace: 'nowrap' }}>
+                                                    <button onClick={() => handleDelete(row.id)} title="Eliminar registro" className="action-btn delete">
                                                         <Trash2 size={16} />
                                                     </button>
                                                 </td>
@@ -561,6 +650,58 @@ const Reportes = () => {
                             </tbody>
                         </table>
                     </div>
+                    
+                    {/* ── Pagination UI ───────────────────────────────────────────── */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderTop: '1px solid var(--color-border)', gap: '12px', background: 'var(--color-white)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--color-text-secondary)', fontWeight: '500' }}>
+                            <span>Mostrar:</span>
+                            <select 
+                                value={itemsPerPage} 
+                                onChange={e => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }} 
+                                className="ui-input"
+                                style={{ height: '32px', padding: '0 12px', width: 'auto', minWidth: '70px' }}
+                            >
+                                <option value={10}>10</option>
+                                <option value={20}>20</option>
+                                <option value={50}>50</option>
+                                <option value={100}>100</option>
+                            </select>
+                            <span>registros ({filteredResults.length} en total)</span>
+                        </div>
+                        
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <Button onClick={() => setCurrentPage(1)} disabled={currentPage === 1} variant="secondary" style={{ padding: '0 12px', height: '32px', fontSize: '1rem' }}>&laquo;</Button>
+                            <Button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} variant="secondary" style={{ padding: '0 12px', height: '32px', fontSize: '1rem' }}>&lsaquo;</Button>
+                            
+                            <span style={{ margin: '0 12px', fontSize: '0.85rem', fontWeight: '600', color: 'var(--color-text-primary)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                Página
+                                <input 
+                                    type="number"
+                                    key={currentPage}
+                                    defaultValue={currentPage}
+                                    className="ui-input"
+                                    style={{ width: '50px', height: '26px', padding: '0 4px', textAlign: 'center', margin: 0, fontWeight: 'normal' }}
+                                    min={1}
+                                    max={totalPages}
+                                    onBlur={(e) => {
+                                        let val = parseInt(e.target.value);
+                                        if (isNaN(val) || val < 1) val = 1;
+                                        if (val > totalPages) val = totalPages;
+                                        setCurrentPage(val);
+                                        e.target.value = val;
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') e.target.blur();
+                                    }}
+                                />
+                                de {totalPages}
+                            </span>
+                            
+                            <Button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} variant="secondary" style={{ padding: '0 12px', height: '32px', fontSize: '1rem' }}>&rsaquo;</Button>
+                            <Button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} variant="secondary" style={{ padding: '0 12px', height: '32px', fontSize: '1rem' }}>&raquo;</Button>
+                        </div>
+                    </div>
+                </div>
                 </div>
             </section>
         </div>

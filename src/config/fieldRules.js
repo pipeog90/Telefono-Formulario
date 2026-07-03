@@ -11,8 +11,7 @@ export const isRelacionadoRequired = (problemCode) => RELACIONADO_PROBLEMS.inclu
 
 // Regla RG5: Campos siempre obligatorios en todas las llamadas
 export const GLOBAL_OBLIGATORIOS = [
-  'L_Orientador', 'L_Fecha', 'L_Hora', 'L_Resultado', 
-  'L_Duracion', 'L_Medio_Contacto', 'L_Como_Conoce', 'L_Sintesis',
+  'L_Orientador', 'L_Medio_Contacto', 'L_Como_Conoce', 'L_Sintesis',
   'U_Problematica_1', 'U_Problema_1'
 ];
 
@@ -21,7 +20,9 @@ export const GLOBAL_OPCIONALES = [
   'L_Llamada_Derivada', 'U_Procedencia',
   'U_Problematica_2', 'U_Problema_2',
   'U_Problematica_3', 'U_Problema_3',
-  'U_Actitud_Problema_1', 'U_Actitud_Problema_2'
+  'U_Actitud_Problema_1', 'U_Actitud_Problema_2',
+  'T_Actitud_Problema_1', 'T_Actitud_Problema_2',
+  'R_Actitud_Problema_1', 'R_Actitud_Problema_2'
 ];
 
 // Campos de Usuario
@@ -36,7 +37,8 @@ const userFields = [
 const orientadorFields = [
   'O_Nivel_Ayuda_1', 'O_Nivel_Ayuda_2', 'O_Sentimientos_1', 'O_Sentimientos_2',
   'O_Sentimientos_3', 'O_Autoevaluacion', 'O_Actitud_Equivocada_1',
-  'O_Actitud_Equivocada_2', 'O_Satisfaccion_1', 'O_Satisfaccion_2', 'O_Volvera_Llamar'
+  'O_Actitud_Equivocada_2', 'O_Satisfaccion_1', 'O_Satisfaccion_2', 'O_Volvera_Llamar',
+  'L_Hora', 'L_Fecha', 'L_Resultado', 'L_Duracion'
 ];
 
 const allDynamicFields = [...userFields, ...orientadorFields];
@@ -48,6 +50,7 @@ const allDynamicFields = [...userFields, ...orientadorFields];
  * @returns {string} RULE_OBL, RULE_OPC, or RULE_NH
  */
 export function getFieldStatus(problemCode, fieldName) {
+  // RG5/RG6: Global priority
   if (GLOBAL_OBLIGATORIOS.includes(fieldName)) return RULE_OBL;
   if (GLOBAL_OPCIONALES.includes(fieldName)) return RULE_OPC;
 
@@ -83,7 +86,8 @@ export function getFieldStatus(problemCode, fieldName) {
     // Orientador fields for F1
     const f1OrientadorOBL = [
       'O_Nivel_Ayuda_1', 'O_Sentimientos_1', 'O_Autoevaluacion', 
-      'O_Actitud_Equivocada_1', 'O_Satisfaccion_1', 'O_Volvera_Llamar'
+      'O_Actitud_Equivocada_1', 'O_Satisfaccion_1', 'O_Volvera_Llamar',
+      'L_Hora', 'L_Fecha', 'L_Resultado', 'L_Duracion'
     ];
     const f1OrientadorOPC = [
       'O_Nivel_Ayuda_2', 'O_Sentimientos_2', 'O_Sentimientos_3', 
@@ -107,11 +111,11 @@ export function getFieldStatus(problemCode, fieldName) {
 
   // RG11: Problemática General (A, B, C, D)
   if (isStandard) {
-    // There are some fields that are OPC in general? 
-    // In the general rules, it just says "Todos los campos son obligatorios, excepto los campos opcionales"
-    // I assume U_Actitud_Problema_2, etc., are also mandatory or are they optional?
-    // Let's assume all other dynamic fields are OBL as RG11 says "Todos los campos son obligatorios".
-    // Except fields like "U_Actitud_Problema_2" might be OPC if 1 is OBL. We will handle 2nd/3rd multi-values differently.
+    const standardOPC = [
+      'O_Nivel_Ayuda_2', 'O_Sentimientos_2', 'O_Sentimientos_3', 
+      'O_Actitud_Equivocada_2', 'O_Satisfaccion_2'
+    ];
+    if (standardOPC.includes(fieldName)) return RULE_OPC;
     return RULE_OBL; 
   }
 

@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
-const Input = ({ label, id, type = 'text', value, onChange, placeholder, required = false, disabled = false, style = {}, error = false, centered = false, tooltip = '', maxLength }) => {
+const Input = ({ label, id, type = 'text', value, onChange, placeholder, required = false, disabled = false, style = {}, error = false, tooltip = '', maxLength }) => {
     const [showTooltip, setShowTooltip] = useState(false);
     const [tooltipPos, setTooltipPos] = useState({ top: 0, left: 0 });
     const labelRef = useRef(null);
@@ -16,21 +16,13 @@ const Input = ({ label, id, type = 'text', value, onChange, placeholder, require
     };
 
     const labelStyle = {
-        fontSize: '0.78rem',
-        color: error ? '#f59e0b' : 'var(--color-text-muted)',
-        fontWeight: '500',
-        marginLeft: centered ? '0' : '4px',
-        textAlign: centered ? 'center' : 'left',
-        whiteSpace: 'normal',
-        overflowWrap: 'break-word',
-        overflow: 'hidden',
+        marginLeft: '4px',
+        textAlign: 'left',
         cursor: tooltip ? 'help' : 'default',
         userSelect: 'none',
         position: 'relative',
-        display: 'block',
         maxWidth: '100%',
         wordBreak: 'break-word',
-        gap: '4px'
     };
 
     const handleLabelDown = () => {
@@ -70,26 +62,8 @@ const Input = ({ label, id, type = 'text', value, onChange, placeholder, require
     ) : null;
 
     const inputStyle = {
-        padding: 'var(--input-padding)',
-        paddingRight: (type === 'date' && value) ? '40px' : '12px',
-        borderRadius: 'var(--radius-sm)',
-        border: error ? '2px solid #ef4444' : '1px solid #43A047',
-        background: '#ffffff',
-        color: error ? '#ef4444' : 'var(--color-text-main)',
-        fontWeight: error ? '700' : 'normal',
-        fontSize: 'var(--input-font-size)',
-        lineHeight: 'var(--input-line-height)',
-        minHeight: 'var(--input-height)',
-        height: 'auto',
-        boxSizing: 'border-box',
-        outline: 'none',
-        transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
-        width: '100%',
-        appearance: 'none',
-        WebkitAppearance: 'none',
-        MozAppearance: 'none',
-        boxShadow: 'none',
-        textAlign: centered ? 'center' : 'left',
+        paddingRight: (type === 'date' && value) ? '40px' : '14px',
+        textAlign: 'left',
         ...style
     };
 
@@ -101,34 +75,24 @@ const Input = ({ label, id, type = 'text', value, onChange, placeholder, require
                 <label
                     ref={labelRef}
                     htmlFor={id}
-                    style={labelStyle}
+                    style={{
+                        ...labelStyle,
+                        color: disabled ? 'var(--color-text-muted)' : labelStyle.color
+                    }}
+                    className={`ui-label ${error ? 'has-error' : ''}`}
                     onMouseDown={handleLabelDown}
                     onMouseUp={handleLabelUp}
                     onMouseLeave={handleLabelUp}
                     onTouchStart={handleLabelDown}
                     onTouchEnd={handleLabelUp}
                 >
-                    {label} {required && <span style={{ color: 'var(--color-accent)' }}>*</span>}
+                    {label} {required && <span style={{ color: disabled ? '#9ca3af' : 'var(--color-accent)' }}>*</span>}
                     {tooltip && <span style={{ fontSize: '0.7rem', color: '#9ca3af' }}>ⓘ</span>}
                 </label>
             )}
             {tooltipElement}
             <div style={{ position: 'relative', width: '100%' }}>
-                {/* Custom Placeholder Overlay for Dates */}
-                {isDateEmpty && (
-                    <div style={{
-                        position: 'absolute',
-                        left: '16px',
-                        top: '0',
-                        bottom: '0',
-                        display: 'flex',
-                        alignItems: 'center',
-                        color: '#9ca3af',
-                        pointerEvents: 'none',
-                    }}>
-                        yyyy-mm-dd
-                    </div>
-                )}
+
                 <input
                     id={id}
                     type={type}
@@ -138,11 +102,12 @@ const Input = ({ label, id, type = 'text', value, onChange, placeholder, require
                     placeholder={placeholder}
                     required={required}
                     disabled={disabled}
+                    tabIndex={disabled ? "-1" : "0"}
                     style={{
                         ...inputStyle,
                         color: isDateEmpty ? 'transparent' : inputStyle.color
                     }}
-                    className={isDateEmpty ? "empty-date-input mobile-input-fix" : "mobile-input-fix"}
+                    className={`ui-input mobile-input-fix ${isDateEmpty ? 'empty-date-input' : ''} ${error ? 'has-error' : ''}`}
                     maxLength={maxLength}
                 />
                 {type === 'date' && value && (

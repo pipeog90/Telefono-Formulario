@@ -25,14 +25,19 @@ const Admin = () => {
     }, [selectedList]);
 
     // --- LIST MANAGEMENT LOGIC ---
-    const listKeys = Object.keys(lists)
+    const listKeys = React.useMemo(() => Object.keys(lists)
         .filter(key => !firestoreKeyMigration[key])
-        .sort();
-    let currentItems = lists[selectedList] || [];
-    if (selectedList === 'PROBLEMA') {
-        currentItems = currentItems.filter(item => item.value.startsWith(selectedLetter));
-    }
-    const problemLetters = lists['PROBLEMATICA']?.map(item => item.value) || [];
+        .sort(), [lists]);
+
+    const currentItems = React.useMemo(() => {
+        let items = lists[selectedList] || [];
+        if (selectedList === 'PROBLEMA') {
+            return items.filter(item => item.value.startsWith(selectedLetter));
+        }
+        return items;
+    }, [lists, selectedList, selectedLetter]);
+
+    const problemLetters = React.useMemo(() => lists['PROBLEMATICA']?.map(item => item.value) || [], [lists]);
 
     const handleAdd = (e) => {
         e.preventDefault();
@@ -319,13 +324,13 @@ const Admin = () => {
                                 )}
                             </div>
 
-                            <div className="glass-panel" style={{ padding: 'var(--card-padding)', overflow: 'hidden' }}>
+                            <div className="premium-table-wrapper">
                                 <div className="table-responsive-wrapper">
-                                    <table className="data-table admin-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                    <table className="premium-table">
                                         <thead>
                                             <tr>
-                                                <th style={{ textAlign: 'left', padding: 'var(--admin-cell-padding)' }}>Valor</th>
-                                                <th style={{ textAlign: 'left', padding: 'var(--admin-cell-padding)', width: '1px', whiteSpace: 'nowrap' }}>Acción</th>
+                                                <th style={{ textAlign: 'left' }}>Valor</th>
+                                                <th style={{ textAlign: 'left', width: '1px', whiteSpace: 'nowrap' }}>Acción</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -333,8 +338,8 @@ const Admin = () => {
                                                 <tr><td colSpan="2" className="no-data" style={{ textAlign: 'center', padding: '20px' }}>No hay valores definidos.</td></tr>
                                             ) : (
                                                 currentItems.map((item) => (
-                                                    <tr key={item.value} className={item.active === false ? 'inactive-row' : ''} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                                                        <td style={{ padding: 'var(--admin-cell-padding)' }}>
+                                                    <tr key={item.value} className={item.active === false ? 'inactive-row' : ''}>
+                                                        <td>
                                                             {editingIndex === item.value ? (
                                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                                                                     <input type="text" value={editValue} onChange={(e) => setEditValue(e.target.value)} className="input-field" style={{ width: '100%' }} placeholder="Código" />
@@ -347,7 +352,7 @@ const Admin = () => {
                                                             )}
                                                         </td>
 
-                                                        <td style={{ padding: 'var(--admin-cell-padding)', textAlign: 'left', width: '1px', whiteSpace: 'nowrap' }}>
+                                                        <td style={{ textAlign: 'left', width: '1px', whiteSpace: 'nowrap' }}>
                                                             {editingIndex === item.value ? (
                                                                 <div style={{ display: 'flex', gap: '5px', justifyContent: 'flex-start' }}>
                                                                     <button onClick={() => saveEdit(item)} className="button small primary" style={{ backgroundColor: 'var(--color-success)', color: 'white', border: 'none', padding: 'var(--admin-btn-padding)', borderRadius: '4px', cursor: 'pointer' }}>Guardar</button>

@@ -36,10 +36,10 @@ export const AuthProvider = ({ children }) => {
         return unsubscribe;
     }, []);
 
-    const value = {
+    const value = React.useMemo(() => ({
         user,
         loading
-    };
+    }), [user, loading]);
 
     return (
         <AuthContext.Provider value={value}>

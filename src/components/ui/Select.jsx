@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
 
-const Select = ({ label, id, value, onChange, options = [], required = false, disabled = false, placeholder = "Seleccionar...", error = false, centered = false, tooltip = '' }) => {
+const Select = ({ label, id, value, onChange, options = [], required = false, disabled = false, placeholder = "Seleccionar...", error = false, tooltip = '', style = {} }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [showTooltip, setShowTooltip] = useState(false);
     const [tooltipPos, setTooltipPos] = useState({ top: 0, left: 0 });
@@ -19,6 +19,7 @@ const Select = ({ label, id, value, onChange, options = [], required = false, di
     const displayValue = selectedOption ? selectedOption.label : placeholder;
 
     const handleSelect = (optionValue) => {
+        if (disabled) return;
         onChange({
             target: {
                 id,
@@ -271,27 +272,20 @@ const Select = ({ label, id, value, onChange, options = [], required = false, di
     const containerStyle = {
         display: 'flex',
         flexDirection: 'column',
+        gap: '2px',
         width: '100%',
         position: 'relative',
         minWidth: 0
     };
 
     const labelStyle = {
-        fontSize: '0.78rem',
-        color: error ? '#f59e0b' : 'var(--color-text-muted)',
-        fontWeight: '500',
-        marginLeft: centered ? '0' : '4px',
-        textAlign: centered ? 'center' : 'left',
-        whiteSpace: 'normal',
-        overflowWrap: 'break-word',
-        overflow: 'hidden',
+        marginLeft: '4px',
+        textAlign: 'left',
         cursor: tooltip ? 'help' : 'default',
         userSelect: 'none',
         position: 'relative',
-        display: 'block',
         maxWidth: '100%',
         wordBreak: 'break-word',
-        gap: '4px'
     };
 
     const handleLabelDown = () => {
@@ -338,6 +332,7 @@ const Select = ({ label, id, value, onChange, options = [], required = false, di
                     ref={labelRef}
                     htmlFor={id}
                     style={labelStyle}
+                    className={`ui-label ${error ? 'has-error' : ''}`}
                     onMouseDown={handleLabelDown}
                     onMouseUp={handleLabelUp}
                     onMouseLeave={handleLabelUp}
@@ -353,23 +348,17 @@ const Select = ({ label, id, value, onChange, options = [], required = false, di
             {/* Trigger Button */}
             <div
                 ref={triggerRef}
-                className={`custom-select-trigger ${isOpen ? 'active' : ''}`}
-                tabIndex="0"
+                className={`ui-input custom-select-trigger mobile-input-fix ${isOpen ? 'active' : ''} ${error ? 'has-error' : ''}`}
+                tabIndex={disabled ? "-1" : "0"}
                 onClick={() => !disabled && setIsOpen(!isOpen)}
                 style={{
-                    color: error ? '#ef4444' : (value ? 'var(--color-text-main)' : '#9ca3af'),
-                    fontWeight: error ? '700' : 'normal',
-                    opacity: disabled ? 0.7 : 1,
-                    cursor: disabled ? 'not-allowed' : 'pointer',
-                    background: disabled ? '#f3f4f6' : '#ffffff',
-                    border: error ? '2px solid #ef4444' : `1px solid ${isOpen ? '#66BB6A' : '#43A047'}`,
-                    textAlign: centered ? 'center' : 'left',
-                    justifyContent: centered ? 'center' : 'flex-start',
-                    paddingRight: centered ? '12px' : '40px',
-                    outline: 'none', // Hide native outline as we use border
-                    overflow: 'hidden',
-                    whiteSpace: 'normal',
-                    display: 'block' // Required for height: auto to work effectively with wrapping text
+                    color: disabled ? '#9ca3af' : (value ? 'var(--color-text-main)' : '#9ca3af'),
+                    textAlign: 'left',
+                    justifyContent: 'flex-start',
+                    paddingRight: '40px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    ...style
                 }}
             >
                 {displayValue}

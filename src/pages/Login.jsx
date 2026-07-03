@@ -15,12 +15,12 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    // Redirect if already logged in - Force hard reload to ensure clean state
+    // Redirect if already logged in - Use SPA navigation
     React.useEffect(() => {
         if (user) {
-            window.location.href = '/';
+            navigate('/', { replace: true });
         }
-    }, [user]);
+    }, [user, navigate]);
 
     const [showChangePassword, setShowChangePassword] = useState(false);
     const [oldPassword, setOldPassword] = useState('');
@@ -108,7 +108,7 @@ const Login = () => {
                     {/* Logo */}
                     <div className="logo-container">
                         <img
-                            src="/logo.png"
+                            src="/logo_nuevo.png"
                             alt="Teléfono de la Esperanza"
                             className="logo-img logo-image"
                             style={{ marginBottom: '2px' }}
@@ -140,7 +140,7 @@ const Login = () => {
                                 <fieldset className="input-fieldset">
                                     <legend style={{ textAlign: 'center' }}>Usuario</legend>
                                     <div className="input-content justify-center" >
-                                        <User className="icon" size={18} style={{ position: 'absolute' }} />
+                                        <User className="icon" size={18} />
                                         <input
                                             type="text"
                                             value={email}
@@ -176,8 +176,7 @@ const Login = () => {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="btn-primary"
-                                    style={{ marginTop: '8px' }}
+                                    className="btn-login-premium primary"
                                 >
                                     {loading ? (
                                         <span className="flex items-center gap-2 justify-center">
@@ -189,7 +188,7 @@ const Login = () => {
                                     ) : (
                                         <>
                                             Ingresar al Sistema
-                                            <ArrowRight size={18} />
+                                            <ArrowRight size={18} style={{ marginLeft: '6px' }} />
                                         </>
                                     )}
                                 </button>
@@ -202,14 +201,7 @@ const Login = () => {
                                         setShowChangePassword(true);
                                         setError('');
                                     }}
-                                    className="btn-primary"
-                                    style={{
-                                        width: '100%',
-                                        justifyContent: 'center',
-                                        background: 'linear-gradient(135deg, #AED581 0%, #8BC34A 100%)',
-                                        borderColor: '#8BC34A',
-                                        boxShadow: '0 4px 15px rgba(139, 195, 74, 0.3)'
-                                    }}
+                                    className="btn-login-premium secondary"
                                 >
                                     Cambiar Contraseña
                                 </button>
@@ -219,15 +211,7 @@ const Login = () => {
                                         setShowRecovery(true);
                                         setError('');
                                     }}
-                                    className="btn-primary"
-                                    style={{
-                                        width: '100%',
-                                        justifyContent: 'center',
-                                        marginTop: '4px',
-                                        background: 'linear-gradient(135deg, #AED581 0%, #8BC34A 100%)',
-                                        borderColor: '#8BC34A',
-                                        boxShadow: '0 4px 15px rgba(139, 195, 74, 0.3)'
-                                    }}
+                                    className="btn-login-premium secondary"
                                 >
                                     Recuperar Contraseña
                                 </button>
@@ -252,15 +236,17 @@ const Login = () => {
                             <form onSubmit={handleChangePassword} className="space-y-2">
                                 <fieldset className="input-fieldset">
                                     <legend style={{ textAlign: 'center' }}>Usuario</legend>
-                                    <User className="icon" size={18} style={{ position: 'absolute' }} />
-                                    <input
-                                        type="text"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        className="input-field text-center"
-                                        placeholder="Ingrese su usuario"
-                                        required
-                                    />
+                                    <div className="input-content justify-center" >
+                                        <User className="icon" size={18} />
+                                        <input
+                                            type="text"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            className="input-field text-center"
+                                            placeholder="Ingrese su usuario"
+                                            required
+                                        />
+                                    </div>
                                 </fieldset>
 
                                 <fieldset className="input-fieldset">
@@ -331,8 +317,7 @@ const Login = () => {
 
                                 <button
                                     type="submit"
-                                    className="btn-primary"
-                                    style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}
+                                    className="btn-login-premium primary"
                                 >
                                     Actualizar Contraseña
                                 </button>
@@ -349,15 +334,9 @@ const Login = () => {
                                         setConfirmPassword('');
                                         setOldPassword('');
                                     }}
-                                    className="btn-primary"
-                                    style={{
-                                        background: '#EF4444',
-                                        width: '100%',
-                                        justifyContent: 'center',
-                                        boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)'
-                                    }}
+                                    className="btn-login-premium danger"
                                 >
-                                    Cerrar
+                                    Cancelar
                                 </button>
                             </div>
                         </div>
@@ -394,8 +373,7 @@ const Login = () => {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="btn-primary"
-                                    style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}
+                                    className="btn-login-premium primary"
                                 >
                                     {loading ? 'Enviando...' : 'Recuperar Contraseña'}
                                 </button>
@@ -410,15 +388,9 @@ const Login = () => {
                                         setError('');
                                         setRecoveryEmail('');
                                     }}
-                                    className="btn-primary"
-                                    style={{
-                                        background: '#EF4444',
-                                        width: '100%',
-                                        justifyContent: 'center',
-                                        boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)'
-                                    }}
+                                    className="btn-login-premium danger"
                                 >
-                                    Cerrar
+                                    Cancelar
                                 </button>
                             </div>
                         </div>

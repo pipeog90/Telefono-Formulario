@@ -21,7 +21,9 @@ const NavLink = ({ to, children }) => {
         transition: 'all 0.3s ease',
 
         background: isActive ? 'rgba(34, 197, 94, 0.1)' : 'transparent',
-        border: isActive ? '1px solid rgba(34, 197, 94, 0.2)' : '1px solid transparent'
+        border: isActive ? '1px solid rgba(34, 197, 94, 0.2)' : '1px solid transparent',
+        fontSize: 'var(--nav-font-size)',
+        boxSizing: 'border-box'
     };
 
     return (
@@ -49,9 +51,8 @@ const Layout = () => {
         localStorage.removeItem('callFormDraft');
         localStorage.removeItem('adminSelectedList');
 
-        // Hard redirect to force complete clearance of React memory state 
-        // to ensure all 4 subdomains start clean for the next user.
-        window.location.href = '/login';
+        // Navigate to login via SPA
+        navigate('/login', { replace: true });
     };
 
     return (
@@ -60,13 +61,14 @@ const Layout = () => {
                 <div
                     style={{
                         display: 'flex',
-                        gap: '15px',
+                        gap: '8px',
                         overflowX: 'auto',
                         whiteSpace: 'nowrap',
-                        paddingRight: '15px',
-                        paddingBottom: '4px',
                         flex: 1,
                         minWidth: 0,
+                        alignItems: 'center',
+                        scrollbarWidth: 'none',        /* Firefox */
+                        msOverflowStyle: 'none',       /* IE/Edge */
                     }}
                     className="mini-scrollbar"
                 >
@@ -76,18 +78,7 @@ const Layout = () => {
                     {isAdmin && <NavLink to="/users">4. Gestión de Usuarios</NavLink>}
                     <style>{`
                         .mini-scrollbar::-webkit-scrollbar {
-                            height: 6px;
-                        }
-                        .mini-scrollbar::-webkit-scrollbar-track {
-                            background: rgba(0, 0, 0, 0.05);
-                            border-radius: 4px;
-                        }
-                        .mini-scrollbar::-webkit-scrollbar-thumb {
-                            background: rgba(34, 197, 94, 0.3);
-                            border-radius: 4px;
-                        }
-                        .mini-scrollbar::-webkit-scrollbar-thumb:hover {
-                            background: rgba(34, 197, 94, 0.6);
+                            display: none;
                         }
                     `}</style>
                 </div>
@@ -95,7 +86,7 @@ const Layout = () => {
                     onClick={handleLogout}
                     className="logout-btn-nav"
                 >
-                    <LogOut size={20} strokeWidth={2.5} />
+                    <LogOut size={16} strokeWidth={2} />
                     <span className="logout-text">Cerrar Sesión</span>
                 </button>
             </nav>

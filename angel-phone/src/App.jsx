@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { ListsProvider } from './context/ListsContext';
+import ErrorBoundary from '../../src/components/ErrorBoundary';
 
 // Lazy-loaded pages for code splitting
 const Home = React.lazy(() => import('./pages/Home'));
@@ -59,20 +60,22 @@ const Navigation = () => {
 
 function App() {
   return (
-    <ListsProvider>
-      <Router>
-        <div className="app-wrapper">
-          <Navigation />
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/reportes" element={<Reportes />} />
-            </Routes>
-          </Suspense>
-        </div>
-      </Router>
-    </ListsProvider>
+    <ErrorBoundary>
+      <ListsProvider>
+        <Router>
+          <div className="app-wrapper">
+            <Navigation />
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/reportes" element={<Reportes />} />
+              </Routes>
+            </Suspense>
+          </div>
+        </Router>
+      </ListsProvider>
+    </ErrorBoundary>
   );
 }
 

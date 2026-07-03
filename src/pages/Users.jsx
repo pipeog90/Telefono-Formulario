@@ -112,6 +112,11 @@ const Users = () => {
     const [resetStatus, setResetStatus] = useState({}); // { uid: 'sending' | 'sent' | 'error:msg' }
     const editRowRef = useRef(null);
 
+    // Filters and Pagination
+    const [columnFilters, setColumnFilters] = useState({});
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(20);
+
     useEffect(() => {
         loadUsers();
     }, []);
@@ -331,6 +336,54 @@ const Users = () => {
         whiteSpace: 'nowrap'
     });
 
+    // ── Pagination and Filtering Logic ──────────────────────────────────────
+    const filteredUsers = React.useMemo(() => {
+        let result = [...users].sort((a, b) => {
+            const codA = parseInt((a.Código_Orientador || '').replace('MEO', '')) || 9999;
+            const codB = parseInt((b.Código_Orientador || '').replace('MEO', '')) || 9999;
+            return codA - codB;
+        });
+
+        Object.entries(columnFilters).forEach(([key, value]) => {
+            if (value && value.trim() !== '') {
+                const lowerValue = value.toLowerCase().trim();
+                result = result.filter(u => {
+                    let fieldVal = '';
+                    if (key === 'role') fieldVal = u.role === 'admin' ? 'Administrador' : 'Orientador';
+                    else if (key === 'email') fieldVal = u.realEmail || '';
+                    else fieldVal = u[key] || '';
+                    
+                    return String(fieldVal).toLowerCase().includes(lowerValue);
+                });
+            }
+        });
+        return result;
+    }, [users, columnFilters]);
+
+    const totalPages = Math.max(1, Math.ceil(filteredUsers.length / itemsPerPage));
+    
+    useEffect(() => {
+        if (currentPage > totalPages) {
+            setCurrentPage(1);
+        }
+    }, [totalPages, currentPage]);
+
+    const paginatedUsers = React.useMemo(() => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        return filteredUsers.slice(startIndex, startIndex + itemsPerPage);
+    }, [filteredUsers, currentPage, itemsPerPage]);
+
+    // Update filter wrapper
+    const handleFilterChange = (column, value) => {
+        setColumnFilters(prev => ({ ...prev, [column]: value }));
+        setCurrentPage(1);
+    };
+
+    const clearFilters = () => {
+        setColumnFilters({});
+        setCurrentPage(1);
+    };
+
     return (
         <div className="container animate-fade-in" style={{ paddingBottom: '4rem' }}>
             <h2 style={{ color: 'var(--color-secondary)', borderBottom: '2px solid var(--color-secondary)', paddingBottom: '2px', marginBottom: '2px', fontWeight: '600' }}>
@@ -355,7 +408,7 @@ const Users = () => {
                                 value={newUser.name}
                                 onChange={e => setNewUser({ ...newUser, name: e.target.value })}
                                 placeholder="Ej: Juan Pérez"
-                                centered={true}
+
                                 tooltip="Nombre del orientador"
                             />
                         </div>
@@ -365,7 +418,7 @@ const Users = () => {
                                 value={newUser.username}
                                 onChange={e => setNewUser({ ...newUser, username: e.target.value })}
                                 placeholder="Ej: juan.perez"
-                                centered={true}
+
                             />
                         </div>
                         <div style={{ flex: '1.5 1 150px' }}>
@@ -374,7 +427,7 @@ const Users = () => {
                                 value={newUser.password}
                                 onChange={e => setNewUser({ ...newUser, password: e.target.value })}
                                 placeholder="Mín. 6 caracteres"
-                                centered={true}
+
                             />
                         </div>
                         <div style={{ flex: '2 1 200px' }}>
@@ -384,7 +437,7 @@ const Users = () => {
                                 value={newUser.email}
                                 onChange={e => setNewUser({ ...newUser, email: e.target.value })}
                                 placeholder="Ej: juan@empresa.com"
-                                centered={true}
+
                                 tooltip="Email"
                             />
                         </div>
@@ -397,7 +450,7 @@ const Users = () => {
                                     { value: 'user', label: 'Orientador (Usuario)' },
                                     { value: 'admin', label: 'Administrador' }
                                 ]}
-                                centered={true}
+
                             />
                         </div>
                         <div style={{ flex: '0.7 1 80px' }}>
@@ -406,7 +459,7 @@ const Users = () => {
                                 value={newUser.Clave}
                                 onChange={e => setNewUser({ ...newUser, Clave: e.target.value.toUpperCase() })}
                                 placeholder="Ej: ABC"
-                                centered={true}
+
                                 tooltip="Clave del orientador."
                                 maxLength={3}
                             />
@@ -425,7 +478,7 @@ const Users = () => {
                                 value={newUser.direccion}
                                 onChange={e => setNewUser({ ...newUser, direccion: e.target.value })}
                                 placeholder="Ej: Calle 123"
-                                centered={true}
+
                                 tooltip="Dirección"
                             />
                         </div>
@@ -435,7 +488,7 @@ const Users = () => {
                                 value={newUser.centro}
                                 onChange={e => setNewUser({ ...newUser, centro: e.target.value })}
                                 options={[{ value: 'Medellín', label: 'Medellín' }]}
-                                centered={true}
+
                                 tooltip="Centro del telefono de la Esperanza"
                             />
                         </div>
@@ -445,7 +498,7 @@ const Users = () => {
                                 type="date"
                                 value={newUser.fecha_alta}
                                 onChange={e => setNewUser({ ...newUser, fecha_alta: e.target.value })}
-                                centered={true}
+
                                 tooltip="Fecha en que se ingresa como orientador "
                             />
                         </div>
@@ -455,7 +508,7 @@ const Users = () => {
                                 type="date"
                                 value={newUser.fecha_baja}
                                 onChange={e => setNewUser({ ...newUser, fecha_baja: e.target.value })}
-                                centered={true}
+
                                 tooltip="Fecha en que se inactiva"
                             />
                         </div>
@@ -469,30 +522,69 @@ const Users = () => {
             </div>
 
             {/* ── Users Table ───────────────────────────────────────────── */}
-            <div className="glass-panel" style={{ padding: '0', overflow: 'hidden' }}>
+            <div className="premium-table-wrapper">
                 <div className="table-responsive-wrapper">
-                    <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
-                        <thead style={{ background: 'var(--color-primary-light)' }}>
+                    <table className="premium-table">
+                        <thead>
                             <tr>
-                                <th style={{ padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Cod.</th>
-                                <th style={{ padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Nombre</th>
-                                <th style={{ padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Clave</th>
-                                <th style={{ padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Usuario</th>
-                                <th style={{ padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Email</th>
-                                <th style={{ padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Rol</th>
-                                <th style={{ padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Dirección</th>
-                                <th style={{ padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Centro</th>
-                                <th style={{ padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Fecha Alta</th>
-                                <th style={{ padding: 'var(--admin-cell-padding)', textAlign: 'left' }}>Fecha Baja</th>
-                                <th style={{ padding: 'var(--admin-cell-padding)', textAlign: 'left', width: '1px', whiteSpace: 'nowrap' }}>Acciones</th>
+                                <th>
+                                    <div>Cod.</div>
+                                    <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.Código_Orientador || ''} onChange={e => handleFilterChange('Código_Orientador', e.target.value)} />
+                                </th>
+                                <th>
+                                    <div>Nombre</div>
+                                    <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.name || ''} onChange={e => handleFilterChange('name', e.target.value)} />
+                                </th>
+                                <th>
+                                    <div>Clave</div>
+                                    <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.Clave || ''} onChange={e => handleFilterChange('Clave', e.target.value)} />
+                                </th>
+                                <th>
+                                    <div>Usuario</div>
+                                    <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.username || ''} onChange={e => handleFilterChange('username', e.target.value)} />
+                                </th>
+                                <th>
+                                    <div>Email</div>
+                                    <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.email || ''} onChange={e => handleFilterChange('email', e.target.value)} />
+                                </th>
+                                <th>
+                                    <div>Rol</div>
+                                    <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.role || ''} onChange={e => handleFilterChange('role', e.target.value)} />
+                                </th>
+                                <th>
+                                    <div>Dirección</div>
+                                    <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.direccion || ''} onChange={e => handleFilterChange('direccion', e.target.value)} />
+                                </th>
+                                <th>
+                                    <div>Centro</div>
+                                    <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.centro || ''} onChange={e => handleFilterChange('centro', e.target.value)} />
+                                </th>
+                                <th>
+                                    <div>Fecha Alta</div>
+                                    <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.fecha_alta || ''} onChange={e => handleFilterChange('fecha_alta', e.target.value)} />
+                                </th>
+                                <th>
+                                    <div>Fecha Baja</div>
+                                    <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.fecha_baja || ''} onChange={e => handleFilterChange('fecha_baja', e.target.value)} />
+                                </th>
+                                <th style={{ width: '1px', verticalAlign: 'top' }}>
+                                    <div style={{ marginBottom: '8px' }}>Acciones</div>
+                                    {Object.keys(columnFilters).length > 0 && (
+                                        <Button type="button" onClick={clearFilters} variant="secondary" style={{ padding: '0 8px', fontSize: '0.8rem', height: '32px' }}>
+                                            Limpiar
+                                        </Button>
+                                    )}
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
-                            {[...users].sort((a, b) => {
-                                const codA = parseInt((a.Código_Orientador || '').replace('MEO', '')) || 9999;
-                                const codB = parseInt((b.Código_Orientador || '').replace('MEO', '')) || 9999;
-                                return codA - codB;
-                            }).map(u => {
+                            {paginatedUsers.length === 0 ? (
+                                <tr>
+                                    <td colSpan="11" style={{ textAlign: 'center', padding: '20px', color: '#666', fontStyle: 'italic' }}>
+                                        No hay usuarios que coincidan con los filtros.
+                                    </td>
+                                </tr>
+                            ) : paginatedUsers.map(u => {
                                 const isAdmin = u.username === 'admin' || u.email === 'admin@te.org';
                                 const isEditing = editingUser && editingUser.uid === u.uid;
                                 const rs = resetStatus[u.uid];
@@ -501,7 +593,7 @@ const Users = () => {
                                 return (
                                     <tr key={u.uid} ref={isEditing ? editRowRef : null} style={{ borderBottom: '1px solid var(--color-border)' }}>
                                         {/* MEO Code */}
-                                        <td style={{ padding: 'var(--admin-cell-padding)', fontWeight: '600', color: 'var(--color-primary)' }}>
+                                        <td style={{ padding: 'var(--admin-cell-padding)', fontWeight: '600', color: 'var(--color-primary)', textAlign: 'center' }}>
                                             {isEditing ? (
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0px' }}>
                                                     <span style={{
@@ -556,8 +648,9 @@ const Users = () => {
                                                 <Input
                                                     value={editingUser.name}
                                                     onChange={e => setEditingUser({ ...editingUser, name: e.target.value })}
-                                                    centered={false}
+
                                                     tooltip="Nombre del orientador"
+                                                    style={{ minWidth: '180px' }}
                                                 />
                                             ) : u.name}
                                         </td>
@@ -568,9 +661,10 @@ const Users = () => {
                                                 <Input
                                                     value={editingUser.Clave || ''}
                                                     onChange={e => setEditingUser({ ...editingUser, Clave: e.target.value.toUpperCase() })}
-                                                    centered={false}
+
                                                     tooltip="Clave del orientador."
                                                     maxLength={3}
+                                                    style={{ minWidth: '60px' }}
                                                 />
                                             ) : u.Clave || '—'}
                                         </td>
@@ -588,8 +682,9 @@ const Users = () => {
                                                     value={editingUser.realEmail || ''}
                                                     onChange={e => setEditingUser({ ...editingUser, realEmail: e.target.value })}
                                                     placeholder="email@dominio.com (opcional)"
-                                                    centered={false}
+
                                                     tooltip="Email"
+                                                    style={{ minWidth: '210px' }}
                                                 />
                                             ) : (
                                                 <EmailDisplay email={u.realEmail} />
@@ -606,7 +701,8 @@ const Users = () => {
                                                         { value: 'user', label: 'Orientador' },
                                                         { value: 'admin', label: 'Administrador' }
                                                     ]}
-                                                    centered={false}
+
+                                                    style={{ minWidth: '140px' }}
                                                 />
                                             ) : (
                                                 <span style={{
@@ -628,8 +724,9 @@ const Users = () => {
                                                 <Input
                                                     value={editingUser.direccion || ''}
                                                     onChange={e => setEditingUser({ ...editingUser, direccion: e.target.value })}
-                                                    centered={false}
+
                                                     tooltip="Dirección"
+                                                    style={{ minWidth: '120px' }}
                                                 />
                                             ) : u.direccion || '—'}
                                         </td>
@@ -641,8 +738,9 @@ const Users = () => {
                                                     value={editingUser.centro || ''}
                                                     onChange={e => setEditingUser({ ...editingUser, centro: e.target.value })}
                                                     options={[{ value: 'Medellín', label: 'Medellín' }]}
-                                                    centered={false}
+
                                                     tooltip="Centro del telefono de la Esperanza"
+                                                    style={{ minWidth: '140px' }}
                                                 />
                                             ) : u.centro || '—'}
                                         </td>
@@ -654,8 +752,9 @@ const Users = () => {
                                                     type="date"
                                                     value={editingUser.fecha_alta || ''}
                                                     onChange={e => setEditingUser({ ...editingUser, fecha_alta: e.target.value })}
-                                                    centered={false}
+
                                                     tooltip="Fecha en que se ingresa como orientador "
+                                                    style={{ minWidth: '120px' }}
                                                 />
                                             ) : u.fecha_alta || '—'}
                                         </td>
@@ -667,8 +766,9 @@ const Users = () => {
                                                     type="date"
                                                     value={editingUser.fecha_baja || ''}
                                                     onChange={e => setEditingUser({ ...editingUser, fecha_baja: e.target.value })}
-                                                    centered={false}
+
                                                     tooltip="Fecha en que se inactiva"
+                                                    style={{ minWidth: '120px' }}
                                                 />
                                             ) : u.fecha_baja || '—'}
                                         </td>
@@ -683,11 +783,29 @@ const Users = () => {
                                                         </span>
                                                     )}
                                                     <div style={{ display: 'flex', gap: '5px' }}>
-                                                        <button onClick={saveEdit} style={btnStyle('white', 'var(--color-success)')}>
-                                                            <Save size={14} style={{ verticalAlign: 'middle', marginRight: '3px' }} />Guardar
+                                                        <button 
+                                                            onClick={saveEdit} 
+                                                            style={{
+                                                                ...btnStyle('white', 'var(--color-success)'),
+                                                                height: 'var(--input-height)',
+                                                                width: 'var(--input-height)',
+                                                                padding: '0'
+                                                            }}
+                                                            title="Guardar"
+                                                        >
+                                                            <Save size={20} />
                                                         </button>
-                                                        <button onClick={cancelEdit} style={btnStyle('#6b7280')}>
-                                                            <X size={14} style={{ verticalAlign: 'middle', marginRight: '3px' }} />Cancelar
+                                                        <button 
+                                                            onClick={cancelEdit} 
+                                                            style={{
+                                                                ...btnStyle('#6b7280'),
+                                                                height: 'var(--input-height)',
+                                                                width: 'var(--input-height)',
+                                                                padding: '0'
+                                                            }}
+                                                            title="Cancelar"
+                                                        >
+                                                            <X size={20} />
                                                         </button>
                                                     </div>
                                                 </div>
@@ -713,7 +831,7 @@ const Users = () => {
                                                             }}
                                                         >
                                                             <KeyRound size={13} style={{ verticalAlign: 'middle', marginRight: '3px' }} />
-                                                            {rs === 'sending' ? 'Enviando…' : 'Reset contraseña'}
+                                                            {rs === 'sending' ? 'Enviando…' : 'Reset'}
                                                         </button>
 
                                                         {/* Delete */}
@@ -743,6 +861,57 @@ const Users = () => {
                             })}
                         </tbody>
                     </table>
+                </div>
+                
+                {/* ── Pagination UI ───────────────────────────────────────────── */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderTop: '1px solid var(--color-border)', gap: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--color-text-secondary)', fontWeight: '500' }}>
+                        <span>Mostrar:</span>
+                        <select 
+                            value={itemsPerPage} 
+                            onChange={e => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }} 
+                            className="ui-input"
+                            style={{ height: '32px', padding: '0 12px', width: 'auto', minWidth: '70px' }}
+                        >
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                            <option value={50}>50</option>
+                            <option value={100}>100</option>
+                        </select>
+                        <span>registros ({filteredUsers.length} en total)</span>
+                    </div>
+                    
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Button onClick={() => setCurrentPage(1)} disabled={currentPage === 1} variant="secondary" style={{ padding: '0 12px', height: '32px', fontSize: '1rem' }}>&laquo;</Button>
+                        <Button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} variant="secondary" style={{ padding: '0 12px', height: '32px', fontSize: '1rem' }}>&lsaquo;</Button>
+                        
+                        <span style={{ margin: '0 12px', fontSize: '0.85rem', fontWeight: '600', color: 'var(--color-text-primary)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                            Página
+                            <input 
+                                type="number"
+                                key={currentPage}
+                                defaultValue={currentPage}
+                                className="ui-input"
+                                style={{ width: '50px', height: '26px', padding: '0 4px', textAlign: 'center', margin: 0, fontWeight: 'normal' }}
+                                min={1}
+                                max={totalPages}
+                                onBlur={(e) => {
+                                    let val = parseInt(e.target.value);
+                                    if (isNaN(val) || val < 1) val = 1;
+                                    if (val > totalPages) val = totalPages;
+                                    setCurrentPage(val);
+                                    e.target.value = val;
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') e.target.blur();
+                                }}
+                            />
+                            de {totalPages}
+                        </span>
+                        
+                        <Button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} variant="secondary" style={{ padding: '0 12px', height: '32px', fontSize: '1rem' }}>&rsaquo;</Button>
+                        <Button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} variant="secondary" style={{ padding: '0 12px', height: '32px', fontSize: '1rem' }}>&raquo;</Button>
+                    </div>
                 </div>
             </div>
         </div>

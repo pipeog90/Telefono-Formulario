@@ -342,7 +342,7 @@ class DataService {
         return lists;
     }
 
-    subscribeToLists(callback) {
+    subscribeToLists(callback, onError) {
         return onSnapshot(collection(dbInstance, "lists"), (querySnapshot) => {
             const lists = {};
             querySnapshot.forEach((docSnap) => {
@@ -350,6 +350,9 @@ class DataService {
                 lists[docSnap.id] = data.items || [];
             });
             callback(lists);
+        }, (error) => {
+            console.error("Firestore subscription error in lists:", error);
+            if (onError) onError(error);
         });
     }
 
@@ -428,4 +431,4 @@ export const db = new DataService();
 export const firestore = dbInstance; // Export raw instance for direct SDK usage
 
 // Export SDK functions for direct usage if needed
-export { collection, doc, addDoc, getDocs, updateDoc, deleteDoc, setDoc, Timestamp };
+export { collection, doc, addDoc, getDoc, getDocs, updateDoc, deleteDoc, setDoc, Timestamp, onSnapshot };
