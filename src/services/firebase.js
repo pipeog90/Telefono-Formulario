@@ -361,13 +361,20 @@ class DataService {
     }
 
     async getCalls(filters = {}) {
-        // Fallback to Firestore to ensure buttons work if BigQuery function is not available
-        const querySnapshot = await getDocs(collection(dbInstance, "calls"));
-        const calls = [];
-        querySnapshot.forEach((doc) => {
-            calls.push({ id: doc.id, ...doc.data() });
-        });
-        return calls;
+        try {
+            const getCallsFromBigQuery = httpsCallable(functionsInstance, 'getCallsFromBigQuery');
+            const response = await getCallsFromBigQuery();
+            return response.data.calls;
+        } catch (error) {
+            console.error("Error calling BigQuery function:", error.code, error.message);
+            // Fallback to Firestore if BigQuery function fails
+            const querySnapshot = await getDocs(collection(dbInstance, "calls"));
+            const calls = [];
+            querySnapshot.forEach((doc) => {
+                calls.push({ id: doc.id, ...doc.data() });
+            });
+            return calls;
+        }
     }
 
     async addCall(callData) {
