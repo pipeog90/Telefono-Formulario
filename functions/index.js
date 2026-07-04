@@ -162,8 +162,7 @@ exports.getCallsFromBigQuery = onCall({ invoker: 'public' }, async (request) => 
 
         let query = `
             SELECT
-                COALESCE(document_id, codigo_id) AS id,
-                '-1' AS L_ID_Llamada,
+                COALESCE(document_id, codigo_id) AS L_ID_Llamada,
                 orientador                  AS L_Orientador,
                 medio_contacto              AS L_Medio_Contacto,
                 como_conocio                AS L_Como_Conoce,
