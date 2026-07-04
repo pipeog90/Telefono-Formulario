@@ -149,7 +149,7 @@ exports.resolveEmailForLogin = onCall(async (request) => {
 
 
 
-exports.getCallsFromBigQuery = onCall(async (request) => {
+exports.getCallsFromBigQuery = onCall({ invoker: 'public' }, async (request) => {
     // 1. Verify caller is authenticated
     if (!request.auth) {
         throw new HttpsError("unauthenticated", "El usuario no está autenticado.");

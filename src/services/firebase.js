@@ -363,7 +363,7 @@ class DataService {
     async getCalls(filters = {}) {
         try {
             const getCallsFromBigQuery = httpsCallable(functionsInstance, 'getCallsFromBigQuery');
-            const response = await getCallsFromBigQuery();
+            const response = await getCallsFromBigQuery(filters);
             return response.data.calls;
         } catch (error) {
             console.error("Error calling BigQuery function:", error.code, error.message);
