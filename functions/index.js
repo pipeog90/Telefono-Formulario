@@ -161,7 +161,65 @@ exports.getCallsFromBigQuery = onCall({ invoker: 'public' }, async (request) => 
         const { fechaInicio, fechaFin } = request.data || {};
 
         let query = `
-            SELECT *
+            SELECT
+                COALESCE(document_id, codigo_id) AS id,
+                COALESCE(CAST(l_id_llamada AS STRING), '-1') AS L_ID_Llamada,
+                orientador                  AS L_Orientador,
+                medio_contacto              AS L_Medio_Contacto,
+                como_conocio                AS L_Como_Conoce,
+                llamante_sexo               AS U_Sexo,
+                llamante_edad               AS U_Edad,
+                llamante_estado_civil       AS U_Estado_Civil,
+                llamante_convive            AS U_Convive,
+                llamante_asiduidad          AS U_Asiduidad,
+                llamante_problematica_1     AS U_Problematica_1,
+                llamante_problema_1         AS U_Problema_1,
+                llamante_problematica_2     AS U_Problematica_2,
+                llamante_problema_2         AS U_Problema_2,
+                llamante_problematica_3     AS U_Problematica_3,
+                llamante_problema_3         AS U_Problema_3,
+                llamante_naturaleza         AS U_Naturaleza,
+                llamante_inicio             AS U_Inicio,
+                llamante_actitud_orientador AS U_Actitud_Orientador,
+                llamante_presentacion       AS U_Presentacion,
+                llamante_paralenguaje       AS U_Paralenguaje,
+                llamante_procedencia        AS U_Procedencia,
+                llamante_peticion           AS U_Peticion,
+                llamante_actitud_problema_1 AS U_Actitud_Problema_1,
+                llamante_actitud_problema_2 AS U_Actitud_Problema_2,
+                llamante_condicion          AS U_Cond_Socioeconomica,
+                llamante_llamada_derivada   AS L_Llamada_Derivada,
+                tercero_sexo                AS T_Sexo_Tercero,
+                tercero_edad                AS T_Edad_Tercero,
+                tercero_estado_civil        AS T_Estado_Civil_Tercero,
+                tercero_convive             AS T_Convive,
+                tercero_relacion            AS T_Relacion,
+                tercero_problematica_1      AS T_Problematica_1,
+                tercero_problema_1          AS T_Problema_1,
+                tercero_problematica_2      AS T_Problematica_2,
+                tercero_problema_2          AS T_Problema_2,
+                tercero_problematica_3      AS T_Problematica_3,
+                tercero_problema_3          AS T_Problema_3,
+                tercero_actitud_problema_1  AS T_Actitud_Problema_1,
+                tercero_actitud_problema_2  AS T_Actitud_Problema_2,
+                FORMAT_DATETIME('%Y-%m-%d', llamada_datetime) AS L_Fecha,
+                FORMAT_DATETIME('%H:%M', llamada_datetime)    AS L_Hora,
+                llamada_resultado           AS L_Resultado,
+                llamada_duracion            AS L_Duracion,
+                orientador_clave            AS O_Clave,
+                orientador_autoevaluacion   AS O_Autoevaluacion,
+                orientador_volvera_llamar   AS O_Volvera_Llamar,
+                orientador_nivel_ayuda_1    AS O_Nivel_Ayuda_1,
+                orientador_nivel_ayuda_2    AS O_Nivel_Ayuda_2,
+                orientador_sentimientos_1   AS O_Sentimientos_1,
+                orientador_sentimientos_2   AS O_Sentimientos_2,
+                orientador_sentimientos_3   AS O_Sentimientos_3,
+                orientador_actitudes_equivocadas_1 AS O_Actitudes_Equivocadas_1,
+                orientador_actitudes_equivocadas_2 AS O_Actitudes_Equivocadas_2,
+                orientador_satisfaccion_llamante_1 AS O_Satisfaccion_Llamante_1,
+                orientador_satisfaccion_llamante_2 AS O_Satisfaccion_Llamante_2,
+                sintesis                    AS L_Sintesis,
+                source
             FROM \`singular-arbor-401018.marts.dashboard_union\`
             WHERE 1=1
         `;
@@ -169,17 +227,16 @@ exports.getCallsFromBigQuery = onCall({ invoker: 'public' }, async (request) => 
         const params = {};
 
         if (fechaInicio) {
-            // Filter using the new L_Fecha variable (assumes it can be cast/parsed as DATE)
-            query += ` AND DATE(L_Fecha) >= DATE(@fechaInicio)`;
+            query += ` AND DATE(llamada_datetime) >= DATE(@fechaInicio)`;
             params.fechaInicio = fechaInicio;
         }
 
         if (fechaFin) {
-            query += ` AND DATE(L_Fecha) <= DATE(@fechaFin)`;
+            query += ` AND DATE(llamada_datetime) <= DATE(@fechaFin)`;
             params.fechaFin = fechaFin;
         }
 
-        query += ` ORDER BY L_Fecha DESC, L_Hora DESC LIMIT 2000`;
+        query += ` ORDER BY llamada_datetime DESC LIMIT 2000`;
 
         const [rows] = await bigquery.query({ 
             query: query,
