@@ -415,11 +415,6 @@ const Users = () => {
         setCurrentPage(1);
     };
 
-    const clearFilters = () => {
-        setColumnFilters({});
-        localStorage.removeItem('usersTableFilters');
-        setCurrentPage(1);
-    };
 
     return (
         <div className="container animate-fade-in" style={{ paddingBottom: '4rem' }}>
@@ -661,11 +656,6 @@ const Users = () => {
                                             <option value="">Filtrar todos</option>
                                             <option value="activos">Filtrar activos</option>
                                         </select>
-                                        {Object.keys(columnFilters).filter(k => columnFilters[k] && columnFilters[k] !== '').length > 0 && (
-                                            <Button type="button" onClick={clearFilters} variant="secondary" style={{ padding: '0 8px', fontSize: '0.8rem', height: '32px', width: '100%' }}>
-                                                Limpiar
-                                            </Button>
-                                        )}
                                     </div>
                                 </th>
                             </tr>
