@@ -26,6 +26,11 @@ service cloud.firestore {
       allow read, write: if request.auth != null;
     }
 
+    match /counters/{counterId} {
+      // Anyone logged in can read or write the counter to get the next ID
+      allow read, write: if request.auth != null;
+    }
+
     // Default deny all other collections just in case
     match /{document=**} {
       allow read, write: if false;

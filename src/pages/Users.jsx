@@ -3,9 +3,14 @@ import { auth } from '../services/firebase';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Select from '../components/ui/Select';
+import { useLists } from '../hooks/useLists';
 import { Users as UsersIcon, UserPlus, Trash2, Edit2, Save, X, Mail, KeyRound, Eye, EyeOff } from 'lucide-react';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
+const capitalize = (str) => {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+};
 
 const isFakeEmail = (email) => !email || email.endsWith('@te.org');
 
@@ -106,6 +111,7 @@ const EmailDisplay = ({ email, disabled }) => {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 const Users = () => {
+    const { lists, updateList } = useLists();
     const [users, setUsers] = useState([]);
     const [newUser, setNewUser] = useState({ name: '', username: '', email: '', password: '', role: 'user', Clave: '', direccion: '', centro: 'Medellín', fecha_alta: '', fecha_baja: '' });
     const [editingUser, setEditingUser] = useState(null);
@@ -144,7 +150,16 @@ const Users = () => {
         setUserError('');
         setUserSuccess('');
 
-        const { name, username, password, role, email, Clave } = newUser;
+        const { name, username, password, role, email, Clave, centro } = newUser;
+
+        // Auto-add new centro to list if it doesn't exist
+        if (centro) {
+            const currentCentroList = lists?.CENTRO || [];
+            const centroExists = currentCentroList.some(c => c.value.toLowerCase() === centro.toLowerCase());
+            if (!centroExists && updateList) {
+                await updateList('CENTRO', [...currentCentroList, { label: centro, value: centro, active: true }]);
+            }
+        }
 
         if (!name || !username || !password || !Clave) {
             setUserError('Nombre, usuario, contraseña y clave son obligatorios.');
@@ -278,6 +293,15 @@ const Users = () => {
         try {
             // Save scroll position before update
             const scrollY = window.scrollY;
+
+            // Auto-add new centro to list if it doesn't exist
+            if (editingUser.centro) {
+                const currentCentroList = lists?.CENTRO || [];
+                const centroExists = currentCentroList.some(c => c.value.toLowerCase() === editingUser.centro.toLowerCase());
+                if (!centroExists && updateList) {
+                    await updateList('CENTRO', [...currentCentroList, { label: editingUser.centro, value: editingUser.centro, active: true }]);
+                }
+            }
 
             // Build update payload — only include realEmail if it actually changed
             // to avoid triggering the Auth email sync Cloud Function unnecessarily
@@ -543,6 +567,20 @@ const Users = () => {
                         alignItems: 'end',
                         marginTop: '12px'
                     }}>
+                        <div style={{ position: 'relative' }}>
+                            <Input type="text"
+                                label="Centro (opcional)"
+                                value={newUser.centro || ''}
+                                onChange={e => setNewUser({ ...newUser, centro: capitalize(e.target.value) })}
+                                list="centros-list"
+                                tooltip="Centro del telefono de la Esperanza"
+                            />
+                            <datalist id="centros-list">
+                                {(lists?.CENTRO || []).filter(c => c.active).map(c => (
+                                    <option key={c.value} value={c.value} />
+                                ))}
+                            </datalist>
+                        </div>
                         <div style={{ flex: '2 1 200px' }}>
                             <Input
                                 label="Dirección (opcional)"
@@ -551,16 +589,6 @@ const Users = () => {
                                 placeholder="Ej: Calle 123"
 
                                 tooltip="Dirección"
-                            />
-                        </div>
-                        <div style={{ flex: '1 1 120px' }}>
-                            <Select
-                                label="Centro (opcional)"
-                                value={newUser.centro}
-                                onChange={e => setNewUser({ ...newUser, centro: e.target.value })}
-                                options={[{ value: 'Medellín', label: 'Medellín' }]}
-
-                                tooltip="Centro del telefono de la Esperanza"
                             />
                         </div>
                         <div style={{ flex: '1.5 1 140px' }}>
