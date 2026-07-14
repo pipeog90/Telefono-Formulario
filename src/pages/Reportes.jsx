@@ -766,7 +766,7 @@ const Reportes = () => {
                             <tbody id="reporte-table-body">
                                 {paginatedResults.length === 0 ? (
                                     <tr><td colSpan="11" className="no-data" style={{ textAlign: 'center', padding: '20px', color: '#888', fontStyle: 'italic' }}>
-                                        {searched ? 'No hay llamadas registradas o no coinciden con los filtros.' : 'Configure los filtros y haga clic en Generar Reporte.'}
+                                        {loading ? 'Generando reporte...' : (searched ? 'No hay llamadas registradas o no coinciden con los filtros.' : 'Configure los filtros y haga clic en Generar Reporte.')}
                                     </td></tr>
                                 ) : (
                                     paginatedResults.map((row, index) => (
