@@ -263,9 +263,11 @@ const Reportes = () => {
 
             setResults(mappedData);
             setRawResults(data);
+            setColumnFilters({});
         } catch (error) {
             console.warn("Error generating report:", error);
             setResults([]);
+            setColumnFilters({});
         } finally {
             setLoading(false);
         }
@@ -294,8 +296,14 @@ const Reportes = () => {
     const handleDeleteAll = async () => {
         if (!isAdmin) return;
         if (window.confirm("¡ADVERTENCIA! ¿Está seguro de eliminar TODOS los registros? Esta acción es irreversible.")) {
-            await db.clearCalls();
-            setResults([]);
+            try {
+                await db.clearCalls();
+                setResults([]);
+                setSearched(false);
+                setColumnFilters({});
+            } catch (err) {
+                console.error("Error clearing calls:", err);
+            }
         }
     };
 
@@ -706,21 +714,20 @@ const Reportes = () => {
                                             </select>
                                         )}
                                     </th>
-                                    {isAdmin && (
-                                        <th style={{ width: '1px', verticalAlign: 'top' }}>
-                                            <div style={{ marginBottom: '8px' }}>Acciones</div>
-                                            {Object.keys(columnFilters).length > 0 && (
-                                                <Button type="button" onClick={clearColumnFilters} variant="secondary" style={{ padding: '0 8px', fontSize: '0.8rem', height: '32px' }}>
-                                                    Limpiar
-                                                </Button>
-                                            )}
-                                        </th>
-                                    )}
+                                    <th>
+                                        <div>Asiduidad</div>
+                                        {results.length > 0 && (
+                                            <select className="table-filter-input" value={columnFilters.U_Asiduidad || ''} onChange={e => handleColumnFilterChange('U_Asiduidad', e.target.value)}>
+                                                <option value="">Filtrar...</option>
+                                                {getUniqueOptions('U_Asiduidad').map((opt, i) => <option key={i} value={opt}>{opt || '-'}</option>)}
+                                            </select>
+                                        )}
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody id="reporte-table-body">
                                 {paginatedResults.length === 0 ? (
-                                    <tr><td colSpan={isAdmin ? "11" : "10"} className="no-data" style={{ textAlign: 'center', padding: '20px', color: '#888', fontStyle: 'italic' }}>
+                                    <tr><td colSpan="11" className="no-data" style={{ textAlign: 'center', padding: '20px', color: '#888', fontStyle: 'italic' }}>
                                         {searched ? 'No hay llamadas registradas o no coinciden con los filtros.' : 'Configure los filtros y haga clic en Generar Reporte.'}
                                     </td></tr>
                                 ) : (
@@ -742,13 +749,7 @@ const Reportes = () => {
                                             <td>{row.U_Sexo}</td>
                                             <td>{row.U_Edad}</td>
                                             <td>{row.L_Como_Conoce}</td>
-                                            {isAdmin && (
-                                                <td style={{ width: '1px', whiteSpace: 'nowrap' }}>
-                                                    <button onClick={() => handleDelete(row.id)} title="Eliminar registro" className="action-btn delete">
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                </td>
-                                            )}
+                                            <td>{row.U_Asiduidad}</td>
                                         </tr>
                                     ))
                                 )}
