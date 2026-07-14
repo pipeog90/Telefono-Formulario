@@ -6,7 +6,7 @@ admin.initializeApp();
 
 // Callable function to toggle a user's active status (disable/enable)
 // Only allows admins (we verify the caller's role from Firestore)
-exports.toggleUserStatus = onCall(async (request) => {
+exports.toggleUserStatus = onCall({ enforceAppCheck: true }, async (request) => {
     // 1. Verify caller is authenticated
     if (!request.auth) {
         throw new HttpsError(
@@ -74,7 +74,7 @@ exports.toggleUserStatus = onCall(async (request) => {
 
 // Callable function to update a user's Auth email
 // Only allows admins
-exports.updateUserEmailAuth = onCall(async (request) => {
+exports.updateUserEmailAuth = onCall({ enforceAppCheck: true }, async (request) => {
     // 1. Verify caller is authenticated
     if (!request.auth) {
         throw new HttpsError("unauthenticated", "El usuario no está autenticado.");
@@ -108,7 +108,7 @@ exports.updateUserEmailAuth = onCall(async (request) => {
 
 // Callable function to resolve a username to their real auth email
 // Publicly accessible (no auth required) so users can login
-exports.resolveEmailForLogin = onCall(async (request) => {
+exports.resolveEmailForLogin = onCall({ enforceAppCheck: true }, async (request) => {
     const { username } = request.data;
 
     if (!username) {
@@ -145,7 +145,7 @@ exports.resolveEmailForLogin = onCall(async (request) => {
 
 // Callable function to create a user with a custom UID (like MEO127)
 // Only allows admins
-exports.createUserAdmin = onCall(async (request) => {
+exports.createUserAdmin = onCall({ enforceAppCheck: true }, async (request) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "El usuario no está autenticado.");
 
     const callerRole = request.auth.token.role;
@@ -186,7 +186,7 @@ exports.createUserAdmin = onCall(async (request) => {
 });
 
 
-exports.getCallsFromBigQuery = onCall({ invoker: 'public' }, async (request) => {
+exports.getCallsFromBigQuery = onCall({ enforceAppCheck: true }, async (request) => {
     // 1. Verify caller is authenticated
     if (!request.auth) {
         throw new HttpsError("unauthenticated", "El usuario no está autenticado.");
@@ -286,7 +286,7 @@ exports.getCallsFromBigQuery = onCall({ invoker: 'public' }, async (request) => 
     }
 });
 
-exports.migratePreProductionCalls = onCall(async (request) => {
+exports.migratePreProductionCalls = onCall({ enforceAppCheck: true }, async (request) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "El usuario no está autenticado.");
 
     const callerRole = request.auth.token.role;
@@ -327,7 +327,7 @@ exports.migratePreProductionCalls = onCall(async (request) => {
     }
 });
 
-exports.migrateCustomClaims = onCall(async (request) => {
+exports.migrateCustomClaims = onCall({ enforceAppCheck: true }, async (request) => {
     const isSuperAdmin = request.auth?.token?.email === 'admin@te.org';
     const isAdmin = request.auth?.token?.role === 'admin';
     if (!isSuperAdmin && !isAdmin) {

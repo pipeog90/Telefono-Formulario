@@ -41,8 +41,18 @@ const firebaseConfig = {
     measurementId: "G-FC62DY559B"
 };
 
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
+
 // --- Initialization ---
 const app = initializeApp(firebaseConfig);
+
+// Initialize Firebase App Check with reCAPTCHA v3
+const appCheck = initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider('6LfCtFMtAAAAAIfenH3byWL4zvwXv0hnf-95-yde'),
+    // Optional: automatically refresh the token
+    isTokenAutoRefreshEnabled: true
+});
+
 const authInstance = getAuth(app);
 // Set persistence to session (logout when tab closes)
 setPersistence(authInstance, browserSessionPersistence).catch((err) => {
