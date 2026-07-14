@@ -167,26 +167,10 @@ export const ListsProvider = ({ children }) => {
                             migrated[newKey] = value;
                         }
 
-                        setLists(prev => {
-                            // 2. Start with previous state but REMOVE all legacy and junk keys
-                            const cleanPrev = { ...prev };
-                            Object.keys(firestoreKeyMigration).forEach(oldKey => {
-                                delete cleanPrev[oldKey];
-                            });
-                            
-                            // Explicitly remove junk keys from the cache
-                            Object.keys(cleanPrev).forEach(key => {
-                                const normalized = key.trim().toLowerCase();
-                                if (normalized === 'estado civil' || 
-                                    normalized === 'municipio' || 
-                                    normalized === 'rango de edad' || 
-                                    normalized.startsWith('o_clave')) {
-                                    delete cleanPrev[key];
-                                }
-                            });
-                            
-                            // 3. Merge with migrated data from Firestore, 
-                            // ensuring NO legacy keys are included in the final object
+                        setLists(() => {
+                            // Merge the official initial configuration with the live data from Firestore.
+                            // This ensures that any orphaned lists stuck in the local cache (but deleted from Firestore)
+                            // are properly purged from the frontend.
                             const finalMigrated = {};
                             for (const [key, value] of Object.entries(migrated)) {
                                 if (!firestoreKeyMigration[key]) {
@@ -194,7 +178,7 @@ export const ListsProvider = ({ children }) => {
                                 }
                             }
                             
-                            return { ...cleanPrev, ...finalMigrated };
+                            return { ...extendedInitialDropdowns, ...finalMigrated };
                         });
                     }
                 } catch (err) {
