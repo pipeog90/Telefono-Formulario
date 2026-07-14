@@ -650,13 +650,11 @@ const Users = () => {
                                     </select>
                                 </th>
                                 <th style={{ width: '1px', verticalAlign: 'top' }}>
-                                    <div style={{ marginBottom: '8px' }}>Acciones</div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                        <select className="table-filter-input" style={{ minWidth: '110px' }} value={columnFilters.status || ''} onChange={e => handleFilterChange('status', e.target.value)}>
-                                            <option value="">Filtrar todos</option>
-                                            <option value="activos">Filtrar activos</option>
-                                        </select>
-                                    </div>
+                                    <div>Acciones</div>
+                                    <select className="table-filter-input" style={{ minWidth: '110px' }} value={columnFilters.status || ''} onChange={e => handleFilterChange('status', e.target.value)}>
+                                        <option value="">Filtrar todos</option>
+                                        <option value="activos">Filtrar activos</option>
+                                    </select>
                                 </th>
                             </tr>
                         </thead>
