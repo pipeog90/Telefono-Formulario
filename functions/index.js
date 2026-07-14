@@ -27,15 +27,9 @@ exports.toggleUserStatus = onCall(async (request) => {
     }
 
     try {
-        // 2. Verify caller is an admin
-        const callerDoc = await admin.firestore().collection("users").doc(callerUid).get();
-        if (!callerDoc.exists) {
-            throw new HttpsError("permission-denied", "Usuario llamante no encontrado.");
-        }
-
-        const callerRole = callerDoc.data().role;
-        // Super admin email/username check just in case, plus role check
-        const isSuperAdmin = (callerDoc.data().username === 'admin' || callerDoc.data().email === 'admin@te.org');
+        // 2. Verify caller is an admin using Custom Auth Claims
+        const callerRole = request.auth.token.role;
+        const isSuperAdmin = request.auth.token.email === 'admin@te.org';
 
         if (callerRole !== "admin" && !isSuperAdmin) {
             throw new HttpsError(
@@ -94,14 +88,9 @@ exports.updateUserEmailAuth = onCall(async (request) => {
     }
 
     try {
-        // 2. Verify caller is an admin
-        const callerDoc = await admin.firestore().collection("users").doc(callerUid).get();
-        if (!callerDoc.exists) {
-            throw new HttpsError("permission-denied", "Usuario llamante no encontrado.");
-        }
-
-        const callerRole = callerDoc.data().role;
-        const isSuperAdmin = (callerDoc.data().username === 'admin' || callerDoc.data().email === 'admin@te.org');
+        // 2. Verify caller is an admin using Custom Auth Claims
+        const callerRole = request.auth.token.role;
+        const isSuperAdmin = request.auth.token.email === 'admin@te.org';
 
         if (callerRole !== "admin" && !isSuperAdmin) {
             throw new HttpsError("permission-denied", "Solo los administradores pueden modificar correos.");
@@ -159,9 +148,10 @@ exports.resolveEmailForLogin = onCall(async (request) => {
 exports.createUserAdmin = onCall(async (request) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "El usuario no está autenticado.");
 
-    const callerDoc = await admin.firestore().collection("users").doc(request.auth.uid).get();
-    const callerData = callerDoc.data();
-    if (callerData?.role !== "admin" && callerData?.username !== "admin" && callerData?.email !== "admin@te.org") {
+    const callerRole = request.auth.token.role;
+    const isSuperAdmin = request.auth.token.email === 'admin@te.org';
+    
+    if (callerRole !== "admin" && !isSuperAdmin) {
         throw new HttpsError("permission-denied", "Solo los administradores pueden crear usuarios.");
     }
 
@@ -177,6 +167,10 @@ exports.createUserAdmin = onCall(async (request) => {
             email: authEmail,
             password: password
         });
+
+        // Set the custom claim based on the role assigned to the user
+        const newRole = userData.role || "orientador";
+        await admin.auth().setCustomUserClaims(uid, { role: newRole });
 
         // 2. Create the Firestore document with the EXACT same UID
         await admin.firestore().collection("users").doc(uid).set({
@@ -295,9 +289,10 @@ exports.getCallsFromBigQuery = onCall({ invoker: 'public' }, async (request) => 
 exports.migratePreProductionCalls = onCall(async (request) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "El usuario no está autenticado.");
 
-    const callerUid = request.auth.uid;
-    const callerDoc = await admin.firestore().collection("users").doc(callerUid).get();
-    if (!callerDoc.exists || callerDoc.data().role !== "admin") {
+    const callerRole = request.auth.token.role;
+    const isSuperAdmin = request.auth.token.email === 'admin@te.org';
+
+    if (callerRole !== "admin" && !isSuperAdmin) {
         throw new HttpsError("permission-denied", "Solo los administradores pueden ejecutar migraciones.");
     }
 
@@ -329,4 +324,37 @@ exports.migratePreProductionCalls = onCall(async (request) => {
     } catch (error) {
         console.error("Error en migración:", error);
         throw new HttpsError("internal", "Error durante la migración: " + error.message);
+    }
+});
+
+exports.migrateCustomClaims = onCall(async (request) => {
+    const isSuperAdmin = request.auth?.token?.email === 'admin@te.org';
+    const isAdmin = request.auth?.token?.role === 'admin';
+    if (!isSuperAdmin && !isAdmin) {
+        throw new HttpsError("permission-denied", "No autorizado.");
+    }
+
+    console.log("Fetching all users from Firestore to migrate claims...");
+    const usersSnapshot = await admin.firestore().collection("users").get();
+    
+    let updated = 0;
+    
+    for (const doc of usersSnapshot.docs) {
+        const data = doc.data();
+        const role = data.role || "orientador";
+        const isSuperUser = (data.username === 'admin' || data.email === 'admin@te.org');
+        
+        const claimRole = isSuperUser ? 'admin' : role;
+        
+        try {
+            await admin.auth().setCustomUserClaims(doc.id, { role: claimRole });
+            console.log(`Set role '${claimRole}' for user ${doc.id}`);
+            updated++;
+        } catch (error) {
+            console.error(`Error setting claims for ${doc.id}:`, error.message);
+        }
+    }
+    
+    return { success: true, updated };
+});
 
