@@ -154,7 +154,42 @@ exports.resolveEmailForLogin = onCall(async (request) => {
     }
 });
 
+// Callable function to create a user with a custom UID (like MEO127)
+// Only allows admins
+exports.createUserAdmin = onCall(async (request) => {
+    if (!request.auth) throw new HttpsError("unauthenticated", "El usuario no está autenticado.");
 
+    const callerDoc = await admin.firestore().collection("users").doc(request.auth.uid).get();
+    const callerData = callerDoc.data();
+    if (callerData?.role !== "admin" && callerData?.username !== "admin" && callerData?.email !== "admin@te.org") {
+        throw new HttpsError("permission-denied", "Solo los administradores pueden crear usuarios.");
+    }
+
+    const { authEmail, password, userData, uid } = request.data;
+    if (!authEmail || !password || !uid || !userData) {
+        throw new HttpsError("invalid-argument", "Faltan datos requeridos.");
+    }
+
+    try {
+        // 1. Create user in Firebase Auth with the exact UID (e.g., MEO127)
+        await admin.auth().createUser({
+            uid: uid,
+            email: authEmail,
+            password: password
+        });
+
+        // 2. Create the Firestore document with the EXACT same UID
+        await admin.firestore().collection("users").doc(uid).set({
+            ...userData,
+            createdAt: new Date().toISOString()
+        });
+
+        return { success: true, uid };
+    } catch (error) {
+        console.error("Error creando usuario:", error);
+        throw new HttpsError("internal", error.message);
+    }
+});
 
 
 exports.getCallsFromBigQuery = onCall({ invoker: 'public' }, async (request) => {

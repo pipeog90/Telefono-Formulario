@@ -130,18 +130,6 @@ class AuthService {
     }
 
     async createUser(userData) {
-        // Creating a user in Firebase Auth automatically signs them in, which kicks out the Admin.
-        // Solution: use a SECONDARY app instance so the admin session is untouched.
-
-        // Reuse secondary app if it already exists (e.g. from a previous failed call)
-        let secondaryApp;
-        try {
-            secondaryApp = getApp("Secondary");
-        } catch (_) {
-            secondaryApp = initializeApp(firebaseConfig, "Secondary");
-        }
-        const secondaryAuth = getAuth(secondaryApp);
-
         try {
             let { email, password, name, role } = userData;
             // Allow creation with simple username
@@ -155,12 +143,9 @@ class AuthService {
                 }
             }
 
-            // 1. Create in Auth (on secondary app to avoid kicking out Admin)
-            const userCredential = await createUserWithEmailAndPassword(secondaryAuth, authEmail, password);
-            const user = userCredential.user;
-
-            // 2. Create in Firestore 'users' collection (using main app DB)
-            await setDoc(doc(dbInstance, "users", user.uid), {
+            const createFn = httpsCallable(functionsInstance, 'createUserAdmin');
+            
+            const firestoreData = {
                 email: email.includes('@') ? email : `${email}@te.org`,
                 username: email.includes('@') ? email.split('@')[0] : email,
                 name,
@@ -173,17 +158,20 @@ class AuthService {
                 centro: userData.centro || null,
                 fecha_alta: userData.fecha_alta || null,
                 fecha_baja: userData.fecha_baja || null,
-                active: userData.active !== undefined ? userData.active : true,
-                createdAt: new Date().toISOString()
+                active: userData.active !== undefined ? userData.active : true
+            };
+
+            const response = await createFn({
+                authEmail,
+                password,
+                uid: userData.Código_Orientador, // e.g. MEO127
+                userData: firestoreData
             });
 
-            return { uid: user.uid, ...userData, username: email.includes('@') ? email.split('@')[0] : email };
-
+            return { uid: response.data.uid, ...userData, username: email.includes('@') ? email.split('@')[0] : email };
         } catch (error) {
+            console.error("Error calling createUserAdmin:", error);
             throw this._mapError(error);
-        } finally {
-            // Always clean up the secondary app so it can be re-created next time
-            try { await deleteApp(secondaryApp); } catch (_) { }
         }
     }
 
@@ -408,7 +396,7 @@ class DataService {
                 createdAt: Timestamp.now()
             };
 
-            const newCallRef = doc(collection(dbInstance, "calls"));
+            const newCallRef = doc(dbInstance, "calls", formattedId);
             transaction.set(newCallRef, callWithId);
             transaction.set(counterRef, { nextId: nextId + 1 }, { merge: true });
 
