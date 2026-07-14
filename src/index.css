@@ -264,6 +264,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Table Filter Input embedded in header */
 .table-filter-input {
     width: 100%;
+    min-width: 110px;
     height: 32px;
     margin-top: 8px;
     padding: 0 10px;
