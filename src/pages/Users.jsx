@@ -395,12 +395,22 @@ const Users = () => {
 
     // Update filter wrapper
     const handleFilterChange = (column, value) => {
-        setColumnFilters(prev => ({ ...prev, [column]: value }));
+        setColumnFilters(prev => {
+            const newFilters = { ...prev };
+            if (value === '') {
+                delete newFilters[column];
+            } else {
+                newFilters[column] = value;
+            }
+            localStorage.setItem('usersTableFilters', JSON.stringify(newFilters));
+            return newFilters;
+        });
         setCurrentPage(1);
     };
 
     const clearFilters = () => {
         setColumnFilters({});
+        localStorage.removeItem('usersTableFilters');
         setCurrentPage(1);
     };
 
