@@ -518,6 +518,9 @@ const Reportes = () => {
                                    (item.U_Problema_2 || '').toLowerCase().trim() === lowerValue ||
                                    (item.U_Problema_3 || '').toLowerCase().trim() === lowerValue;
                         }
+                        if (key === 'L_Sintesis') {
+                            return String(item[key] || '').toLowerCase().includes(lowerValue);
+                        }
                         return String(item[key] || '').toLowerCase().trim() === lowerValue;
                     });
                 }
@@ -563,6 +566,9 @@ const Reportes = () => {
                         return (item.U_Problema_1 || '').toLowerCase().trim() === lowerValue ||
                                (item.U_Problema_2 || '').toLowerCase().trim() === lowerValue ||
                                (item.U_Problema_3 || '').toLowerCase().trim() === lowerValue;
+                    }
+                    if (key === 'L_Sintesis') {
+                        return String(item[key] || '').toLowerCase().includes(lowerValue);
                     }
                     return String(item[key] || '').toLowerCase().trim() === lowerValue;
                 });
@@ -741,10 +747,13 @@ const Reportes = () => {
                                     <th>
                                         <div>Síntesis</div>
                                         {results.length > 0 && (
-                                            <select className="table-filter-input" value={columnFilters.L_Sintesis || ''} onChange={e => handleColumnFilterChange('L_Sintesis', e.target.value)}>
-                                                <option value="">Filtrar...</option>
-                                                {getUniqueOptions('L_Sintesis').map((opt, i) => <option key={i} value={opt}>{opt || '-'}</option>)}
-                                            </select>
+                                            <input 
+                                                type="text" 
+                                                className="table-filter-input" 
+                                                placeholder="Buscar..." 
+                                                value={columnFilters.L_Sintesis || ''} 
+                                                onChange={e => handleColumnFilterChange('L_Sintesis', e.target.value)}
+                                            />
                                         )}
                                     </th>
                                     <th>
