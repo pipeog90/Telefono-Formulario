@@ -190,23 +190,25 @@ const Users = () => {
         }
     };
 
-    // ── Delete ──────────────────────────────────────────────────────────────
-    const handleDeleteUser = async (uid) => {
-        const userToDelete = users.find(u => u.uid === uid);
-        if (userToDelete && (userToDelete.username === 'admin' || userToDelete.email === 'admin@te.org')) {
-            alert('No se puede eliminar al Super Administrador.');
+    // ── Toggle Status ────────────────────────────────────────────────────────
+    const handleToggleUserStatus = async (uid, currentDisabled) => {
+        const userToToggle = users.find(u => u.uid === uid);
+        if (userToToggle && (userToToggle.username === 'admin' || userToToggle.email === 'admin@te.org')) {
+            alert('No se puede cambiar el estado del Super Administrador.');
             return;
         }
         if (auth.currentUser && auth.currentUser.uid === uid) {
-            alert('No puedes eliminar tu propia cuenta.');
+            alert('No puedes cambiar tu propio estado de cuenta.');
             return;
         }
-        if (window.confirm('¿Está seguro de eliminar este usuario?')) {
+        const actionText = currentDisabled ? 'activar' : 'inactivar';
+        if (window.confirm(`¿Está seguro de ${actionText} este usuario?`)) {
             try {
-                await auth.deleteUser(uid);
+                await auth.toggleUserStatus(uid, !currentDisabled);
                 loadUsers();
             } catch (err) {
-                console.error('Error deleting user:', err);
+                console.error(`Error al ${actionText} usuario:`, err);
+                alert(`Error al ${actionText} usuario: ${err.message}`);
             }
         }
     };
@@ -592,7 +594,14 @@ const Users = () => {
                                 const hasRealEmail = u.realEmail && !isFakeEmail(u.realEmail);
 
                                 return (
-                                    <tr key={u.uid} ref={isEditing ? editRowRef : null} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                                    <tr 
+                                        key={u.uid} 
+                                        ref={isEditing ? editRowRef : null}
+                                        style={{ 
+                                            borderBottom: '1px solid var(--color-border-light)',
+                                            color: u.disabled ? '#e74c3c' : 'inherit'
+                                        }}
+                                    >
                                         {/* MEO Code */}
                                         <td style={{ padding: 'var(--admin-cell-padding)', fontWeight: '600', color: 'var(--color-primary)', textAlign: 'center' }}>
                                             {isEditing ? (
@@ -767,7 +776,6 @@ const Users = () => {
                                                     type="date"
                                                     value={editingUser.fecha_baja || ''}
                                                     onChange={e => setEditingUser({ ...editingUser, fecha_baja: e.target.value })}
-
                                                     tooltip="Fecha en que se inactiva"
                                                     style={{ minWidth: '120px' }}
                                                 />
@@ -835,10 +843,10 @@ const Users = () => {
                                                             {rs === 'sending' ? 'Enviando…' : 'Reset'}
                                                         </button>
 
-                                                        {/* Delete */}
+                                                        {/* Toggle Status */}
                                                         {auth.currentUser?.uid !== u.uid && (
-                                                            <button onClick={() => handleDeleteUser(u.uid)} style={btnStyle('var(--color-danger)')}>
-                                                                <Trash2 size={13} style={{ verticalAlign: 'middle', marginRight: '3px' }} />Eliminar
+                                                            <button onClick={() => handleToggleUserStatus(u.uid, u.disabled)} style={btnStyle(u.disabled ? 'var(--color-success)' : 'var(--color-danger)')}>
+                                                                <Trash2 size={13} style={{ verticalAlign: 'middle', marginRight: '3px' }} />{u.disabled ? 'Activar' : 'Inactivar'}
                                                             </button>
                                                         )}
                                                     </div>

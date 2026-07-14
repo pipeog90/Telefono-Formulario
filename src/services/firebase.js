@@ -244,18 +244,18 @@ class AuthService {
         }
     }
 
-    async deleteUser(uid) {
+    async toggleUserStatus(uid, disabled) {
         try {
-            // Use our secure Cloud Function to delete the Auth account and Firestore doc
-            const deleteUserAuth = httpsCallable(functionsInstance, 'deleteUserAuth');
-            await deleteUserAuth({ uid });
+            // Use our secure Cloud Function to toggle the Auth account and Firestore doc
+            const toggleUserStatusFn = httpsCallable(functionsInstance, 'toggleUserStatus');
+            await toggleUserStatusFn({ uid, disabled });
 
-            // Check if we just deleted ourselves
-            if (authInstance.currentUser && authInstance.currentUser.uid === uid) {
-                await firebaseDeleteUser(authInstance.currentUser); // Clean up local session
+            // If disabling the currently logged-in user, sign them out
+            if (disabled && authInstance.currentUser && authInstance.currentUser.uid === uid) {
+                await this.signOut();
             }
         } catch (error) {
-            console.error("Error from Cloud Function deleteUserAuth:", error);
+            console.error("Error from Cloud Function toggleUserStatus:", error);
             throw this._mapError(error);
         }
     }

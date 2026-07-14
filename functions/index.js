@@ -4,9 +4,9 @@ const { BigQuery } = require("@google-cloud/bigquery");
 
 admin.initializeApp();
 
-// Callable function to delete a user's Auth account
+// Callable function to toggle a user's active status (disable/enable)
 // Only allows admins (we verify the caller's role from Firestore)
-exports.deleteUserAuth = onCall(async (request) => {
+exports.toggleUserStatus = onCall(async (request) => {
     // 1. Verify caller is authenticated
     if (!request.auth) {
         throw new HttpsError(
@@ -17,11 +17,12 @@ exports.deleteUserAuth = onCall(async (request) => {
 
     const callerUid = request.auth.uid;
     const targetUid = request.data.uid;
+    const disabled = request.data.disabled;
 
-    if (!targetUid) {
+    if (!targetUid || typeof disabled !== 'boolean') {
         throw new HttpsError(
             "invalid-argument",
-            "Se requiere el UID del usuario a eliminar."
+            "Se requiere el UID del usuario y el estado disabled (booleano)."
         );
     }
 
@@ -39,33 +40,40 @@ exports.deleteUserAuth = onCall(async (request) => {
         if (callerRole !== "admin" && !isSuperAdmin) {
             throw new HttpsError(
                 "permission-denied",
-                "Solo los administradores pueden eliminar usuarios."
+                "Solo los administradores pueden cambiar el estado de los usuarios."
             );
         }
 
-        // 3. Prevent self-deletion and super-admin deletion
+        // 3. Prevent self-disabling and super-admin disabling
         if (callerUid === targetUid) {
-            throw new HttpsError("permission-denied", "No puedes eliminar tu propia cuenta a través de este método.");
+            throw new HttpsError("permission-denied", "No puedes cambiar el estado de tu propia cuenta.");
         }
 
         const targetDoc = await admin.firestore().collection("users").doc(targetUid).get();
         if (targetDoc.exists) {
             const targetData = targetDoc.data();
             if (targetData.username === 'admin' || targetData.email === 'admin@te.org') {
-                throw new HttpsError("permission-denied", "No se puede eliminar al Super Administrador.");
+                throw new HttpsError("permission-denied", "No se puede cambiar el estado del Super Administrador.");
             }
         }
 
-        // 4. Delete the Auth user
-        await admin.auth().deleteUser(targetUid);
+        // 4. Update the Auth user (if they exist)
+        try {
+            await admin.auth().updateUser(targetUid, { disabled: disabled });
+        } catch (authError) {
+            if (authError.code !== 'auth/user-not-found') {
+                throw authError; // Rethrow if it's not the user-not-found error
+            }
+            // If user-not-found, we gracefully continue to update Firestore (old users)
+        }
 
-        // 5. Delete the Firestore document (so frontend doesn't have to do it separately)
-        await admin.firestore().collection("users").doc(targetUid).delete();
+        // 5. Update the Firestore document
+        await admin.firestore().collection("users").doc(targetUid).update({ disabled: disabled });
 
-        return { success: true, message: "Usuario eliminado correctamente de Firebase Auth y Firestore." };
+        return { success: true, message: "Estado de usuario actualizado correctamente." };
 
     } catch (error) {
-        console.error("Error eliminando usuario:", error);
+        console.error("Error cambiando estado de usuario:", error);
         throw new HttpsError("internal", error.message);
     }
 });
