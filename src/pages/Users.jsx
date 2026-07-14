@@ -114,7 +114,10 @@ const Users = () => {
     const editRowRef = useRef(null);
 
     // Filters and Pagination
-    const [columnFilters, setColumnFilters] = useState({});
+    const [columnFilters, setColumnFilters] = useState(() => {
+        const saved = localStorage.getItem('usersTableFilters');
+        return saved ? JSON.parse(saved) : {};
+    });
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(20);
 
@@ -340,6 +343,20 @@ const Users = () => {
     });
 
     // ── Pagination and Filtering Logic ──────────────────────────────────────
+    
+    const getUniqueOptions = (column) => {
+        const options = new Set();
+        users.forEach(u => {
+            let fieldVal = '';
+            if (column === 'role') fieldVal = u.role === 'admin' ? 'Administrador' : 'Orientador';
+            else if (column === 'email') fieldVal = u.realEmail || '';
+            else fieldVal = u[column] || '';
+            
+            options.add(fieldVal);
+        });
+        return Array.from(options).sort((a, b) => String(a).localeCompare(String(b)));
+    };
+
     const filteredUsers = React.useMemo(() => {
         let result = [...users].sort((a, b) => {
             const codA = parseInt((a.Código_Orientador || '').replace('MEO', '')) || 9999;
@@ -356,7 +373,7 @@ const Users = () => {
                     else if (key === 'email') fieldVal = u.realEmail || '';
                     else fieldVal = u[key] || '';
                     
-                    return String(fieldVal).toLowerCase().includes(lowerValue);
+                    return String(fieldVal).toLowerCase().trim() === lowerValue;
                 });
             }
         });
@@ -532,43 +549,93 @@ const Users = () => {
                             <tr>
                                 <th>
                                     <div>Cod.</div>
-                                    <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.Código_Orientador || ''} onChange={e => handleFilterChange('Código_Orientador', e.target.value)} />
+                                    <select className="table-filter-input" value={columnFilters.Código_Orientador || ''} onChange={e => handleFilterChange('Código_Orientador', e.target.value)}>
+                                        <option value="">Filtrar...</option>
+                                        {getUniqueOptions('Código_Orientador').map((opt, i) => (
+                                            <option key={i} value={opt}>{opt || '-'}</option>
+                                        ))}
+                                    </select>
                                 </th>
                                 <th>
                                     <div>Nombre</div>
-                                    <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.name || ''} onChange={e => handleFilterChange('name', e.target.value)} />
+                                    <select className="table-filter-input" value={columnFilters.name || ''} onChange={e => handleFilterChange('name', e.target.value)}>
+                                        <option value="">Filtrar...</option>
+                                        {getUniqueOptions('name').map((opt, i) => (
+                                            <option key={i} value={opt}>{opt || '-'}</option>
+                                        ))}
+                                    </select>
                                 </th>
                                 <th>
                                     <div>Clave</div>
-                                    <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.Clave || ''} onChange={e => handleFilterChange('Clave', e.target.value)} />
+                                    <select className="table-filter-input" value={columnFilters.Clave || ''} onChange={e => handleFilterChange('Clave', e.target.value)}>
+                                        <option value="">Filtrar...</option>
+                                        {getUniqueOptions('Clave').map((opt, i) => (
+                                            <option key={i} value={opt}>{opt || '-'}</option>
+                                        ))}
+                                    </select>
                                 </th>
                                 <th>
                                     <div>Usuario</div>
-                                    <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.username || ''} onChange={e => handleFilterChange('username', e.target.value)} />
+                                    <select className="table-filter-input" value={columnFilters.username || ''} onChange={e => handleFilterChange('username', e.target.value)}>
+                                        <option value="">Filtrar...</option>
+                                        {getUniqueOptions('username').map((opt, i) => (
+                                            <option key={i} value={opt}>{opt || '-'}</option>
+                                        ))}
+                                    </select>
                                 </th>
                                 <th>
                                     <div>Email</div>
-                                    <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.email || ''} onChange={e => handleFilterChange('email', e.target.value)} />
+                                    <select className="table-filter-input" value={columnFilters.email || ''} onChange={e => handleFilterChange('email', e.target.value)}>
+                                        <option value="">Filtrar...</option>
+                                        {getUniqueOptions('email').map((opt, i) => (
+                                            <option key={i} value={opt}>{opt || '-'}</option>
+                                        ))}
+                                    </select>
                                 </th>
                                 <th>
                                     <div>Rol</div>
-                                    <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.role || ''} onChange={e => handleFilterChange('role', e.target.value)} />
+                                    <select className="table-filter-input" value={columnFilters.role || ''} onChange={e => handleFilterChange('role', e.target.value)}>
+                                        <option value="">Filtrar...</option>
+                                        {getUniqueOptions('role').map((opt, i) => (
+                                            <option key={i} value={opt}>{opt || '-'}</option>
+                                        ))}
+                                    </select>
                                 </th>
                                 <th>
                                     <div>Dirección</div>
-                                    <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.direccion || ''} onChange={e => handleFilterChange('direccion', e.target.value)} />
+                                    <select className="table-filter-input" value={columnFilters.direccion || ''} onChange={e => handleFilterChange('direccion', e.target.value)}>
+                                        <option value="">Filtrar...</option>
+                                        {getUniqueOptions('direccion').map((opt, i) => (
+                                            <option key={i} value={opt}>{opt || '-'}</option>
+                                        ))}
+                                    </select>
                                 </th>
                                 <th>
                                     <div>Centro</div>
-                                    <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.centro || ''} onChange={e => handleFilterChange('centro', e.target.value)} />
+                                    <select className="table-filter-input" value={columnFilters.centro || ''} onChange={e => handleFilterChange('centro', e.target.value)}>
+                                        <option value="">Filtrar...</option>
+                                        {getUniqueOptions('centro').map((opt, i) => (
+                                            <option key={i} value={opt}>{opt || '-'}</option>
+                                        ))}
+                                    </select>
                                 </th>
                                 <th>
                                     <div>Fecha Alta</div>
-                                    <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.fecha_alta || ''} onChange={e => handleFilterChange('fecha_alta', e.target.value)} />
+                                    <select className="table-filter-input" value={columnFilters.fecha_alta || ''} onChange={e => handleFilterChange('fecha_alta', e.target.value)}>
+                                        <option value="">Filtrar...</option>
+                                        {getUniqueOptions('fecha_alta').map((opt, i) => (
+                                            <option key={i} value={opt}>{opt || '-'}</option>
+                                        ))}
+                                    </select>
                                 </th>
                                 <th>
                                     <div>Fecha Baja</div>
-                                    <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.fecha_baja || ''} onChange={e => handleFilterChange('fecha_baja', e.target.value)} />
+                                    <select className="table-filter-input" value={columnFilters.fecha_baja || ''} onChange={e => handleFilterChange('fecha_baja', e.target.value)}>
+                                        <option value="">Filtrar...</option>
+                                        {getUniqueOptions('fecha_baja').map((opt, i) => (
+                                            <option key={i} value={opt}>{opt || '-'}</option>
+                                        ))}
+                                    </select>
                                 </th>
                                 <th style={{ width: '1px', verticalAlign: 'top' }}>
                                     <div style={{ marginBottom: '8px' }}>Acciones</div>
