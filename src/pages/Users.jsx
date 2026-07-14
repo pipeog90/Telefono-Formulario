@@ -346,20 +346,47 @@ const Users = () => {
     const uniqueOptionsCache = React.useMemo(() => {
         const cache = {};
         const columns = ['Código_Orientador', 'name', 'Clave', 'username', 'email', 'role', 'direccion', 'centro', 'fecha_alta', 'fecha_baja'];
+        
         columns.forEach(col => {
+            let availableUsers = users;
+            
+            // Apply all filters *except* the current column to find valid options for this column
+            Object.entries(columnFilters).forEach(([key, value]) => {
+                if (key !== col && value && value.trim() !== '') {
+                    if (key === 'status') {
+                        if (value === 'activos') {
+                            availableUsers = availableUsers.filter(u => !u.disabled);
+                        }
+                        return;
+                    }
+
+                    const lowerValue = value.toLowerCase().trim();
+                    availableUsers = availableUsers.filter(u => {
+                        let fieldVal = '';
+                        if (key === 'role') fieldVal = u.role === 'admin' ? 'Administrador' : 'Orientador';
+                        else if (key === 'email') fieldVal = u.realEmail || '';
+                        else fieldVal = u[key] || '';
+                        
+                        return String(fieldVal).toLowerCase().trim() === lowerValue;
+                    });
+                }
+            });
+
             const options = new Set();
-            users.forEach(u => {
+            availableUsers.forEach(u => {
                 let fieldVal = '';
                 if (col === 'role') fieldVal = u.role === 'admin' ? 'Administrador' : 'Orientador';
                 else if (col === 'email') fieldVal = u.realEmail || '';
                 else fieldVal = u[col] || '';
                 
-                options.add(fieldVal);
+                if (fieldVal !== undefined && fieldVal !== null) {
+                    options.add(fieldVal);
+                }
             });
             cache[col] = Array.from(options).sort((a, b) => String(a).localeCompare(String(b)));
         });
         return cache;
-    }, [users]);
+    }, [users, columnFilters]);
 
     const getUniqueOptions = (column) => {
         return uniqueOptionsCache[column] || [];

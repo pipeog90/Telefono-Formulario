@@ -464,13 +464,41 @@ const Reportes = () => {
         if (!results || results.length === 0) return {};
         const fields = ['L_ID_Llamada', 'L_Orientador', 'L_Sintesis', 'L_Fecha', 'L_Duracion', 'U_Sexo', 'U_Edad', 'L_Como_Conoce', 'U_Asiduidad'];
         const cache = {};
+        
         fields.forEach(f => {
-            cache[f] = [...new Set(results.map(r => r[f]))].filter(Boolean).sort();
+            let availableResults = results;
+            
+            // Apply all filters *except* the current column
+            Object.entries(columnFilters).forEach(([key, value]) => {
+                if (key !== f && value && value.trim() !== '') {
+                    const lowerValue = value.toLowerCase().trim();
+                    availableResults = availableResults.filter(item => {
+                        if (key === 'Problema') {
+                            return (item.U_Problema_1 || '').toLowerCase().trim() === lowerValue ||
+                                   (item.U_Problema_2 || '').toLowerCase().trim() === lowerValue ||
+                                   (item.U_Problema_3 || '').toLowerCase().trim() === lowerValue;
+                        }
+                        return String(item[key] || '').toLowerCase().trim() === lowerValue;
+                    });
+                }
+            });
+
+            cache[f] = [...new Set(availableResults.map(r => r[f]))].filter(Boolean).sort();
         });
         
         // Special case: Problema
+        let availableResultsForProblema = results;
+        Object.entries(columnFilters).forEach(([key, value]) => {
+            if (key !== 'Problema' && value && value.trim() !== '') {
+                const lowerValue = value.toLowerCase().trim();
+                availableResultsForProblema = availableResultsForProblema.filter(item => {
+                    return String(item[key] || '').toLowerCase().trim() === lowerValue;
+                });
+            }
+        });
+
         const allProblems = [];
-        results.forEach(r => {
+        availableResultsForProblema.forEach(r => {
             if (r.U_Problema_1) allProblems.push(r.U_Problema_1);
             if (r.U_Problema_2) allProblems.push(r.U_Problema_2);
             if (r.U_Problema_3) allProblems.push(r.U_Problema_3);
@@ -478,7 +506,7 @@ const Reportes = () => {
         cache['Problema'] = [...new Set(allProblems)].filter(Boolean).sort();
         
         return cache;
-    }, [results]);
+    }, [results, columnFilters]);
 
     const getUniqueOptions = (field) => {
         return uniqueOptionsCache[field] || [];
