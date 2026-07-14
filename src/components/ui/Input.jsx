@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
-const Input = ({ label, id, type = 'text', value, onChange, placeholder, required = false, disabled = false, style = {}, error = false, tooltip = '', maxLength }) => {
+const Input = ({ label, id, type = 'text', value, onChange, placeholder, required = false, disabled = false, style = {}, error = false, tooltip = '', maxLength, autoComplete = 'off' }) => {
     const [showTooltip, setShowTooltip] = useState(false);
     const [tooltipPos, setTooltipPos] = useState({ top: 0, left: 0 });
     const labelRef = useRef(null);
@@ -96,7 +96,7 @@ const Input = ({ label, id, type = 'text', value, onChange, placeholder, require
                 <input
                     id={id}
                     type={type}
-                    autoComplete="off"
+                    autoComplete={autoComplete}
                     value={value || ''}
                     onChange={onChange}
                     placeholder={placeholder}

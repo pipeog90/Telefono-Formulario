@@ -65,6 +65,7 @@ const PasswordInput = ({ label, value, onChange, placeholder, style = {}, center
                     placeholder={placeholder}
                     style={inputStyle}
                     className="mobile-input-fix"
+                    autoComplete="new-password"
                 />
                 <button
                     type="button"
@@ -418,7 +419,7 @@ const Users = () => {
                                 value={newUser.username}
                                 onChange={e => setNewUser({ ...newUser, username: e.target.value })}
                                 placeholder="Ej: juan.perez"
-
+                                autoComplete="new-password"
                             />
                         </div>
                         <div style={{ flex: '1.5 1 150px' }}>
