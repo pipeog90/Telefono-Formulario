@@ -72,20 +72,50 @@ const Reportes = () => {
             let data = await db.getCalls(activeFilters);
 
             // Robust Matcher for basic fields
-            const safeMatch = (itemValue, filterValue) => {
+            const safeMatch = (itemValue, filterValue, listName) => {
                 if (!filterValue) return true;
                 const v1 = String(itemValue || '').trim().toUpperCase();
                 const v2 = String(filterValue || '').trim().toUpperCase();
                 const v2Id = v2.split(' - ')[0].trim();
-                return v1 === v2 || v1 === v2Id || v1.startsWith(`${v2Id} -`) || v1.startsWith(`${v2Id}-`);
+                
+                if (v1 === v2 || v1 === v2Id || v1.startsWith(`${v2Id} -`) || v1.startsWith(`${v2Id}-`)) return true;
+
+                if (listName && lists && lists[listName]) {
+                    const matchedOption = lists[listName].find(opt => String(opt.value).toUpperCase() === v2);
+                    if (matchedOption) {
+                        const parts = matchedOption.label.split(' - ');
+                        if (parts.length > 1) {
+                            const labelText = parts.slice(1).join(' - ').trim().toUpperCase();
+                            if (v1 === labelText || v1.includes(labelText)) return true;
+                        }
+                    }
+                }
+                return false;
             };
 
             // Specific Filters
-            if (activeFilters.L_Orientador) data = data.filter(item => safeMatch(item.L_Orientador, activeFilters.L_Orientador));
+            if (activeFilters.L_Orientador) data = data.filter(item => safeMatch(item.L_Orientador, activeFilters.L_Orientador, null));
             
             if (activeFilters.problema) {
                 const filterKey = activeFilters.problema.split(' - ')[0].trim().toUpperCase();
                 const probRegex = new RegExp(`^${filterKey}\\d+`);
+                
+                let problematicaLabelText = '';
+                let problemaLabelText = '';
+                
+                if (filterKey.length === 1) {
+                    const matchedOption = (lists['PROBLEMATICA'] || []).find(opt => String(opt.value).toUpperCase() === filterKey);
+                    if (matchedOption) {
+                        const parts = matchedOption.label.split(' - ');
+                        if (parts.length > 1) problematicaLabelText = parts.slice(1).join(' - ').trim().toUpperCase();
+                    }
+                } else {
+                    const matchedOption = (lists['PROBLEMA'] || []).find(opt => String(opt.value).toUpperCase() === filterKey);
+                    if (matchedOption) {
+                        const parts = matchedOption.label.split(' - ');
+                        if (parts.length > 1) problemaLabelText = parts.slice(1).join(' - ').trim().toUpperCase();
+                    }
+                }
                 
                 data = data.filter(item => {
                     const p1 = String(item.U_Problematica_1 || '').trim().toUpperCase();
@@ -96,11 +126,17 @@ const Reportes = () => {
                     const prob2 = String(item.U_Problema_2 || '').trim().toUpperCase();
                     const prob3 = String(item.U_Problema_3 || '').trim().toUpperCase();
 
-                    const matchesProb = (p) => p === filterKey || p.startsWith(`${filterKey} -`) || p.startsWith(`${filterKey}-`);
+                    const matchesProb = (p) => {
+                        if (p === filterKey || p.startsWith(`${filterKey} -`) || p.startsWith(`${filterKey}-`)) return true;
+                        if (filterKey.length === 1 && problematicaLabelText && (p === problematicaLabelText || p.includes(problematicaLabelText))) return true;
+                        return false;
+                    };
+                    
                     const matchesProblem = (prob) => {
-                        if (prob === filterKey) return true;
-                        if (prob.startsWith(`${filterKey} -`) || prob.startsWith(`${filterKey}-`)) return true;
-                        return probRegex.test(prob);
+                        if (prob === filterKey || prob.startsWith(`${filterKey} -`) || prob.startsWith(`${filterKey}-`)) return true;
+                        if (filterKey.length > 1 && problemaLabelText && (prob === problemaLabelText || prob.includes(problemaLabelText))) return true;
+                        if (filterKey.length === 1 && probRegex.test(prob)) return true;
+                        return false;
                     };
 
                     return matchesProb(p1) || matchesProb(p2) || matchesProb(p3) ||
@@ -108,9 +144,9 @@ const Reportes = () => {
                 });
             }
 
-            if (activeFilters.asiduidad) data = data.filter(item => safeMatch(item.U_Asiduidad, activeFilters.asiduidad));
-            if (activeFilters.sexo) data = data.filter(item => safeMatch(item.U_Sexo, activeFilters.sexo));
-            if (activeFilters.edad) data = data.filter(item => safeMatch(item.U_Edad, activeFilters.edad));
+            if (activeFilters.asiduidad) data = data.filter(item => safeMatch(item.U_Asiduidad, activeFilters.asiduidad, 'ASIDUIDAD'));
+            if (activeFilters.sexo) data = data.filter(item => safeMatch(item.U_Sexo, activeFilters.sexo, 'SEXO'));
+            if (activeFilters.edad) data = data.filter(item => safeMatch(item.U_Edad, activeFilters.edad, 'EDAD'));
 
             // Date Range Filters
             if (activeFilters.fechaInicio) {
