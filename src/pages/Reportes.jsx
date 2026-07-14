@@ -452,6 +452,20 @@ const Reportes = () => {
         reader.readAsText(file);
     };
 
+    const getUniqueOptions = (field) => {
+        if (!results || results.length === 0) return [];
+        if (field === 'Problema') {
+            const allProblems = [];
+            results.forEach(r => {
+                if (r.U_Problema_1) allProblems.push(r.U_Problema_1);
+                if (r.U_Problema_2) allProblems.push(r.U_Problema_2);
+                if (r.U_Problema_3) allProblems.push(r.U_Problema_3);
+            });
+            return [...new Set(allProblems)].filter(Boolean).sort();
+        }
+        return [...new Set(results.map(r => r[field]))].filter(Boolean).sort();
+    };
+
     // ── Pagination and Filtering Logic ──────────────────────────────────────
     const filteredResults = React.useMemo(() => {
         let res = results;
@@ -459,13 +473,12 @@ const Reportes = () => {
             if (value && value.trim() !== '') {
                 const lowerValue = value.toLowerCase().trim();
                 res = res.filter(item => {
-                    let fieldVal = '';
                     if (key === 'Problema') {
-                        fieldVal = [item.U_Problema_1, item.U_Problema_2, item.U_Problema_3].join(' ');
-                    } else {
-                        fieldVal = item[key] || '';
+                        return (item.U_Problema_1 || '').toLowerCase().trim() === lowerValue ||
+                               (item.U_Problema_2 || '').toLowerCase().trim() === lowerValue ||
+                               (item.U_Problema_3 || '').toLowerCase().trim() === lowerValue;
                     }
-                    return String(fieldVal).toLowerCase().includes(lowerValue);
+                    return String(item[key] || '').toLowerCase().trim() === lowerValue;
                 });
             }
         });
@@ -614,39 +627,84 @@ const Reportes = () => {
                                     <th style={{ width: '40px', textAlign: 'center' }}>No</th>
                                     <th>
                                         <div>ID</div>
-                                        <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.L_ID_Llamada || ''} onChange={e => handleColumnFilterChange('L_ID_Llamada', e.target.value)} />
+                                        {results.length > 0 && (
+                                            <select className="table-filter-input" value={columnFilters.L_ID_Llamada || ''} onChange={e => handleColumnFilterChange('L_ID_Llamada', e.target.value)}>
+                                                <option value="">Filtrar...</option>
+                                                {getUniqueOptions('L_ID_Llamada').map((opt, i) => <option key={i} value={opt}>{opt || '-'}</option>)}
+                                            </select>
+                                        )}
                                     </th>
                                     <th>
                                         <div>Orientador</div>
-                                        <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.L_Orientador || ''} onChange={e => handleColumnFilterChange('L_Orientador', e.target.value)} />
+                                        {results.length > 0 && (
+                                            <select className="table-filter-input" value={columnFilters.L_Orientador || ''} onChange={e => handleColumnFilterChange('L_Orientador', e.target.value)}>
+                                                <option value="">Filtrar...</option>
+                                                {getUniqueOptions('L_Orientador').map((opt, i) => <option key={i} value={opt}>{opt || '-'}</option>)}
+                                            </select>
+                                        )}
                                     </th>
                                     <th>
                                         <div>Problema</div>
-                                        <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.Problema || ''} onChange={e => handleColumnFilterChange('Problema', e.target.value)} />
+                                        {results.length > 0 && (
+                                            <select className="table-filter-input" value={columnFilters.Problema || ''} onChange={e => handleColumnFilterChange('Problema', e.target.value)}>
+                                                <option value="">Filtrar...</option>
+                                                {getUniqueOptions('Problema').map((opt, i) => <option key={i} value={opt}>{opt || '-'}</option>)}
+                                            </select>
+                                        )}
                                     </th>
                                     <th>
                                         <div>Síntesis</div>
-                                        <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.L_Sintesis || ''} onChange={e => handleColumnFilterChange('L_Sintesis', e.target.value)} />
+                                        {results.length > 0 && (
+                                            <select className="table-filter-input" value={columnFilters.L_Sintesis || ''} onChange={e => handleColumnFilterChange('L_Sintesis', e.target.value)}>
+                                                <option value="">Filtrar...</option>
+                                                {getUniqueOptions('L_Sintesis').map((opt, i) => <option key={i} value={opt}>{opt || '-'}</option>)}
+                                            </select>
+                                        )}
                                     </th>
                                     <th>
                                         <div>Fecha</div>
-                                        <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.L_Fecha || ''} onChange={e => handleColumnFilterChange('L_Fecha', e.target.value)} />
+                                        {results.length > 0 && (
+                                            <select className="table-filter-input" value={columnFilters.L_Fecha || ''} onChange={e => handleColumnFilterChange('L_Fecha', e.target.value)}>
+                                                <option value="">Filtrar...</option>
+                                                {getUniqueOptions('L_Fecha').map((opt, i) => <option key={i} value={opt}>{opt || '-'}</option>)}
+                                            </select>
+                                        )}
                                     </th>
                                     <th>
                                         <div>Duración</div>
-                                        <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.L_Duracion || ''} onChange={e => handleColumnFilterChange('L_Duracion', e.target.value)} />
+                                        {results.length > 0 && (
+                                            <select className="table-filter-input" value={columnFilters.L_Duracion || ''} onChange={e => handleColumnFilterChange('L_Duracion', e.target.value)}>
+                                                <option value="">Filtrar...</option>
+                                                {getUniqueOptions('L_Duracion').map((opt, i) => <option key={i} value={opt}>{opt || '-'}</option>)}
+                                            </select>
+                                        )}
                                     </th>
                                     <th>
                                         <div>Sexo</div>
-                                        <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.U_Sexo || ''} onChange={e => handleColumnFilterChange('U_Sexo', e.target.value)} />
+                                        {results.length > 0 && (
+                                            <select className="table-filter-input" value={columnFilters.U_Sexo || ''} onChange={e => handleColumnFilterChange('U_Sexo', e.target.value)}>
+                                                <option value="">Filtrar...</option>
+                                                {getUniqueOptions('U_Sexo').map((opt, i) => <option key={i} value={opt}>{opt || '-'}</option>)}
+                                            </select>
+                                        )}
                                     </th>
                                     <th>
                                         <div>Edad</div>
-                                        <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.U_Edad || ''} onChange={e => handleColumnFilterChange('U_Edad', e.target.value)} />
+                                        {results.length > 0 && (
+                                            <select className="table-filter-input" value={columnFilters.U_Edad || ''} onChange={e => handleColumnFilterChange('U_Edad', e.target.value)}>
+                                                <option value="">Filtrar...</option>
+                                                {getUniqueOptions('U_Edad').map((opt, i) => <option key={i} value={opt}>{opt || '-'}</option>)}
+                                            </select>
+                                        )}
                                     </th>
                                     <th>
                                         <div>Cómo se enteró</div>
-                                        <input type="text" placeholder="Filtrar..." className="table-filter-input" value={columnFilters.L_Como_Conoce || ''} onChange={e => handleColumnFilterChange('L_Como_Conoce', e.target.value)} />
+                                        {results.length > 0 && (
+                                            <select className="table-filter-input" value={columnFilters.L_Como_Conoce || ''} onChange={e => handleColumnFilterChange('L_Como_Conoce', e.target.value)}>
+                                                <option value="">Filtrar...</option>
+                                                {getUniqueOptions('L_Como_Conoce').map((opt, i) => <option key={i} value={opt}>{opt || '-'}</option>)}
+                                            </select>
+                                        )}
                                     </th>
                                     {isAdmin && (
                                         <th style={{ width: '1px', verticalAlign: 'top' }}>
