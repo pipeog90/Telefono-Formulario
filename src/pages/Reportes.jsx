@@ -526,7 +526,7 @@ const Reportes = () => {
 
                             {/* Action Buttons Row */}
                             <div className="action-buttons-row" style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '6px', justifyContent: 'flex-start' }}>
-                                <Button type="submit" variant="primary" style={{ width: '170px', padding: '10px', display: 'flex', justifyContent: 'center' }}>
+                                <Button type="submit" variant="primary" style={{ width: '170px', padding: '10px', display: 'flex', justifyContent: 'center', backgroundColor: loading ? '#f39c12' : '', borderColor: loading ? '#e67e22' : '' }}>
                                     {loading ? 'Generando...' : 'Generar Reporte'}
                                 </Button>
                                 <Button type="button" onClick={handleExport} variant="secondary" style={{ width: '170px', padding: '10px', backgroundColor: 'white', border: '2px solid #3498db', color: '#3498db', display: 'flex', justifyContent: 'center' }}>
