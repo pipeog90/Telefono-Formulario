@@ -71,36 +71,46 @@ const Reportes = () => {
             const activeFilters = { ...filters, ...filterOverride };
             let data = await db.getCalls(activeFilters);
 
-            // Specific Filters
-            if (activeFilters.L_Orientador) data = data.filter(item => String(item.L_Orientador) === String(activeFilters.L_Orientador));
-            // Adapt problem filtering to match data structure
-            // CallForm stores l_problematica as just the letter key (e.g. "O"),
-            // but the Reportes Select sends the full string (e.g. "O - PROBLEMAS...").
-            // We extract the letter prefix and check ALL three problematica/problema pairs.
-            if (activeFilters.problema) {
-                const filterKey = activeFilters.problema.split(' - ')[0]; // Extract letter key
-                const probRegex = new RegExp('^' + filterKey + '(\\d| -|$)');
-                data = data.filter(item => {
-                    // Check all three problematica slots
-                    const p1 = String(item.U_Problematica_1 || '');
-                    const p2 = String(item.U_Problematica_2 || '');
-                    const p3 = String(item.U_Problematica_3 || '');
-                    // Check all three problema slots (e.g. "O2" starts with "O")
-                    const prob1 = String(item.U_Problema_1 || '');
-                    const prob2 = String(item.U_Problema_2 || '');
-                    const prob3 = String(item.U_Problema_3 || '');
+            // Robust Matcher for basic fields
+            const safeMatch = (itemValue, filterValue) => {
+                if (!filterValue) return true;
+                const v1 = String(itemValue || '').trim().toUpperCase();
+                const v2 = String(filterValue || '').trim().toUpperCase();
+                const v2Id = v2.split(' - ')[0].trim();
+                return v1 === v2 || v1 === v2Id || v1.startsWith(`${v2Id} -`) || v1.startsWith(`${v2Id}-`);
+            };
 
-                    return p1 === filterKey || p1 === activeFilters.problema ||
-                        p2 === filterKey || p2 === activeFilters.problema ||
-                        p3 === filterKey || p3 === activeFilters.problema ||
-                        probRegex.test(prob1) || prob1 === activeFilters.problema ||
-                        probRegex.test(prob2) || prob2 === activeFilters.problema ||
-                        probRegex.test(prob3) || prob3 === activeFilters.problema;
+            // Specific Filters
+            if (activeFilters.L_Orientador) data = data.filter(item => safeMatch(item.L_Orientador, activeFilters.L_Orientador));
+            
+            if (activeFilters.problema) {
+                const filterKey = activeFilters.problema.split(' - ')[0].trim().toUpperCase();
+                const probRegex = new RegExp(`^${filterKey}\\d+`);
+                
+                data = data.filter(item => {
+                    const p1 = String(item.U_Problematica_1 || '').trim().toUpperCase();
+                    const p2 = String(item.U_Problematica_2 || '').trim().toUpperCase();
+                    const p3 = String(item.U_Problematica_3 || '').trim().toUpperCase();
+                    
+                    const prob1 = String(item.U_Problema_1 || '').trim().toUpperCase();
+                    const prob2 = String(item.U_Problema_2 || '').trim().toUpperCase();
+                    const prob3 = String(item.U_Problema_3 || '').trim().toUpperCase();
+
+                    const matchesProb = (p) => p === filterKey || p.startsWith(`${filterKey} -`) || p.startsWith(`${filterKey}-`);
+                    const matchesProblem = (prob) => {
+                        if (prob === filterKey) return true;
+                        if (prob.startsWith(`${filterKey} -`) || prob.startsWith(`${filterKey}-`)) return true;
+                        return probRegex.test(prob);
+                    };
+
+                    return matchesProb(p1) || matchesProb(p2) || matchesProb(p3) ||
+                           matchesProblem(prob1) || matchesProblem(prob2) || matchesProblem(prob3);
                 });
             }
-            if (activeFilters.asiduidad) data = data.filter(item => String(item.U_Asiduidad) === String(activeFilters.asiduidad));
-            if (activeFilters.sexo) data = data.filter(item => String(item.U_Sexo) === String(activeFilters.sexo));
-            if (activeFilters.edad) data = data.filter(item => String(item.U_Edad) === String(activeFilters.edad));
+
+            if (activeFilters.asiduidad) data = data.filter(item => safeMatch(item.U_Asiduidad, activeFilters.asiduidad));
+            if (activeFilters.sexo) data = data.filter(item => safeMatch(item.U_Sexo, activeFilters.sexo));
+            if (activeFilters.edad) data = data.filter(item => safeMatch(item.U_Edad, activeFilters.edad));
 
             // Date Range Filters
             if (activeFilters.fechaInicio) {
