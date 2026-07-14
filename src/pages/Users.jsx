@@ -3,6 +3,7 @@ import { auth } from '../services/firebase';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Select from '../components/ui/Select';
+import CreatableSelect from '../components/ui/CreatableSelect';
 import { useLists } from '../hooks/useLists';
 import { Users as UsersIcon, UserPlus, Trash2, Edit2, Save, X, Mail, KeyRound, Eye, EyeOff } from 'lucide-react';
 
@@ -567,20 +568,15 @@ const Users = () => {
                         alignItems: 'end',
                         marginTop: '12px'
                     }}>
-                        <div style={{ position: 'relative' }}>
-                            <Input type="text"
+                        <div style={{ flex: '1 1 150px' }}>
+                            <CreatableSelect
+                                id="new-user-centro"
                                 label="Centro (opcional)"
                                 value={newUser.centro || ''}
                                 onChange={e => setNewUser({ ...newUser, centro: capitalize(e.target.value) })}
-                                list="centros-list"
-                                autoComplete="on"
+                                options={(lists?.CENTRO || []).filter(c => c.active)}
                                 tooltip="Centro del telefono de la Esperanza"
                             />
-                            <datalist id="centros-list">
-                                {(lists?.CENTRO || []).filter(c => c.active).map(c => (
-                                    <option key={c.value} value={c.value} />
-                                ))}
-                            </datalist>
                         </div>
                         <div style={{ flex: '2 1 200px' }}>
                             <Input
@@ -890,19 +886,14 @@ const Users = () => {
                                         {/* Centro */}
                                         <td style={{ padding: 'var(--admin-cell-padding)' }}>
                                             {isEditing ? (
-                                                <div style={{ position: 'relative', width: '150px' }}>
-                                                    <Input type="text"
+                                                <div style={{ minWidth: '150px' }}>
+                                                    <CreatableSelect
+                                                        id="edit-user-centro"
                                                         value={editingUser.centro || ''}
                                                         onChange={e => setEditingUser({ ...editingUser, centro: capitalize(e.target.value) })}
-                                                        list="edit-centros-list"
-                                                        autoComplete="on"
+                                                        options={(lists?.CENTRO || []).filter(c => c.active)}
                                                         tooltip="Centro del telefono de la Esperanza"
                                                     />
-                                                    <datalist id="edit-centros-list">
-                                                        {(lists?.CENTRO || []).filter(c => c.active).map(c => (
-                                                            <option key={c.value} value={c.value} />
-                                                        ))}
-                                                    </datalist>
                                                 </div>
                                             ) : u.centro || '—'}
                                         </td>
