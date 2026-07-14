@@ -366,6 +366,13 @@ const Users = () => {
 
         Object.entries(columnFilters).forEach(([key, value]) => {
             if (value && value.trim() !== '') {
+                if (key === 'status') {
+                    if (value === 'activos') {
+                        result = result.filter(u => !u.disabled);
+                    }
+                    return;
+                }
+
                 const lowerValue = value.toLowerCase().trim();
                 result = result.filter(u => {
                     let fieldVal = '';
@@ -649,7 +656,11 @@ const Users = () => {
                                 </th>
                                 <th style={{ width: '1px', verticalAlign: 'top' }}>
                                     <div style={{ marginBottom: '8px' }}>Acciones</div>
-                                    {Object.keys(columnFilters).length > 0 && (
+                                    <select className="table-filter-input" style={{ marginBottom: '8px', minWidth: '110px' }} value={columnFilters.status || ''} onChange={e => handleFilterChange('status', e.target.value)}>
+                                        <option value="">Filtrar todos</option>
+                                        <option value="activos">Filtrar activos</option>
+                                    </select>
+                                    {Object.keys(columnFilters).filter(k => columnFilters[k] && columnFilters[k] !== '').length > 0 && (
                                         <Button type="button" onClick={clearFilters} variant="secondary" style={{ padding: '0 8px', fontSize: '0.8rem', height: '32px' }}>
                                             Limpiar
                                         </Button>
