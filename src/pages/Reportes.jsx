@@ -72,13 +72,14 @@ const Reportes = () => {
             let data = await db.getCalls(activeFilters);
 
             // Specific Filters
-            if (activeFilters.L_Orientador) data = data.filter(item => item.L_Orientador === activeFilters.L_Orientador);
+            if (activeFilters.L_Orientador) data = data.filter(item => String(item.L_Orientador) === String(activeFilters.L_Orientador));
             // Adapt problem filtering to match data structure
             // CallForm stores l_problematica as just the letter key (e.g. "O"),
             // but the Reportes Select sends the full string (e.g. "O - PROBLEMAS...").
             // We extract the letter prefix and check ALL three problematica/problema pairs.
             if (activeFilters.problema) {
                 const filterKey = activeFilters.problema.split(' - ')[0]; // Extract letter key
+                const probRegex = new RegExp('^' + filterKey + '(\\d| -|$)');
                 data = data.filter(item => {
                     // Check all three problematica slots
                     const p1 = String(item.U_Problematica_1 || '');
@@ -92,14 +93,14 @@ const Reportes = () => {
                     return p1 === filterKey || p1 === activeFilters.problema ||
                         p2 === filterKey || p2 === activeFilters.problema ||
                         p3 === filterKey || p3 === activeFilters.problema ||
-                        prob1.startsWith(filterKey) || prob1 === activeFilters.problema ||
-                        prob2.startsWith(filterKey) || prob2 === activeFilters.problema ||
-                        prob3.startsWith(filterKey) || prob3 === activeFilters.problema;
+                        probRegex.test(prob1) || prob1 === activeFilters.problema ||
+                        probRegex.test(prob2) || prob2 === activeFilters.problema ||
+                        probRegex.test(prob3) || prob3 === activeFilters.problema;
                 });
             }
-            if (activeFilters.asiduidad) data = data.filter(item => item.U_Asiduidad === activeFilters.asiduidad);
-            if (activeFilters.sexo) data = data.filter(item => item.U_Sexo === activeFilters.sexo);
-            if (activeFilters.edad) data = data.filter(item => item.U_Edad === activeFilters.edad);
+            if (activeFilters.asiduidad) data = data.filter(item => String(item.U_Asiduidad) === String(activeFilters.asiduidad));
+            if (activeFilters.sexo) data = data.filter(item => String(item.U_Sexo) === String(activeFilters.sexo));
+            if (activeFilters.edad) data = data.filter(item => String(item.U_Edad) === String(activeFilters.edad));
 
             // Date Range Filters
             if (activeFilters.fechaInicio) {
