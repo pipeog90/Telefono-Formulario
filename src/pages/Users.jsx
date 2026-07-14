@@ -90,10 +90,10 @@ const PasswordInput = ({ label, value, onChange, placeholder, style = {}, center
 };
 
 /** Show the email; if it's a fake @te.org, display a softer label */
-const EmailDisplay = ({ email }) => {
+const EmailDisplay = ({ email, disabled }) => {
     if (isFakeEmail(email)) {
         return (
-            <span style={{ color: '#9ca3af', fontStyle: 'italic', fontSize: '0.85rem' }}>
+            <span style={{ color: disabled ? '#e74c3c' : '#9ca3af', fontStyle: 'italic', fontSize: '0.85rem' }}>
                 {email || '—'} <span style={{ fontSize: '0.75rem' }}>(sin email real)</span>
             </span>
         );
@@ -603,7 +603,7 @@ const Users = () => {
                                         }}
                                     >
                                         {/* MEO Code */}
-                                        <td style={{ padding: 'var(--admin-cell-padding)', fontWeight: '600', color: 'var(--color-primary)', textAlign: 'center' }}>
+                                        <td style={{ padding: 'var(--admin-cell-padding)', fontWeight: '600', color: u.disabled ? '#e74c3c' : 'var(--color-primary)', textAlign: 'center' }}>
                                             {isEditing ? (
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0px' }}>
                                                     <span style={{
@@ -680,7 +680,7 @@ const Users = () => {
                                         </td>
 
                                         {/* Username */}
-                                        <td style={{ padding: 'var(--admin-cell-padding)', color: '#6b7280', fontSize: '0.9rem' }}>
+                                        <td style={{ padding: 'var(--admin-cell-padding)', color: u.disabled ? '#e74c3c' : '#6b7280', fontSize: '0.9rem' }}>
                                             {u.username || (u.email ? u.email.replace('@te.org', '') : '—')}
                                         </td>
 
@@ -697,7 +697,7 @@ const Users = () => {
                                                     style={{ minWidth: '210px' }}
                                                 />
                                             ) : (
-                                                <EmailDisplay email={u.realEmail} />
+                                                <EmailDisplay email={u.realEmail} disabled={u.disabled} />
                                             )}
                                         </td>
 
@@ -719,8 +719,8 @@ const Users = () => {
                                                     padding: '4px 8px',
                                                     borderRadius: '12px',
                                                     fontSize: '0.8rem',
-                                                    backgroundColor: u.role === 'admin' ? '#e0e7ff' : '#f3f4f6',
-                                                    color: u.role === 'admin' ? '#3730a3' : '#374151'
+                                                    backgroundColor: u.disabled ? '#fee2e2' : (u.role === 'admin' ? '#e0e7ff' : '#f3f4f6'),
+                                                    color: u.disabled ? '#e74c3c' : (u.role === 'admin' ? '#3730a3' : '#374151')
                                                 }}>
                                                     {u.role === 'admin' ? 'Administrador' : 'Orientador'}
                                                 </span>
