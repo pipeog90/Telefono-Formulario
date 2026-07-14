@@ -202,12 +202,12 @@ const CallForm = ({ user }) => {
     // Helper to get tooltip text for a field
     const tip = (fieldId) => fieldConfig[fieldId]?.description || '';
 
-    const handleChange = (e) => {
+    const handleChange = React.useCallback((e) => {
         const { id, value } = e.target;
         
         // Clear validation highlights and errors on any manual user change
-        if (missingFieldsList.length > 0) setMissingFieldsList([]);
-        if (errorMessage) setErrorMessage('');
+        setMissingFieldsList(prev => prev.length > 0 ? [] : prev);
+        setErrorMessage(prev => prev ? '' : prev);
         
         const config = fieldConfig[id];
         let sanitized = value;
@@ -228,7 +228,7 @@ const CallForm = ({ user }) => {
             if (id === 'R_Problematica_3') nextData.R_Problema_3 = '';
             return nextData;
         });
-    };
+    }, []);
 
     // Helper to get problems based on selected problematica category
     const getProblems = (categoryCode, excludeProblems = []) => {
@@ -354,13 +354,10 @@ const CallForm = ({ user }) => {
 
     // Helper wrapper to avoid writing disabled={isFieldNH('...')} required={isFieldOBL('...')} everywhere
     const getFieldProps = (fieldName) => {
-        const isNH = isFieldNH(fieldName);
-        const isOBL = isFieldOBL(fieldName);
         return {
-            disabled: isNH,
-            required: isOBL,
-            error: missingFieldsList.includes(fieldName),
-            style: isNH ? { opacity: 0.5, pointerEvents: 'none' } : {}
+            disabled: isFieldNH(fieldName),
+            required: isFieldOBL(fieldName),
+            error: missingFieldsList.includes(fieldName)
         };
     };
 

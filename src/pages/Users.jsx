@@ -342,19 +342,26 @@ const Users = () => {
         whiteSpace: 'nowrap'
     });
 
-    // ── Pagination and Filtering Logic ──────────────────────────────────────
-    
-    const getUniqueOptions = (column) => {
-        const options = new Set();
-        users.forEach(u => {
-            let fieldVal = '';
-            if (column === 'role') fieldVal = u.role === 'admin' ? 'Administrador' : 'Orientador';
-            else if (column === 'email') fieldVal = u.realEmail || '';
-            else fieldVal = u[column] || '';
-            
-            options.add(fieldVal);
+    const uniqueOptionsCache = React.useMemo(() => {
+        const cache = {};
+        const columns = ['Código_Orientador', 'name', 'Clave', 'username', 'email', 'role', 'direccion', 'centro', 'fecha_alta', 'fecha_baja'];
+        columns.forEach(col => {
+            const options = new Set();
+            users.forEach(u => {
+                let fieldVal = '';
+                if (col === 'role') fieldVal = u.role === 'admin' ? 'Administrador' : 'Orientador';
+                else if (col === 'email') fieldVal = u.realEmail || '';
+                else fieldVal = u[col] || '';
+                
+                options.add(fieldVal);
+            });
+            cache[col] = Array.from(options).sort((a, b) => String(a).localeCompare(String(b)));
         });
-        return Array.from(options).sort((a, b) => String(a).localeCompare(String(b)));
+        return cache;
+    }, [users]);
+
+    const getUniqueOptions = (column) => {
+        return uniqueOptionsCache[column] || [];
     };
 
     const filteredUsers = React.useMemo(() => {

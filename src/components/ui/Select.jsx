@@ -358,6 +358,9 @@ const Select = ({ label, id, value, onChange, options = [], required = false, di
                     paddingRight: '40px',
                     display: 'flex',
                     alignItems: 'center',
+                    opacity: disabled ? 0.5 : 1,
+                    pointerEvents: disabled ? 'none' : 'auto',
+                    cursor: disabled ? 'not-allowed' : 'pointer',
                     ...style
                 }}
             >

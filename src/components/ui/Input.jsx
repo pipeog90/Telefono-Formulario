@@ -105,7 +105,9 @@ const Input = ({ label, id, type = 'text', value, onChange, placeholder, require
                     tabIndex={disabled ? "-1" : "0"}
                     style={{
                         ...inputStyle,
-                        color: isDateEmpty ? 'transparent' : inputStyle.color
+                        color: isDateEmpty ? 'transparent' : inputStyle.color,
+                        opacity: disabled ? 0.5 : 1,
+                        pointerEvents: disabled ? 'none' : 'auto'
                     }}
                     className={`ui-input mobile-input-fix ${isDateEmpty ? 'empty-date-input' : ''} ${error ? 'has-error' : ''}`}
                     maxLength={maxLength}

@@ -460,18 +460,28 @@ const Reportes = () => {
         reader.readAsText(file);
     };
 
+    const uniqueOptionsCache = React.useMemo(() => {
+        if (!results || results.length === 0) return {};
+        const fields = ['L_ID_Llamada', 'L_Orientador', 'L_Sintesis', 'L_Fecha', 'L_Duracion', 'U_Sexo', 'U_Edad', 'L_Como_Conoce', 'U_Asiduidad'];
+        const cache = {};
+        fields.forEach(f => {
+            cache[f] = [...new Set(results.map(r => r[f]))].filter(Boolean).sort();
+        });
+        
+        // Special case: Problema
+        const allProblems = [];
+        results.forEach(r => {
+            if (r.U_Problema_1) allProblems.push(r.U_Problema_1);
+            if (r.U_Problema_2) allProblems.push(r.U_Problema_2);
+            if (r.U_Problema_3) allProblems.push(r.U_Problema_3);
+        });
+        cache['Problema'] = [...new Set(allProblems)].filter(Boolean).sort();
+        
+        return cache;
+    }, [results]);
+
     const getUniqueOptions = (field) => {
-        if (!results || results.length === 0) return [];
-        if (field === 'Problema') {
-            const allProblems = [];
-            results.forEach(r => {
-                if (r.U_Problema_1) allProblems.push(r.U_Problema_1);
-                if (r.U_Problema_2) allProblems.push(r.U_Problema_2);
-                if (r.U_Problema_3) allProblems.push(r.U_Problema_3);
-            });
-            return [...new Set(allProblems)].filter(Boolean).sort();
-        }
-        return [...new Set(results.map(r => r[field]))].filter(Boolean).sort();
+        return uniqueOptionsCache[field] || [];
     };
 
     // ── Pagination and Filtering Logic ──────────────────────────────────────
