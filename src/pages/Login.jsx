@@ -17,6 +17,7 @@ const Login = () => {
 
     // Redirect if already logged in - Use SPA navigation
     React.useEffect(() => {
+        window.scrollTo(0, 0);
         if (user) {
             navigate('/', { replace: true });
         }

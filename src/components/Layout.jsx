@@ -36,10 +36,15 @@ const NavLink = ({ to, children }) => {
 
 
 const Layout = () => {
+    const location = useLocation();
     const navigate = useNavigate();
     const { user } = useAuth();
 
     const isAdmin = user && user.role === 'admin';
+
+    React.useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [location.pathname]);
 
     const handleLogout = async () => {
         await auth.signOut();
