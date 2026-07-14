@@ -282,6 +282,7 @@ const Users = () => {
             const originalUser = users.find((u) => u.uid === editingUser.uid);
             const rawUpdates = {
                 name: editingUser.name,
+                Nombre_Orientador: editingUser.name,
                 role: editingUser.role,
                 Clave: editingUser.Clave,
                 Código_Orientador: fullMeoCode,

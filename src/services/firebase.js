@@ -164,6 +164,7 @@ class AuthService {
                 email: email.includes('@') ? email : `${email}@te.org`,
                 username: email.includes('@') ? email.split('@')[0] : email,
                 name,
+                Nombre_Orientador: name,
                 role,
                 realEmail: userData.realEmail || null,
                 Clave: userData.Clave ? userData.Clave.toUpperCase() : null,
