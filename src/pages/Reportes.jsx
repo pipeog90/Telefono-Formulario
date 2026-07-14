@@ -9,25 +9,65 @@ import Button from '../components/ui/Button';
 
 const Reportes = () => {
     const { lists } = useLists();
-    const [filters, setFilters] = useState({
-        fechaInicio: '',
-        fechaFin: '',
-        orientador: '',
-        problema: '',
-        asiduidad: '',
-        sexo: '',
-        edad: ''
+    const [filters, setFilters] = useState(() => {
+        const saved = sessionStorage.getItem('reportesFilters');
+        return saved ? JSON.parse(saved) : {
+            fechaInicio: '',
+            fechaFin: '',
+            orientador: '',
+            problema: '',
+            asiduidad: '',
+            sexo: '',
+            edad: ''
+        };
     });
-    const [results, setResults] = useState([]);
-    const [rawResults, setRawResults] = useState([]);
+    const [results, setResults] = useState(() => {
+        try {
+            const saved = sessionStorage.getItem('reportesResults');
+            return saved ? JSON.parse(saved) : [];
+        } catch(e) { return []; }
+    });
+    const [rawResults, setRawResults] = useState(() => {
+        try {
+            const saved = sessionStorage.getItem('reportesRawResults');
+            return saved ? JSON.parse(saved) : [];
+        } catch(e) { return []; }
+    });
     const [loading, setLoading] = useState(false);
-    const [searched, setSearched] = useState(false);
+    const [searched, setSearched] = useState(() => {
+        const saved = sessionStorage.getItem('reportesSearched');
+        return saved ? JSON.parse(saved) : false;
+    });
     const [usersList, setUsersList] = useState([]);
 
     // Filters and Pagination for the table
-    const [columnFilters, setColumnFilters] = useState({});
-    const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(20);
+    const [columnFilters, setColumnFilters] = useState(() => {
+        const saved = sessionStorage.getItem('reportesColumnFilters');
+        return saved ? JSON.parse(saved) : {};
+    });
+    const [currentPage, setCurrentPage] = useState(() => {
+        const saved = sessionStorage.getItem('reportesCurrentPage');
+        return saved ? JSON.parse(saved) : 1;
+    });
+    const [itemsPerPage, setItemsPerPage] = useState(() => {
+        const saved = sessionStorage.getItem('reportesItemsPerPage');
+        return saved ? JSON.parse(saved) : 20;
+    });
+
+    // Sync state to sessionStorage
+    useEffect(() => { sessionStorage.setItem('reportesFilters', JSON.stringify(filters)); }, [filters]);
+    useEffect(() => { sessionStorage.setItem('reportesSearched', JSON.stringify(searched)); }, [searched]);
+    useEffect(() => { sessionStorage.setItem('reportesColumnFilters', JSON.stringify(columnFilters)); }, [columnFilters]);
+    useEffect(() => { sessionStorage.setItem('reportesCurrentPage', JSON.stringify(currentPage)); }, [currentPage]);
+    useEffect(() => { sessionStorage.setItem('reportesItemsPerPage', JSON.stringify(itemsPerPage)); }, [itemsPerPage]);
+    useEffect(() => {
+        try {
+            sessionStorage.setItem('reportesResults', JSON.stringify(results));
+            sessionStorage.setItem('reportesRawResults', JSON.stringify(rawResults));
+        } catch (e) {
+            console.warn("Could not save report results to sessionStorage. Quota exceeded?", e);
+        }
+    }, [results, rawResults]);
 
     // Fetch users for Orientador dropdown
     useEffect(() => {
