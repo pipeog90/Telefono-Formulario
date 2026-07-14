@@ -65,7 +65,9 @@ const PasswordInput = ({ label, value, onChange, placeholder, style = {}, center
                     placeholder={placeholder}
                     style={inputStyle}
                     className="mobile-input-fix"
-                    autoComplete="new-password"
+                    autoComplete="off"
+                    data-lpignore="true"
+                    data-1p-ignore="true"
                 />
                 <button
                     type="button"
@@ -462,7 +464,7 @@ const Users = () => {
                 <h3 className="section-title">
                     <UserPlus size={20} /> Agregar Nuevo Usuario
                 </h3>
-                <form onSubmit={handleAddUser}>
+                <form onSubmit={handleAddUser} autoComplete="off">
                     <div style={{ 
                         display: 'flex', 
                         flexWrap: 'wrap',
@@ -485,7 +487,9 @@ const Users = () => {
                                 value={newUser.username}
                                 onChange={e => setNewUser({ ...newUser, username: e.target.value })}
                                 placeholder="Ej: juan.perez"
-                                autoComplete="new-password"
+                                autoComplete="off"
+                                data-lpignore="true"
+                                data-1p-ignore="true"
                             />
                         </div>
                         <div style={{ flex: '1.5 1 150px' }}>
