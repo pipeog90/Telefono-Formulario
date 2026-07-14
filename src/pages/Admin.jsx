@@ -7,6 +7,11 @@ import { List, RefreshCw, Database } from 'lucide-react';
 import { initialDropdowns, problemCategories } from '../data/initialData';
 import { db } from '../services/firebase';
 
+const capitalize = (str) => {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
 const Admin = () => {
     const { lists, loading, updateList } = useLists();
 
@@ -92,7 +97,12 @@ const Admin = () => {
             generatedValue = nextNum.toString();
         }
 
-        const fullLabel = `${generatedValue} - ${description}`;
+        let fullLabel = `${generatedValue} - ${description}`;
+        if (selectedList === 'CENTRO') {
+            generatedValue = capitalize(description.trim());
+            fullLabel = generatedValue;
+        }
+
         const newItem = { value: generatedValue, label: fullLabel, active: true };
         const newItems = [...allItems, newItem];
 
@@ -100,6 +110,8 @@ const Admin = () => {
             newItems.sort((a, b) => a.value.localeCompare(b.value));
         } else if (selectedList === 'PROBLEMA') {
             newItems.sort((a, b) => a.value.localeCompare(b.value, undefined, { numeric: true, sensitivity: 'base' }));
+        } else if (selectedList === 'CENTRO') {
+            newItems.sort((a, b) => a.value.localeCompare(b.value));
         } else {
             newItems.sort((a, b) => parseInt(a.value) - parseInt(b.value));
         }
@@ -110,6 +122,7 @@ const Admin = () => {
 
     // Helper for placeholder
     const getPlaceholder = () => {
+        if (selectedList === 'CENTRO') return 'Escriba el nombre del centro (Ej: Bogotá)';
         return 'Escriba la descripción (el código se generará automáticamente)';
     };
 
