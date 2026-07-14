@@ -292,12 +292,8 @@ exports.getCallsFromBigQuery = onCall({ invoker: 'public' }, async (request) => 
     }
 });
 
-// One-time migration: stamp all existing calls without L_ID_Llamada as "-1"
-// Only admins can trigger this. Safe to call multiple times (idempotent).
 exports.migratePreProductionCalls = onCall(async (request) => {
-    if (!request.auth) {
-        throw new HttpsError("unauthenticated", "El usuario no está autenticado.");
-    }
+    if (!request.auth) throw new HttpsError("unauthenticated", "El usuario no está autenticado.");
 
     const callerUid = request.auth.uid;
     const callerDoc = await admin.firestore().collection("users").doc(callerUid).get();
@@ -312,8 +308,15 @@ exports.migratePreProductionCalls = onCall(async (request) => {
 
         callsSnapshot.forEach((doc) => {
             const data = doc.data();
-            if (!data.L_ID_Llamada) {
-                batch.update(doc.ref, { L_ID_Llamada: "-1" });
+            const currentId = doc.id;
+            const targetId = data.L_ID_Llamada;
+            
+            if (targetId && currentId !== targetId) {
+                const newRef = admin.firestore().collection("calls").doc(targetId);
+                const oldRef = admin.firestore().collection("calls").doc(currentId);
+                
+                batch.set(newRef, data);
+                batch.delete(oldRef);
                 updated++;
             }
         });
@@ -322,9 +325,8 @@ exports.migratePreProductionCalls = onCall(async (request) => {
             await batch.commit();
         }
 
-        return { success: true, message: `${updated} llamadas pre-producción actualizadas con ID -1.`, total: callsSnapshot.size, updated };
+        return { success: true, message: `Migradas ${updated} llamadas con IDs aleatorios a IDs L_ID_Llamada.`, total: callsSnapshot.size, updated };
     } catch (error) {
         console.error("Error en migración:", error);
         throw new HttpsError("internal", "Error durante la migración: " + error.message);
-    }
-});
+
