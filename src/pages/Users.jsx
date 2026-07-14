@@ -656,15 +656,17 @@ const Users = () => {
                                 </th>
                                 <th style={{ width: '1px', verticalAlign: 'top' }}>
                                     <div style={{ marginBottom: '8px' }}>Acciones</div>
-                                    <select className="table-filter-input" style={{ marginBottom: '8px', minWidth: '110px' }} value={columnFilters.status || ''} onChange={e => handleFilterChange('status', e.target.value)}>
-                                        <option value="">Filtrar todos</option>
-                                        <option value="activos">Filtrar activos</option>
-                                    </select>
-                                    {Object.keys(columnFilters).filter(k => columnFilters[k] && columnFilters[k] !== '').length > 0 && (
-                                        <Button type="button" onClick={clearFilters} variant="secondary" style={{ padding: '0 8px', fontSize: '0.8rem', height: '32px' }}>
-                                            Limpiar
-                                        </Button>
-                                    )}
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                        <select className="table-filter-input" style={{ minWidth: '110px' }} value={columnFilters.status || ''} onChange={e => handleFilterChange('status', e.target.value)}>
+                                            <option value="">Filtrar todos</option>
+                                            <option value="activos">Filtrar activos</option>
+                                        </select>
+                                        {Object.keys(columnFilters).filter(k => columnFilters[k] && columnFilters[k] !== '').length > 0 && (
+                                            <Button type="button" onClick={clearFilters} variant="secondary" style={{ padding: '0 8px', fontSize: '0.8rem', height: '32px', width: '100%' }}>
+                                                Limpiar
+                                            </Button>
+                                        )}
+                                    </div>
                                 </th>
                             </tr>
                         </thead>
