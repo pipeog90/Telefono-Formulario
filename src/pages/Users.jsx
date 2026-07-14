@@ -113,7 +113,7 @@ const EmailDisplay = ({ email, disabled }) => {
 const Users = () => {
     const { lists, updateList } = useLists();
     const [users, setUsers] = useState([]);
-    const [newUser, setNewUser] = useState({ name: '', username: '', email: '', password: '', role: 'user', Clave: '', direccion: '', centro: 'Medellín', fecha_alta: '', fecha_baja: '' });
+    const [newUser, setNewUser] = useState({ name: '', username: '', email: '', password: '', role: 'user', Clave: '', direccion: '', centro: '', fecha_alta: '', fecha_baja: '' });
     const [editingUser, setEditingUser] = useState(null);
     const [userError, setUserError] = useState('');
     const [userSuccess, setUserSuccess] = useState('');
@@ -203,7 +203,7 @@ const Users = () => {
                 fecha_baja: newUser.fecha_baja || null
             });
             setUserSuccess(`Usuario ${name} creado exitosamente con código ${nextMeoCode}.`);
-            setNewUser({ name: '', username: '', email: '', password: '', role: 'user', Clave: '', direccion: '', centro: 'Medellín', fecha_alta: '', fecha_baja: '' });
+            setNewUser({ name: '', username: '', email: '', password: '', role: 'user', Clave: '', direccion: '', centro: '', fecha_alta: '', fecha_baja: '' });
             loadUsers();
         } catch (err) {
             setUserError(err.message || 'Error al crear usuario.');
@@ -573,6 +573,7 @@ const Users = () => {
                                 value={newUser.centro || ''}
                                 onChange={e => setNewUser({ ...newUser, centro: capitalize(e.target.value) })}
                                 list="centros-list"
+                                autoComplete="on"
                                 tooltip="Centro del telefono de la Esperanza"
                             />
                             <datalist id="centros-list">
@@ -889,14 +890,20 @@ const Users = () => {
                                         {/* Centro */}
                                         <td style={{ padding: 'var(--admin-cell-padding)' }}>
                                             {isEditing ? (
-                                                <Select
-                                                    value={editingUser.centro || ''}
-                                                    onChange={e => setEditingUser({ ...editingUser, centro: e.target.value })}
-                                                    options={[{ value: 'Medellín', label: 'Medellín' }]}
-
-                                                    tooltip="Centro del telefono de la Esperanza"
-                                                    style={{ minWidth: '140px' }}
-                                                />
+                                                <div style={{ position: 'relative', width: '150px' }}>
+                                                    <Input type="text"
+                                                        value={editingUser.centro || ''}
+                                                        onChange={e => setEditingUser({ ...editingUser, centro: capitalize(e.target.value) })}
+                                                        list="edit-centros-list"
+                                                        autoComplete="on"
+                                                        tooltip="Centro del telefono de la Esperanza"
+                                                    />
+                                                    <datalist id="edit-centros-list">
+                                                        {(lists?.CENTRO || []).filter(c => c.active).map(c => (
+                                                            <option key={c.value} value={c.value} />
+                                                        ))}
+                                                    </datalist>
+                                                </div>
                                             ) : u.centro || '—'}
                                         </td>
 
