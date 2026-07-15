@@ -247,12 +247,28 @@ const Reportes = () => {
                 return dateString;
             };
 
+            // Build a quick lookup for Orientador names
+            const orientadorMap = {};
+            usersList.forEach(u => {
+                if (u.value) {
+                    orientadorMap[u.value] = u.label || u.description || u.value;
+                }
+            });
+
             // Map data to display format (convert codes to labels for both display AND export)
-            const mappedData = data.map((item) => ({
+            const mappedData = data.map((item) => {
+                // If L_Orientador is missing (legacy data) but we have O_Clave, find the name
+                let resolvedOrientador = item.L_Orientador;
+                if (!resolvedOrientador && item.O_Clave) {
+                    resolvedOrientador = orientadorMap[item.O_Clave] || item.O_Clave;
+                }
+
+                return {
                 ...item, // Keep originals
                 l_id_llamada: item.L_ID_Llamada || '—',
                 c_fecha: formatDate(item.L_Fecha),
-                orientador: item.L_Orientador || 'Desconocido',
+                orientador: resolvedOrientador || 'Desconocido',
+                L_Orientador: resolvedOrientador || 'Desconocido', // Overwrite for the table to render it
                 sintesis: item.L_Sintesis || '',
                 // Header Section
                 medioContacto: getLabel('MEDIO_CONTACTO', item.L_Medio_Contacto),
@@ -309,9 +325,10 @@ const Reportes = () => {
                 o_actitudes_2: getLabel('ACTITUD_EQUIVOCADA', item.O_Actitud_Equivocada_2),
                 o_satisfaccion_1: getLabel('SATISFACCION', item.O_Satisfaccion_1),
                 o_satisfaccion_2: getLabel('SATISFACCION', item.O_Satisfaccion_2)
-            }));
+            };
+        });
 
-            setResults(mappedData);
+        setResults(mappedData);
             setRawResults(data);
             setColumnFilters({});
         } catch (error) {

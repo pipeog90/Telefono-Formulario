@@ -286,6 +286,16 @@ exports.getCallsFromBigQuery = onCall({ enforceAppCheck: true }, async (request)
     }
 });
 
+exports.getSchemaDebug = onCall(async (request) => {
+    try {
+        const bigquery = new BigQuery({ projectId: "singular-arbor-401018" });
+        const [rows] = await bigquery.query({ query: "SELECT * FROM `singular-arbor-401018.marts.dashboard_union` WHERE como_conocio IS NOT NULL LIMIT 1" });
+        return { row: rows[0] };
+    } catch (error) {
+        throw new HttpsError("internal", error.message);
+    }
+});
+
 exports.migratePreProductionCalls = onCall({ enforceAppCheck: true }, async (request) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "El usuario no está autenticado.");
 
