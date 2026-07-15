@@ -1728,6 +1728,9 @@ textarea.input-field-form {
         min-height: var(--input-height) !important;
         height: var(--input-height) !important;
         display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
     }
 
     /* Hide glass-panel background for Users table on mobile only */
