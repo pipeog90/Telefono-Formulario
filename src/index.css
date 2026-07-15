@@ -132,6 +132,10 @@ input[type="datetime-local"].ui-input {
     display: flex;
     align-items: center;
     line-height: normal;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
 }
 
 .ui-input:hover:not(:disabled) {
@@ -1730,6 +1734,7 @@ textarea.input-field-form {
         display: block !important;
         width: 100% !important;
         max-width: 100% !important;
+        min-width: 0 !important;
         box-sizing: border-box !important;
     }
 
