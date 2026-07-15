@@ -46,6 +46,11 @@ import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 // --- Initialization ---
 const app = initializeApp(firebaseConfig);
 
+// Enable App Check debug token for local development
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+}
+
 // Initialize Firebase App Check with reCAPTCHA v3
 const appCheck = initializeAppCheck(app, {
     provider: new ReCaptchaV3Provider('6LfCtFMtAAAAAIfenH3byWL4zvwXv0hnf-95-yde'),
