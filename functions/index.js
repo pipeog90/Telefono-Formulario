@@ -288,9 +288,12 @@ exports.getCallsFromBigQuery = onCall({ enforceAppCheck: true }, async (request)
 
 exports.getSchemaDebug = onCall(async (request) => {
     try {
-        const bigquery = new BigQuery({ projectId: "singular-arbor-401018" });
-        const [rows] = await bigquery.query({ query: "SELECT * FROM `singular-arbor-401018.marts.dashboard_union` WHERE como_conocio IS NOT NULL LIMIT 1" });
-        return { row: rows[0] };
+        const usersSnapshot = await admin.firestore().collection("users").get();
+        const users = [];
+        usersSnapshot.forEach(doc => {
+            users.push(doc.data());
+        });
+        return { users };
     } catch (error) {
         throw new HttpsError("internal", error.message);
     }

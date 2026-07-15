@@ -83,12 +83,15 @@ const Reportes = () => {
                         .replace(/([A-Z]+)0+(\d+)/, '$1$2');
                 };
 
-                setUsersList(users.map((u) => ({ 
-                    value: u.name, 
-                    label: u.name, 
-                    Clave: u.Clave,
-                    NormalizedClave: normalizeClave(u.Clave)
-                })));
+                setUsersList(users.map((u) => {
+                    const rawClave = u.Código_Orientador || u.Clave;
+                    return { 
+                        value: u.name, 
+                        label: u.name, 
+                        Clave: rawClave,
+                        NormalizedClave: normalizeClave(rawClave)
+                    };
+                }));
             } catch (err) {
                 console.warn('Could not fetch users for filter:', err);
             }
