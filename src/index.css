@@ -142,7 +142,8 @@ input[type="datetime-local"].ui-input {
     border-color: var(--color-border-hover);
 }
 
-.ui-input:focus {
+.ui-input:focus,
+.ui-input:focus-within {
     outline: none;
     border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
@@ -1736,6 +1737,8 @@ textarea.input-field-form {
         max-width: 100% !important;
         min-width: 0 !important;
         box-sizing: border-box !important;
+        border: none !important;
+        background: transparent !important;
     }
 
     /* Hide glass-panel background for Users table on mobile only */

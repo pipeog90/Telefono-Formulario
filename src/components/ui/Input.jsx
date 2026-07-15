@@ -91,7 +91,19 @@ const Input = ({ label, id, type = 'text', value, onChange, placeholder, require
                 </label>
             )}
             {tooltipElement}
-            <div style={{ position: 'relative', width: '100%' }}>
+            <div 
+                className={type === 'date' || type === 'time' || type === 'datetime-local' ? `ui-input ${error ? 'has-error' : ''}` : ''}
+                style={{ 
+                    position: 'relative', 
+                    width: '100%',
+                    ...((type === 'date' || type === 'time' || type === 'datetime-local') ? {
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: 0,
+                        overflow: 'hidden'
+                    } : {})
+                }}
+            >
 
                 <input
                     id={id}
@@ -107,9 +119,21 @@ const Input = ({ label, id, type = 'text', value, onChange, placeholder, require
                         ...inputStyle,
                         color: isDateEmpty ? 'transparent' : inputStyle.color,
                         opacity: disabled ? 0.5 : 1,
-                        pointerEvents: disabled ? 'none' : 'auto'
+                        pointerEvents: disabled ? 'none' : 'auto',
+                        ...((type === 'date' || type === 'time' || type === 'datetime-local') ? {
+                            border: 'none',
+                            background: 'transparent',
+                            boxShadow: 'none',
+                            outline: 'none',
+                            width: '100%',
+                            height: '100%',
+                            minHeight: 'var(--input-height)',
+                            padding: '0 10px',
+                            paddingRight: (type === 'date' && value) ? '40px' : '14px',
+                            boxSizing: 'border-box'
+                        } : {})
                     }}
-                    className={`ui-input mobile-input-fix ${isDateEmpty ? 'empty-date-input' : ''} ${error ? 'has-error' : ''}`}
+                    className={(type === 'date' || type === 'time' || type === 'datetime-local') ? `mobile-input-fix ${isDateEmpty ? 'empty-date-input' : ''}` : `ui-input mobile-input-fix ${isDateEmpty ? 'empty-date-input' : ''} ${error ? 'has-error' : ''}`}
                     maxLength={maxLength}
                     {...props}
                 />
@@ -132,7 +156,8 @@ const Input = ({ label, id, type = 'text', value, onChange, placeholder, require
                             alignItems: 'center',
                             justifyContent: 'center',
                             color: '#e74c3c',
-                            padding: '4px'
+                            padding: '4px',
+                            zIndex: 10
                         }}
                         aria-label="Limpiar fecha"
                     >
