@@ -22,7 +22,7 @@ const Registro = () => {
             <div className="registro-container">
 
                 {/* Header */}
-                <header className="registro-header glass-panel card-responsive-padding" style={{ border: '1px solid rgba(34, 197, 94, 0.35)' }}>
+                <header className="registro-header glass-panel card-responsive-padding">
                     <div className="header-left">
                         <div className="header-icon">
                             <Phone size={24} />
