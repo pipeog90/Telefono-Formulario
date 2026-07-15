@@ -201,11 +201,21 @@ const Reportes = () => {
                 const today = new Date();
                 const dayOfWeek = today.getDay(); // 0 (Sun) - 6 (Sat)
                 const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-                const lastMonday = new Date(today);
-                lastMonday.setDate(today.getDate() - diffToMonday);
-                lastMonday.setHours(0, 0, 0, 0);
+                const currentMonday = new Date(today);
+                currentMonday.setDate(today.getDate() - diffToMonday);
+                
+                const lastWeekMonday = new Date(currentMonday);
+                lastWeekMonday.setDate(currentMonday.getDate() - 7);
+                
+                const lastWeekSunday = new Date(currentMonday);
+                lastWeekSunday.setDate(currentMonday.getDate() - 1);
+                
+                // Format strings to match 'YYYY-MM-DD' since item.L_Fecha is in that format
+                const pad = (n) => n.toString().padStart(2, '0');
+                const lastMonStr = `${lastWeekMonday.getFullYear()}-${pad(lastWeekMonday.getMonth() + 1)}-${pad(lastWeekMonday.getDate())}`;
+                const lastSunStr = `${lastWeekSunday.getFullYear()}-${pad(lastWeekSunday.getMonth() + 1)}-${pad(lastWeekSunday.getDate())}`;
 
-                data = data.filter(item => new Date(item.L_Fecha) >= lastMonday);
+                data = data.filter(item => item.L_Fecha >= lastMonStr && item.L_Fecha <= lastSunStr);
             }
 
             // specific sorting (newest first)

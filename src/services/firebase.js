@@ -365,20 +365,36 @@ class DataService {
     }
 
     async getCalls(filters = {}) {
+        let bqCalls = [];
+        let fsCalls = [];
+
         try {
             const getCallsFromBigQuery = httpsCallable(functionsInstance, 'getCallsFromBigQuery');
             const response = await getCallsFromBigQuery(filters);
-            return response.data.calls;
+            bqCalls = response.data.calls || [];
         } catch (error) {
             console.error("Error calling BigQuery function:", error.code, error.message);
-            // Fallback to Firestore if BigQuery function fails
-            const querySnapshot = await getDocs(collection(dbInstance, "calls"));
-            const calls = [];
-            querySnapshot.forEach((doc) => {
-                calls.push({ id: doc.id, ...doc.data() });
-            });
-            return calls;
         }
+
+        try {
+            const querySnapshot = await getDocs(collection(dbInstance, "calls"));
+            querySnapshot.forEach((doc) => {
+                fsCalls.push({ id: doc.id, ...doc.data() });
+            });
+        } catch (error) {
+            console.error("Error calling Firestore:", error);
+        }
+
+        // Merge by L_ID_Llamada (Firestore takes precedence if there's overlap)
+        const mergedMap = new Map();
+        bqCalls.forEach(call => {
+            if (call.L_ID_Llamada) mergedMap.set(call.L_ID_Llamada, call);
+        });
+        fsCalls.forEach(call => {
+            if (call.L_ID_Llamada) mergedMap.set(call.L_ID_Llamada, call);
+        });
+
+        return Array.from(mergedMap.values());
     }
 
     async addCall(callData) {
