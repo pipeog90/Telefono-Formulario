@@ -92,7 +92,8 @@ const Input = ({ label, id, type = 'text', value, onChange, placeholder, require
             )}
             {tooltipElement}
             <div 
-                className={type === 'date' || type === 'time' || type === 'datetime-local' ? `ui-input ${error ? 'has-error' : ''}` : ''}
+                className={type === 'date' || type === 'time' || type === 'datetime-local' ? `ui-input mobile-input-fix mobile-input-wrapper ${error ? 'has-error' : ''}` : ''}
+                aria-disabled={disabled ? "true" : "false"}
                 style={{ 
                     position: 'relative', 
                     width: '100%',
@@ -133,7 +134,7 @@ const Input = ({ label, id, type = 'text', value, onChange, placeholder, require
                             boxSizing: 'border-box'
                         } : {})
                     }}
-                    className={(type === 'date' || type === 'time' || type === 'datetime-local') ? `mobile-input-fix ${isDateEmpty ? 'empty-date-input' : ''}` : `ui-input mobile-input-fix ${isDateEmpty ? 'empty-date-input' : ''} ${error ? 'has-error' : ''}`}
+                    className={(type === 'date' || type === 'time' || type === 'datetime-local') ? `date-inner-input ${isDateEmpty ? 'empty-date-input' : ''}` : `ui-input mobile-input-fix ${isDateEmpty ? 'empty-date-input' : ''} ${error ? 'has-error' : ''}`}
                     maxLength={maxLength}
                     {...props}
                 />

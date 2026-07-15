@@ -1914,6 +1914,16 @@ textarea.input-field-form {
     /* Match var(--radius-sm) */
 }
 
+/* Fix for date wrapper using mobile-input-fix */
+.ui-input.mobile-input-wrapper {
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+.ui-input.mobile-input-wrapper[aria-disabled="true"] {
+    opacity: 0.5 !important;
+}
+
 .mobile-input-fix:focus {
     border-color: #66BB6A !important;
     box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.1) !important;
