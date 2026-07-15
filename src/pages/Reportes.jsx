@@ -74,7 +74,21 @@ const Reportes = () => {
         const fetchUsers = async () => {
             try {
                 const users = await auth.getUsers();
-                setUsersList(users.map((u) => ({ value: u.name, label: u.name, Clave: u.Clave })));
+                
+                const normalizeClave = (c) => {
+                    if (!c) return '';
+                    return String(c)
+                        .toUpperCase()
+                        .replace(/[\s-]/g, '')
+                        .replace(/([A-Z]+)0+(\d+)/, '$1$2');
+                };
+
+                setUsersList(users.map((u) => ({ 
+                    value: u.name, 
+                    label: u.name, 
+                    Clave: u.Clave,
+                    NormalizedClave: normalizeClave(u.Clave)
+                })));
             } catch (err) {
                 console.warn('Could not fetch users for filter:', err);
             }
@@ -135,14 +149,22 @@ const Reportes = () => {
 
             // Specific Filters
             if (activeFilters.orientador) {
-                // Find the selected user's Clave to match legacy data
+                // Find the selected user's NormalizedClave to match legacy data
                 const selectedUser = usersList.find(u => u.value === activeFilters.orientador);
-                const mappedClave = selectedUser ? selectedUser.Clave : null;
+                const mappedClave = selectedUser ? selectedUser.NormalizedClave : null;
 
                 data = data.filter(item => {
                     // Item could be legacy (O_Clave) or new (L_Orientador)
+                    
+                    const normalizeClave = (c) => {
+                        if (!c) return '';
+                        return String(c).toUpperCase().replace(/[\s-]/g, '').replace(/([A-Z]+)0+(\d+)/, '$1$2');
+                    };
+                    
+                    const normalizedItemClave = normalizeClave(item.O_Clave);
+
                     return safeMatch(item.L_Orientador, activeFilters.orientador, null) || 
-                           (mappedClave && safeMatch(item.O_Clave, mappedClave, null)) ||
+                           (mappedClave && safeMatch(normalizedItemClave, mappedClave, null)) ||
                            safeMatch(item.O_Clave, activeFilters.orientador, null);
                 });
             }
@@ -261,12 +283,18 @@ const Reportes = () => {
             // Build a quick lookup for Orientador names and Claves
             const orientadorMap = {};
             const claveToNameMap = {};
+            
+            const normalizeClave = (c) => {
+                if (!c) return '';
+                return String(c).toUpperCase().replace(/[\s-]/g, '').replace(/([A-Z]+)0+(\d+)/, '$1$2');
+            };
+
             usersList.forEach(u => {
                 if (u.value) {
                     orientadorMap[u.value] = u.label || u.description || u.value;
                 }
-                if (u.Clave) {
-                    claveToNameMap[u.Clave] = u.label || u.value;
+                if (u.NormalizedClave) {
+                    claveToNameMap[u.NormalizedClave] = u.label || u.value;
                 }
             });
 
@@ -275,7 +303,8 @@ const Reportes = () => {
                 // If L_Orientador is missing (legacy data) but we have O_Clave, find the name
                 let resolvedOrientador = item.L_Orientador;
                 if (!resolvedOrientador && item.O_Clave) {
-                    resolvedOrientador = claveToNameMap[item.O_Clave] || orientadorMap[item.O_Clave] || item.O_Clave;
+                    const normalizedItemClave = normalizeClave(item.O_Clave);
+                    resolvedOrientador = claveToNameMap[normalizedItemClave] || orientadorMap[item.O_Clave] || item.O_Clave;
                 }
 
                 return {
