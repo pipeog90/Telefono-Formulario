@@ -74,7 +74,7 @@ const Reportes = () => {
         const fetchUsers = async () => {
             try {
                 const users = await auth.getUsers();
-                setUsersList(users.map((u) => ({ value: u.name, label: u.name })));
+                setUsersList(users.map((u) => ({ value: u.name, label: u.name, Clave: u.Clave })));
             } catch (err) {
                 console.warn('Could not fetch users for filter:', err);
             }
@@ -134,7 +134,18 @@ const Reportes = () => {
             };
 
             // Specific Filters
-            if (activeFilters.L_Orientador) data = data.filter(item => safeMatch(item.L_Orientador, activeFilters.L_Orientador, null));
+            if (activeFilters.orientador) {
+                // Find the selected user's Clave to match legacy data
+                const selectedUser = usersList.find(u => u.value === activeFilters.orientador);
+                const mappedClave = selectedUser ? selectedUser.Clave : null;
+
+                data = data.filter(item => {
+                    // Item could be legacy (O_Clave) or new (L_Orientador)
+                    return safeMatch(item.L_Orientador, activeFilters.orientador, null) || 
+                           (mappedClave && safeMatch(item.O_Clave, mappedClave, null)) ||
+                           safeMatch(item.O_Clave, activeFilters.orientador, null);
+                });
+            }
             
             if (activeFilters.problema) {
                 const filterKey = activeFilters.problema.split(' - ')[0].trim().toUpperCase();
@@ -247,11 +258,15 @@ const Reportes = () => {
                 return dateString;
             };
 
-            // Build a quick lookup for Orientador names
+            // Build a quick lookup for Orientador names and Claves
             const orientadorMap = {};
+            const claveToNameMap = {};
             usersList.forEach(u => {
                 if (u.value) {
                     orientadorMap[u.value] = u.label || u.description || u.value;
+                }
+                if (u.Clave) {
+                    claveToNameMap[u.Clave] = u.label || u.value;
                 }
             });
 
@@ -260,7 +275,7 @@ const Reportes = () => {
                 // If L_Orientador is missing (legacy data) but we have O_Clave, find the name
                 let resolvedOrientador = item.L_Orientador;
                 if (!resolvedOrientador && item.O_Clave) {
-                    resolvedOrientador = orientadorMap[item.O_Clave] || item.O_Clave;
+                    resolvedOrientador = claveToNameMap[item.O_Clave] || orientadorMap[item.O_Clave] || item.O_Clave;
                 }
 
                 return {
