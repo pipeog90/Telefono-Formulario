@@ -56,6 +56,23 @@ export const initialDropdowns = {
             "value": "2",
             "label": "2 - Mujer",
             "active": true
+        },
+        {
+            "value": "6",
+            "label": "6 - Otros",
+            "active": true
+        }
+    ],
+    "VOLVERA_LLAMAR": [
+        {
+            "value": "1",
+            "label": "1 - Sí",
+            "active": true
+        },
+        {
+            "value": "2",
+            "label": "2 - No",
+            "active": true
         }
     ],
     "EDAD": [
