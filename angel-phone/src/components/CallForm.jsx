@@ -383,19 +383,24 @@ const CallForm = ({ user }) => {
                         type="button"
                         onClick={handleReset}
                         style={{
-                            background: 'linear-gradient(135deg, var(--sub-color-primary), var(--sub-color-secondary))',
+                            backgroundColor: 'var(--color-primary)',
                             color: 'white',
                             border: 'none',
-                            borderRadius: '8px',
-                            padding: '6px 14px',
+                            borderRadius: 'var(--radius-sm, 4px)',
+                            padding: '0 20px',
+                            height: 'var(--input-height, 34px)',
                             fontWeight: '600',
-                            fontSize: '0.85rem',
+                            fontSize: '0.9rem',
                             cursor: 'pointer',
-                            boxShadow: '0 2px 8px rgba(34,197,94,0.3)',
-                            whiteSpace: 'nowrap'
+                            boxShadow: '0 2px 4px rgba(16, 185, 129, 0.2)',
+                            whiteSpace: 'nowrap',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'all 0.2s ease'
                         }}
                     >
-                        ＋ Nueva llamada
+                        Limpiar Llamada
                     </button>
                 }
             >
