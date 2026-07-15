@@ -355,7 +355,7 @@ const CallForm = ({ user }) => {
     // Helper wrapper to avoid writing disabled={isFieldNH('...')} required={isFieldOBL('...')} everywhere
     const getFieldProps = (fieldName) => {
         return {
-            disabled: isFieldNH(fieldName),
+            disabled: (fieldName === 'L_Hora' || fieldName === 'L_Fecha') ? false : isFieldNH(fieldName),
             required: isFieldOBL(fieldName),
             error: missingFieldsList.includes(fieldName)
         };
