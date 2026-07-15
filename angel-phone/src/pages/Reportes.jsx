@@ -177,11 +177,11 @@ const Reportes = () => {
                             <div className="form-row" style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', marginBottom: '10px' }}>
                                 <div className="form-group-inline" style={{ display: 'flex', flexDirection: 'column', flex: '1 1 200px' }}>
                                     <label htmlFor="fechaInicio" style={{ fontWeight: '400', marginBottom: '3px' }}>Fecha Inicio:</label>
-                                    <input type="date" id="fechaInicio" value={filters.fechaInicio} onChange={handleChange} style={{ padding: '8px 10px', width: '100%', border: '1px solid var(--color-border)', borderRadius: '4px' }} />
+                                    <input type="date" className="ui-input" id="fechaInicio" value={filters.fechaInicio} onChange={handleChange} />
                                 </div>
                                 <div className="form-group-inline" style={{ display: 'flex', flexDirection: 'column', flex: '1 1 200px' }}>
                                     <label htmlFor="fechaFin" style={{ fontWeight: '400', marginBottom: '3px' }}>Fecha Fin:</label>
-                                    <input type="date" id="fechaFin" value={filters.fechaFin} onChange={handleChange} style={{ padding: '8px 10px', width: '100%', border: '1px solid var(--color-border)', borderRadius: '4px' }} />
+                                    <input type="date" className="ui-input" id="fechaFin" value={filters.fechaFin} onChange={handleChange} />
                                 </div>
                                 <div className="form-group-inline" style={{ display: 'flex', flexDirection: 'column', flex: '1 1 200px' }}>
                                     <label htmlFor="orientador" style={{ fontWeight: '400', marginBottom: '3px' }}>Orientador:</label>

@@ -124,6 +124,16 @@ h1, h2, h3, h4, h5, h6 {
     appearance: none;
 }
 
+/* Ensure date inputs explicitly match normal input dimensions across browsers */
+input[type="date"].ui-input,
+input[type="time"].ui-input,
+input[type="datetime-local"].ui-input {
+    min-height: var(--input-height);
+    display: flex;
+    align-items: center;
+    line-height: normal;
+}
+
 .ui-input:hover:not(:disabled) {
     border-color: var(--color-border-hover);
 }
@@ -1708,13 +1718,16 @@ textarea.input-field-form {
         padding-right: 2rem !important;
     }
 
-    /* Restore native date picker on mobile */
+    /* Restore native date picker on mobile while enforcing height consistency */
     input[type="date"],
     input[type="time"],
     input[type="datetime-local"] {
         -webkit-appearance: auto !important;
         -moz-appearance: auto !important;
         appearance: auto !important;
+        min-height: var(--input-height) !important;
+        height: var(--input-height) !important;
+        display: block !important;
     }
 
     /* Hide glass-panel background for Users table on mobile only */
