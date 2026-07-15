@@ -41,7 +41,7 @@ const firebaseConfig = {
     measurementId: "G-FC62DY559B"
 };
 
-import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check";
 
 // --- Initialization ---
 const app = initializeApp(firebaseConfig);
@@ -51,9 +51,9 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
     self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
 }
 
-// Initialize Firebase App Check with reCAPTCHA v3
+// Initialize Firebase App Check with reCAPTCHA Enterprise
 const appCheck = initializeAppCheck(app, {
-    provider: new ReCaptchaV3Provider('6LfCtFMtAAAAAIfenH3byWL4zvwXv0hnf-95-yde'),
+    provider: new ReCaptchaEnterpriseProvider('6LfCtFMtAAAAAIfenH3byWL4zvwXv0hnf-95-yde'),
     // Optional: automatically refresh the token
     isTokenAutoRefreshEnabled: true
 });
